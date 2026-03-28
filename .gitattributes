@@ -1,0 +1,4 @@
+* text=auto
+
+# Keep notebooks as text-based JSON in git
+*.ipynb text
