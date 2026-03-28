@@ -8,6 +8,7 @@ import json
 import os
 import platform
 import random
+import subprocess
 import sys
 from datetime import datetime, timezone
 from importlib import metadata
@@ -15,6 +16,9 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import numpy as np
+
+
+BENCHMARK_PROTOCOL_VERSION = "1.0.0"
 
 
 def set_global_seed(seed: int) -> None:
@@ -55,6 +59,25 @@ def _safe_package_version(pkg_name: str) -> Optional[str]:
         return None
 
 
+def _get_git_commit_hash() -> Optional[str]:
+    """Return the current git commit hash when available."""
+    # CI environments often expose the commit directly.
+    env_sha = os.getenv("GITHUB_SHA")
+    if env_sha:
+        return env_sha
+
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return result.stdout.strip() or None
+    except Exception:
+        return None
+
+
 def create_run_manifest(domain: str, config: Dict[str, Any], seed_list: List[int]) -> Dict[str, Any]:
     """Create run manifest with environment and dependency metadata."""
     packages = [
@@ -79,6 +102,8 @@ def create_run_manifest(domain: str, config: Dict[str, Any], seed_list: List[int
     return {
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "domain": domain,
+        "benchmark_protocol_version": BENCHMARK_PROTOCOL_VERSION,
+        "git_commit_hash": _get_git_commit_hash(),
         "config": config,
         "seeds": seed_list,
         "environment": {

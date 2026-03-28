@@ -48,6 +48,11 @@ CANONICAL_CATEGORIES = [
     "systems",
 ]
 
+BUDGET_TRAIN_TIME_CAP_SECONDS = 30.0
+BUDGET_TRAIN_TIME_CAP_SECONDS_FULL = 300.0
+BUDGET_MEMORY_CAP_MB = 4096.0
+BUDGET_TUNING_TRIALS_CAP = 0
+
 
 def _category_for_approach(name: str) -> str:
     low = name.lower()
@@ -130,6 +135,9 @@ def run_all_approaches(
     print("=" * 70)
     
     seeds = resolve_seed_list(n_runs=n_runs, seed=seed, seed_list=seed_list)
+    train_time_cap_seconds = BUDGET_TRAIN_TIME_CAP_SECONDS if smoke_test else BUDGET_TRAIN_TIME_CAP_SECONDS_FULL
+    memory_cap_mb = BUDGET_MEMORY_CAP_MB
+    tuning_trials_cap = BUDGET_TUNING_TRIALS_CAP
     all_run_results: List[List[Dict[str, Any]]] = []
 
     for run_idx, run_seed in enumerate(seeds, start=1):
@@ -211,6 +219,10 @@ def run_all_approaches(
                     'philosophy': approach.get_philosophy(),
                     'metrics': approach.metrics.to_dict(),
                     'seed': run_seed,
+                    'train_time_cap_seconds': train_time_cap_seconds,
+                    'memory_cap_mb': memory_cap_mb,
+                    'tuning_trials_cap': tuning_trials_cap,
+                    'out_of_budget': train_time > train_time_cap_seconds,
                     'success': True,
                 }
                 validate_run_row(
@@ -218,6 +230,10 @@ def run_all_approaches(
                         'name': row['name'],
                         'category': row['category'],
                         'seed': row['seed'],
+                        'train_time_cap_seconds': row['train_time_cap_seconds'],
+                        'memory_cap_mb': row['memory_cap_mb'],
+                        'tuning_trials_cap': row['tuning_trials_cap'],
+                        'out_of_budget': row['out_of_budget'],
                         'success': row['success'],
                         'metrics': row['metrics'].get('primary_metrics', {}),
                     },
@@ -232,6 +248,10 @@ def run_all_approaches(
                     'name': approach.name,
                     'category': category,
                     'seed': run_seed,
+                    'train_time_cap_seconds': train_time_cap_seconds,
+                    'memory_cap_mb': memory_cap_mb,
+                    'tuning_trials_cap': tuning_trials_cap,
+                    'out_of_budget': False,
                     'philosophy': approach.get_philosophy(),
                     'metrics': {},
                     'success': False,
@@ -259,11 +279,20 @@ def run_all_approaches(
 
     for name, rows in by_name.items():
         successful = [r for r in rows if r.get('success', False)]
+        out_of_budget_count = sum(1 for r in rows if r.get('out_of_budget', False))
+        budget_summary = {
+            'train_time_cap_seconds': train_time_cap_seconds,
+            'memory_cap_mb': memory_cap_mb,
+            'tuning_trials_cap': tuning_trials_cap,
+            'out_of_budget_count': out_of_budget_count,
+            'out_of_budget_rate': out_of_budget_count / total_runs,
+        }
         if not successful:
             aggregated_results.append({
                 'name': name,
                 'category': rows[0].get('category', 'systems'),
                 'success_rate': 0.0,
+                'budget_summary': budget_summary,
                 'success': False,
             })
             continue
@@ -290,6 +319,7 @@ def run_all_approaches(
             'success_rate': success_rate,
             'primary_metrics_summary': primary_summary,
             'systems_metrics_summary': systems_summary,
+            'budget_summary': budget_summary,
             'success': True,
         })
 
@@ -357,6 +387,9 @@ def run_all_approaches(
                     'n_test': n_test,
                     'n_runs': len(seeds),
                     'smoke_test': smoke_test,
+                    'train_time_cap_seconds': train_time_cap_seconds,
+                    'memory_cap_mb': memory_cap_mb,
+                    'tuning_trials_cap': tuning_trials_cap,
                 },
                 seed_list=seeds,
             ),
