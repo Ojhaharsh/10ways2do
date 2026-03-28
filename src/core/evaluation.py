@@ -275,7 +275,10 @@ class Evaluator:
         # Comparison table
         df = self.compare()
         report.append("## Comparison Table\n")
-        report.append(df.to_markdown(index=False))
+        try:
+            report.append(df.to_markdown(index=False))
+        except ImportError:
+            report.append(df.to_string(index=False))
         report.append("\n\n")
         
         # Per-approach details

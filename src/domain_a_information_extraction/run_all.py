@@ -445,7 +445,11 @@ def generate_report(results: List[Dict], comparison_df: pd.DataFrame) -> str:
                      f"(Latency: {best_speed[latency_col]:.2f}ms)\n")
     
     report.append("\n## Comparison Table\n")
-    report.append(comparison_df.to_markdown(index=False))
+    try:
+        report.append(comparison_df.to_markdown(index=False))
+    except ImportError:
+        # Fall back when optional dependency "tabulate" is not installed.
+        report.append(comparison_df.to_string(index=False))
     report.append("\n")
     
     report.append("\n## Approach Philosophies\n")
