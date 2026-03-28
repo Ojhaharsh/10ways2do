@@ -15,6 +15,7 @@ from src.domain_a_information_extraction.run_all import run_all_approaches as ru
 from src.domain_b_anomaly_detection.run_all import run_all_approaches as run_b
 from src.domain_c_recommendation.run_all import run_all_approaches as run_c
 from src.domain_d_time_series.run_all import run_all_approaches as run_d
+from src.core.benchmark_utils import BENCHMARK_PROTOCOL_VERSION
 
 
 REQUIRED_FILES = [
@@ -88,6 +89,8 @@ def test_smoke_artifacts(domain_name, runner, kwargs, tmp_path):
     with open(output_dir / "run_manifest.json", encoding="utf-8") as f:
         manifest = json.load(f)
     assert manifest["domain"] == domain_name
+    assert manifest["benchmark_protocol_version"] == BENCHMARK_PROTOCOL_VERSION
+    assert "git_commit_hash" in manifest
     assert manifest["config"]["smoke_test"] is True
 
     with open(output_dir / "results_aggregated.json", encoding="utf-8") as f:
@@ -95,6 +98,25 @@ def test_smoke_artifacts(domain_name, runner, kwargs, tmp_path):
     assert "approaches" in aggregated
     assert isinstance(aggregated["approaches"], list)
     assert len(aggregated["approaches"]) > 0
+    for row in aggregated["approaches"]:
+        assert "budget_summary" in row
+        budget_summary = row["budget_summary"]
+        for key in [
+            "train_time_cap_seconds",
+            "memory_cap_mb",
+            "tuning_trials_cap",
+            "out_of_budget_count",
+            "out_of_budget_rate",
+        ]:
+            assert key in budget_summary
+
+    with open(output_dir / "results_raw_by_run.json", encoding="utf-8") as f:
+        raw = json.load(f)
+    assert "runs" in raw
+    for run_rows in raw["runs"]:
+        for row in run_rows:
+            for key in ["train_time_cap_seconds", "memory_cap_mb", "tuning_trials_cap", "out_of_budget"]:
+                assert key in row
 
     canonical = pd.read_csv(output_dir / "comparison_canonical.csv")
     assert "Category" in canonical.columns
