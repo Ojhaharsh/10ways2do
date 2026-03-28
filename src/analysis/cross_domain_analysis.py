@@ -149,7 +149,10 @@ class CrossDomainAnalyzer:
         report.append("## Approach Philosophies\n")
         df = self.compare_philosophies()
         if not df.empty:
-            report.append(df.to_markdown(index=False))
+            try:
+                report.append(df.to_markdown(index=False))
+            except ImportError:
+                report.append(df.to_string(index=False))
         
         # Trade-offs
         report.append("\n## Trade-off Analysis\n")
