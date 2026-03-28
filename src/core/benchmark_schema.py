@@ -70,6 +70,19 @@ def validate_run_row(row: Dict[str, Any], required_metric_keys: Optional[List[st
     if not isinstance(success, bool):
         raise ValueError("Benchmark row 'success' must be a bool")
 
+    train_time_cap_seconds = _require(row, "train_time_cap_seconds")
+    memory_cap_mb = _require(row, "memory_cap_mb")
+    tuning_trials_cap = _require(row, "tuning_trials_cap")
+    out_of_budget = _require(row, "out_of_budget")
+
+    _validate_numeric(train_time_cap_seconds, "train_time_cap_seconds")
+    if memory_cap_mb is not None:
+        _validate_numeric(memory_cap_mb, "memory_cap_mb")
+    if not isinstance(tuning_trials_cap, int) or tuning_trials_cap < 0:
+        raise ValueError("Benchmark row 'tuning_trials_cap' must be a non-negative int")
+    if not isinstance(out_of_budget, bool):
+        raise ValueError("Benchmark row 'out_of_budget' must be a bool")
+
     if success:
         metrics = _require(row, "metrics")
         if not isinstance(metrics, dict) or not metrics:
@@ -112,6 +125,34 @@ def validate_aggregated_results(
             raise ValueError("success_rate must be in [0, 1]")
         if not isinstance(success, bool):
             raise ValueError("Aggregated row 'success' must be bool")
+
+        budget_summary = _require(row, "budget_summary")
+        if not isinstance(budget_summary, dict):
+            raise ValueError("Aggregated row 'budget_summary' must be dict")
+        for budget_key in [
+            "train_time_cap_seconds",
+            "memory_cap_mb",
+            "tuning_trials_cap",
+            "out_of_budget_count",
+            "out_of_budget_rate",
+        ]:
+            if budget_key not in budget_summary:
+                raise ValueError(f"Aggregated budget_summary missing '{budget_key}'")
+
+        _validate_numeric(budget_summary["train_time_cap_seconds"], "budget_summary.train_time_cap_seconds")
+        if budget_summary["memory_cap_mb"] is not None:
+            _validate_numeric(budget_summary["memory_cap_mb"], "budget_summary.memory_cap_mb")
+
+        tuning_trials_cap = budget_summary["tuning_trials_cap"]
+        out_of_budget_count = budget_summary["out_of_budget_count"]
+        out_of_budget_rate = budget_summary["out_of_budget_rate"]
+        if not isinstance(tuning_trials_cap, int) or tuning_trials_cap < 0:
+            raise ValueError("budget_summary.tuning_trials_cap must be a non-negative int")
+        if not isinstance(out_of_budget_count, int) or out_of_budget_count < 0:
+            raise ValueError("budget_summary.out_of_budget_count must be a non-negative int")
+        _validate_numeric(out_of_budget_rate, "budget_summary.out_of_budget_rate")
+        if not (0.0 <= float(out_of_budget_rate) <= 1.0):
+            raise ValueError("budget_summary.out_of_budget_rate must be in [0, 1]")
 
         if not success:
             continue
