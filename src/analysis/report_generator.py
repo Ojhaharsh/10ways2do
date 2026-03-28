@@ -106,7 +106,10 @@ class ReportGenerator:
         
         if summary_data:
             df = pd.DataFrame(summary_data)
-            report.append(df.to_markdown(index=False))
+            try:
+                report.append(df.to_markdown(index=False))
+            except ImportError:
+                report.append(df.to_string(index=False))
         
         # Detailed results per approach
         report.append("\n## Detailed Results\n")
