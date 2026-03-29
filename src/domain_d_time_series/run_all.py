@@ -21,6 +21,7 @@ from .approach_09_hybrid import HybridForecaster
 from ..core.metrics import compute_timeseries_metrics
 from ..core.benchmark_utils import (
     aggregate_numeric_dicts,
+    compute_significance_vs_best,
     create_run_manifest,
     resolve_seed_list,
     save_json,
@@ -90,6 +91,9 @@ def _build_canonical_table(variant_df: pd.DataFrame) -> pd.DataFrame:
                     "Approach": "N/A",
                     "RMSE Mean": np.nan,
                     "RMSE Std": np.nan,
+                    "RMSE CI95 Low": np.nan,
+                    "RMSE CI95 High": np.nan,
+                    "RMSE p-value vs Best": np.nan,
                     "MAE Mean": np.nan,
                     "MASE Mean": np.nan,
                     "Run Success Rate": 0.0,
@@ -106,6 +110,11 @@ def _build_canonical_table(variant_df: pd.DataFrame) -> pd.DataFrame:
                 "Approach": best["Approach"],
                 "RMSE Mean": float(best["RMSE Mean"]),
                 "RMSE Std": float(best["RMSE Std"]),
+                "RMSE CI95 Low": float(best["RMSE CI95 Low"]),
+                "RMSE CI95 High": float(best["RMSE CI95 High"]),
+                "RMSE p-value vs Best": float(best["RMSE p-value vs Best"])
+                if pd.notna(best["RMSE p-value vs Best"])
+                else np.nan,
                 "MAE Mean": float(best["MAE Mean"]),
                 "MASE Mean": float(best["MASE Mean"]),
                 "Run Success Rate": float(best["Run Success Rate"]),
@@ -266,6 +275,7 @@ def run_all_approaches(
     total_runs = len(seeds)
     comparison_data: List[Dict[str, Any]] = []
     aggregated_results: List[Dict[str, Any]] = []
+    rmse_samples_by_name: Dict[str, List[float]] = {}
 
     for name, rows in by_name.items():
         successful = [r for r in rows if r.get('success', False)]
@@ -288,6 +298,11 @@ def run_all_approaches(
             continue
 
         metric_summary = aggregate_numeric_dicts([r['metrics'] for r in successful])
+        rmse_samples_by_name[name] = [
+            float(r['metrics'].get('rmse'))
+            for r in successful
+            if isinstance(r['metrics'].get('rmse'), (int, float)) and np.isfinite(r['metrics'].get('rmse'))
+        ]
         time_summary = aggregate_numeric_dicts(
             [{'training_time': r.get('training_time', np.nan), 'inference_time': r.get('inference_time', np.nan)} for r in successful]
         )
@@ -311,10 +326,25 @@ def run_all_approaches(
             'MAE Std': _safe_metric(metric_summary, 'mae', 'std'),
             'RMSE Mean': _safe_metric(metric_summary, 'rmse', 'mean'),
             'RMSE Std': _safe_metric(metric_summary, 'rmse', 'std'),
+            'RMSE CI95 Low': _safe_metric(metric_summary, 'rmse', 'ci95_low'),
+            'RMSE CI95 High': _safe_metric(metric_summary, 'rmse', 'ci95_high'),
             'MASE Mean': _safe_metric(metric_summary, 'mase', 'mean'),
             'Training Time Mean (s)': _safe_metric(time_summary, 'training_time', 'mean'),
             'Run Success Rate': success_rate,
         })
+
+    rmse_significance = compute_significance_vs_best(
+        rmse_samples_by_name,
+        higher_is_better=False,
+    )
+
+    for row in aggregated_results:
+        if row.get('success', False):
+            row['significance_vs_best'] = rmse_significance[row['name']]
+
+    for row in comparison_data:
+        significance = rmse_significance.get(row['Approach'], {})
+        row['RMSE p-value vs Best'] = significance.get('p_value', np.nan)
 
     variant_comparison_df = pd.DataFrame(comparison_data)
     canonical_comparison_df = _build_canonical_table(variant_comparison_df)
