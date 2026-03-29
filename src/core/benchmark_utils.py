@@ -5,6 +5,7 @@ Shared utilities for reproducible benchmark runs.
 from __future__ import annotations
 
 import json
+import math
 import os
 import platform
 import random
@@ -125,7 +126,7 @@ def save_json(path: Path, payload: Dict[str, Any]) -> None:
 
 
 def aggregate_numeric_dicts(rows: List[Dict[str, Any]]) -> Dict[str, Dict[str, float]]:
-    """Aggregate numeric keys in a list of dicts into mean/std summaries."""
+    """Aggregate numeric keys in a list of dicts into statistical summaries."""
     values_by_key: Dict[str, List[float]] = {}
 
     for row in rows:
@@ -136,9 +137,92 @@ def aggregate_numeric_dicts(rows: List[Dict[str, Any]]) -> Dict[str, Dict[str, f
     summary: Dict[str, Dict[str, float]] = {}
     for k, vals in values_by_key.items():
         arr = np.array(vals, dtype=float)
+        n = int(arr.shape[0])
+        mean = float(np.mean(arr))
+        std = float(np.std(arr))
+        sem = float(std / np.sqrt(n)) if n > 0 else float("nan")
+        ci95_half = 1.96 * sem if np.isfinite(sem) else float("nan")
         summary[k] = {
-            "mean": float(np.mean(arr)),
-            "std": float(np.std(arr)),
-            "n": int(arr.shape[0]),
+            "mean": mean,
+            "std": std,
+            "n": n,
+            "sem": sem,
+            "ci95_low": float(mean - ci95_half) if np.isfinite(ci95_half) else float("nan"),
+            "ci95_high": float(mean + ci95_half) if np.isfinite(ci95_half) else float("nan"),
         }
     return summary
+
+
+def _welch_ttest_pvalue_normal_approx(sample_a: List[float], sample_b: List[float]) -> Optional[float]:
+    """Approximate two-sided p-value for Welch's t-test using normal tail."""
+    if len(sample_a) < 2 or len(sample_b) < 2:
+        return None
+
+    a = np.array(sample_a, dtype=float)
+    b = np.array(sample_b, dtype=float)
+
+    mean_a = float(np.mean(a))
+    mean_b = float(np.mean(b))
+    var_a = float(np.var(a, ddof=1))
+    var_b = float(np.var(b, ddof=1))
+
+    denom = np.sqrt((var_a / len(a)) + (var_b / len(b)))
+    if not np.isfinite(denom) or denom <= 0:
+        return None
+
+    z = abs((mean_a - mean_b) / denom)
+    p_value = float(math.erfc(z / np.sqrt(2.0)))
+    return p_value
+
+
+def compute_significance_vs_best(
+    metric_samples_by_name: Dict[str, List[float]],
+    higher_is_better: bool,
+    alpha: float = 0.05,
+) -> Dict[str, Dict[str, Any]]:
+    """Compute per-approach significance against the best mean approach."""
+    clean_samples: Dict[str, List[float]] = {}
+    for name, samples in metric_samples_by_name.items():
+        clean = [float(v) for v in samples if isinstance(v, (int, float)) and np.isfinite(v)]
+        if clean:
+            clean_samples[name] = clean
+
+    if not clean_samples:
+        return {}
+
+    means = {name: float(np.mean(vals)) for name, vals in clean_samples.items()}
+    best_name = max(means, key=means.get) if higher_is_better else min(means, key=means.get)
+    best_mean = means[best_name]
+    best_samples = clean_samples[best_name]
+
+    result: Dict[str, Dict[str, Any]] = {}
+    for name, samples in clean_samples.items():
+        mean_value = means[name]
+        if name == best_name:
+            p_value: Optional[float] = 1.0
+        else:
+            p_value = _welch_ttest_pvalue_normal_approx(samples, best_samples)
+
+        if higher_is_better:
+            mean_diff_vs_best = mean_value - best_mean
+            significantly_better = (
+                p_value is not None and p_value < alpha and mean_value > best_mean
+            )
+        else:
+            mean_diff_vs_best = best_mean - mean_value
+            significantly_better = (
+                p_value is not None and p_value < alpha and mean_value < best_mean
+            )
+
+        result[name] = {
+            "best_approach": best_name,
+            "best_mean": best_mean,
+            "higher_is_better": higher_is_better,
+            "alpha": alpha,
+            "is_best": name == best_name,
+            "mean_diff_vs_best": float(mean_diff_vs_best),
+            "p_value": p_value,
+            "significantly_better_than_best": significantly_better,
+        }
+
+    return result
