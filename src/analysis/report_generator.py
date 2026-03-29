@@ -20,6 +20,18 @@ class ReportGenerator:
             'domain_c': 'Recommendation',
             'domain_d': 'Time Series Forecasting'
         }
+
+    def _load_aggregated_rows(self, domain: str) -> List[Dict[str, Any]]:
+        """Load successful aggregated rows for a domain when available."""
+        aggregated_path = self.results_dir / domain / "results_aggregated.json"
+        if not aggregated_path.exists():
+            return []
+
+        with open(aggregated_path) as f:
+            payload = json.load(f)
+
+        approaches = payload.get('approaches', []) if isinstance(payload, dict) else []
+        return [row for row in approaches if isinstance(row, dict) and row.get('success', False)]
     
     def load_domain_results(self, domain: str) -> Optional[List[Dict]]:
         """Load results for a specific domain."""
@@ -301,7 +313,64 @@ trade-offs in terms of accuracy, speed, interpretability, data efficiency, and r
     
     def _generate_cross_domain_insights(self) -> str:
         """Generate insights comparing across domains."""
-        return """
+        dynamic_lines: List[str] = []
+
+        dynamic_lines.append("## Cross-Domain Statistical Summary")
+        winners = []
+
+        for domain, domain_name in self.domains.items():
+            rows = self._load_aggregated_rows(domain)
+            if not rows:
+                dynamic_lines.append(f"- {domain_name}: No aggregated results available.")
+                continue
+
+            best_row = next(
+                (r for r in rows if isinstance(r.get('significance_vs_best'), dict) and r['significance_vs_best'].get('is_best')),
+                None,
+            )
+
+            if best_row is None:
+                dynamic_lines.append(f"- {domain_name}: No significance annotations available.")
+                continue
+
+            sig = best_row['significance_vs_best']
+            best_name = best_row.get('name', sig.get('best_approach', 'N/A'))
+            best_mean = sig.get('best_mean')
+            direction = "higher-is-better" if sig.get('higher_is_better', True) else "lower-is-better"
+            best_mean_str = f"{best_mean:.4f}" if isinstance(best_mean, (int, float)) else "N/A"
+
+            competitors_significant = 0
+            competitors_total = 0
+            for row in rows:
+                if row.get('name') == best_name:
+                    continue
+                row_sig = row.get('significance_vs_best')
+                if not isinstance(row_sig, dict):
+                    continue
+                p_value = row_sig.get('p_value')
+                if isinstance(p_value, (int, float)):
+                    competitors_total += 1
+                    if p_value < float(row_sig.get('alpha', 0.05)):
+                        competitors_significant += 1
+
+            dynamic_lines.append(
+                f"- {domain_name}: best={best_name}, best_mean={best_mean_str}, "
+                f"criterion={direction}, significant_vs_best={competitors_significant}/{competitors_total}."
+            )
+            winners.append(best_name)
+
+        if winners:
+            winner_counts: Dict[str, int] = {}
+            for winner in winners:
+                winner_counts[winner] = winner_counts.get(winner, 0) + 1
+            top_winner = max(winner_counts, key=winner_counts.get)
+            dynamic_lines.append(
+                f"- Most frequent domain winner: {top_winner} ({winner_counts[top_winner]} domain(s))."
+            )
+
+        dynamic_block = "\n".join(dynamic_lines)
+
+        return dynamic_block + "\n\n" + """
 ## Universal Patterns
 
 ### 1. Rule-Based Methods
