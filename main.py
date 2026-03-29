@@ -64,6 +64,7 @@ def run_all(**kwargs):
     
     domains = ['a', 'b', 'c', 'd']
     results = {}
+    base_output_dir = kwargs.get('output_dir', 'results')
     
     for domain in domains:
         print(f"\n\n{'#' * 80}")
@@ -71,7 +72,9 @@ def run_all(**kwargs):
         print(f"{'#' * 80}\n")
         
         try:
-            results[domain] = run_domain(domain, **kwargs)
+            domain_kwargs = dict(kwargs)
+            domain_kwargs['output_dir'] = f"{base_output_dir}/domain_{domain}"
+            results[domain] = run_domain(domain, **domain_kwargs)
         except Exception as e:
             print(f"Error running domain {domain}: {e}")
             import traceback
