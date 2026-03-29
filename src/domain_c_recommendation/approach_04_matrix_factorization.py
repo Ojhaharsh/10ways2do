@@ -14,6 +14,26 @@ from sklearn.decomposition import NMF
 from ..core.base_model import BaseApproach
 
 
+def _robust_linear_solve(a: np.ndarray, b: np.ndarray) -> np.ndarray:
+    """Solve Ax=b with numerical safeguards for ill-conditioned systems."""
+    try:
+        return np.linalg.solve(a, b)
+    except np.linalg.LinAlgError:
+        pass
+
+    # Retry with small diagonal jitter before falling back to least squares.
+    n = a.shape[0]
+    eye = np.eye(n, dtype=a.dtype)
+    for jitter in (1e-8, 1e-6, 1e-4):
+        try:
+            return np.linalg.solve(a + jitter * eye, b)
+        except np.linalg.LinAlgError:
+            continue
+
+    x, *_ = np.linalg.lstsq(a, b, rcond=None)
+    return x
+
+
 class SVDRecommender(BaseApproach):
     """SVD-based matrix factorization."""
     
@@ -143,14 +163,14 @@ class ALSRecommender(BaseApproach):
                 Cu = np.diag(confidence[u])
                 A = self.item_factors.T @ Cu @ self.item_factors + reg
                 b = self.item_factors.T @ Cu @ preference[u]
-                self.user_factors[u] = np.linalg.solve(A, b)
+                self.user_factors[u] = _robust_linear_solve(A, b)
             
             # Fix users, solve for items
             for i in range(n_items):
                 Ci = np.diag(confidence[:, i])
                 A = self.user_factors.T @ Ci @ self.user_factors + reg
                 b = self.user_factors.T @ Ci @ preference[:, i]
-                self.item_factors[i] = np.linalg.solve(A, b)
+                self.item_factors[i] = _robust_linear_solve(A, b)
         
         self.is_trained = True
     
