@@ -62,6 +62,7 @@ class ReportGenerator:
                         'name': entry.get('name', 'unknown'),
                         'metrics': normalized_metrics,
                         'training_time': training_time,
+                        'significance_vs_best': entry.get('significance_vs_best'),
                         'success': True,
                     }
                 )
@@ -154,6 +155,37 @@ class ReportGenerator:
                     report.append(f"- Index {failure.get('index', '?')}: {failure.get('reason', failure.get('type', 'Unknown'))}\n")
             
             report.append("\n")
+
+        report.append("## Statistical Significance\n")
+        significance_lines = []
+        for r in results:
+            if not r.get('success', False):
+                continue
+
+            significance = r.get('significance_vs_best')
+            if not isinstance(significance, dict):
+                continue
+
+            best_approach = significance.get('best_approach', 'N/A')
+            p_value = significance.get('p_value')
+            is_best = bool(significance.get('is_best', False))
+            mean_diff = significance.get('mean_diff_vs_best', 0.0)
+
+            p_value_str = f"{p_value:.4f}" if isinstance(p_value, (int, float)) else "N/A"
+            if is_best:
+                significance_lines.append(
+                    f"- {r['name']}: reference best approach (p-value={p_value_str})"
+                )
+            else:
+                significance_lines.append(
+                    f"- {r['name']}: compared vs {best_approach}, "
+                    f"p-value={p_value_str}, mean difference={mean_diff:.4f}"
+                )
+
+        if significance_lines:
+            report.extend([line + "\n" for line in significance_lines])
+        else:
+            report.append("No significance information available for this domain.\n")
         
         # Key insights
         report.append("## Key Insights\n")
