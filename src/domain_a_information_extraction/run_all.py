@@ -23,6 +23,7 @@ from ..core.metrics import compute_ie_metrics
 from ..core.evaluation import Evaluator, EvaluationResult
 from ..core.benchmark_utils import (
     aggregate_numeric_dicts,
+    compute_significance_vs_best,
     create_run_manifest,
     resolve_seed_list,
     save_json,
@@ -92,6 +93,9 @@ def _build_canonical_table(variant_df: pd.DataFrame) -> pd.DataFrame:
                     "Approach": "N/A",
                     "Exact Match Mean": np.nan,
                     "Exact Match Std": np.nan,
+                    "Exact Match CI95 Low": np.nan,
+                    "Exact Match CI95 High": np.nan,
+                    "Exact Match p-value vs Best": np.nan,
                     "Partial Match Mean": np.nan,
                     "Run Success Rate": 0.0,
                     "Available": False,
@@ -107,6 +111,11 @@ def _build_canonical_table(variant_df: pd.DataFrame) -> pd.DataFrame:
                 "Approach": best["Approach"],
                 "Exact Match Mean": float(best["Exact Match Mean"]),
                 "Exact Match Std": float(best["Exact Match Std"]),
+                "Exact Match CI95 Low": float(best["Exact Match CI95 Low"]),
+                "Exact Match CI95 High": float(best["Exact Match CI95 High"]),
+                "Exact Match p-value vs Best": float(best["Exact Match p-value vs Best"])
+                if pd.notna(best["Exact Match p-value vs Best"])
+                else np.nan,
                 "Partial Match Mean": float(best["Partial Match Mean"]),
                 "Run Success Rate": float(best["Run Success Rate"]),
                 "Available": True,
@@ -276,6 +285,7 @@ def run_all_approaches(
     total_runs = len(seeds)
     comparison_data: List[Dict[str, Any]] = []
     aggregated_results: List[Dict[str, Any]] = []
+    exact_match_samples_by_name: Dict[str, List[float]] = {}
 
     for name, rows in by_name.items():
         successful = [r for r in rows if r.get('success', False)]
@@ -309,6 +319,11 @@ def run_all_approaches(
         ]
         primary_summary = aggregate_numeric_dicts(primary_metrics)
         systems_summary = aggregate_numeric_dicts(systems_metrics)
+        exact_match_samples_by_name[name] = [
+            float(m.get('overall_exact_match'))
+            for m in primary_metrics
+            if isinstance(m.get('overall_exact_match'), (int, float)) and np.isfinite(m.get('overall_exact_match'))
+        ]
 
         success_rate = by_name_success.get(name, 0) / total_runs
         category = successful[0].get('category', 'systems')
@@ -328,10 +343,25 @@ def run_all_approaches(
             'Category': category,
             'Exact Match Mean': _safe_metric(primary_summary, 'overall_exact_match', 'mean'),
             'Exact Match Std': _safe_metric(primary_summary, 'overall_exact_match', 'std'),
+            'Exact Match CI95 Low': _safe_metric(primary_summary, 'overall_exact_match', 'ci95_low'),
+            'Exact Match CI95 High': _safe_metric(primary_summary, 'overall_exact_match', 'ci95_high'),
             'Partial Match Mean': _safe_metric(primary_summary, 'overall_partial_match', 'mean'),
             'Latency p95 Mean (ms)': _safe_metric(systems_summary, 'inference_latency_p95', 'mean'),
             'Run Success Rate': success_rate,
         })
+
+    exact_match_significance = compute_significance_vs_best(
+        exact_match_samples_by_name,
+        higher_is_better=True,
+    )
+
+    for row in aggregated_results:
+        if row.get('success', False):
+            row['significance_vs_best'] = exact_match_significance[row['name']]
+
+    for row in comparison_data:
+        significance = exact_match_significance.get(row['Approach'], {})
+        row['Exact Match p-value vs Best'] = significance.get('p_value', np.nan)
 
     variant_comparison_df = pd.DataFrame(comparison_data)
     canonical_comparison_df = _build_canonical_table(variant_comparison_df)
