@@ -109,6 +109,20 @@ def test_smoke_artifacts(domain_name, runner, kwargs, tmp_path):
             "out_of_budget_rate",
         ]:
             assert key in budget_summary
+        if row.get("success"):
+            assert "significance_vs_best" in row
+            significance = row["significance_vs_best"]
+            for key in [
+                "best_approach",
+                "best_mean",
+                "higher_is_better",
+                "alpha",
+                "is_best",
+                "mean_diff_vs_best",
+                "p_value",
+                "significantly_better_than_best",
+            ]:
+                assert key in significance
 
     with open(output_dir / "results_raw_by_run.json", encoding="utf-8") as f:
         raw = json.load(f)
@@ -122,7 +136,13 @@ def test_smoke_artifacts(domain_name, runner, kwargs, tmp_path):
     assert "Category" in canonical.columns
     assert "Available" in canonical.columns
     assert len(canonical) == 10
+    assert any(col.endswith("CI95 Low") for col in canonical.columns)
+    assert any(col.endswith("CI95 High") for col in canonical.columns)
+    assert any("p-value vs Best" in col for col in canonical.columns)
 
     variants = pd.read_csv(output_dir / "comparison_variants.csv")
     assert "Approach" in variants.columns
     assert "Category" in variants.columns
+    assert any(col.endswith("CI95 Low") for col in variants.columns)
+    assert any(col.endswith("CI95 High") for col in variants.columns)
+    assert any("p-value vs Best" in col for col in variants.columns)
