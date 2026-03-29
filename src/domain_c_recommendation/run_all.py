@@ -21,6 +21,7 @@ from .approach_09_hybrid import HybridRecommender
 from ..core.metrics import compute_ranking_metrics
 from ..core.benchmark_utils import (
     aggregate_numeric_dicts,
+    compute_significance_vs_best,
     create_run_manifest,
     resolve_seed_list,
     save_json,
@@ -90,6 +91,9 @@ def _build_canonical_table(variant_df: pd.DataFrame) -> pd.DataFrame:
                     "Approach": "N/A",
                     "NDCG@10 Mean": np.nan,
                     "NDCG@10 Std": np.nan,
+                    "NDCG@10 CI95 Low": np.nan,
+                    "NDCG@10 CI95 High": np.nan,
+                    "NDCG@10 p-value vs Best": np.nan,
                     "Recall@10 Mean": np.nan,
                     "MRR Mean": np.nan,
                     "Run Success Rate": 0.0,
@@ -105,6 +109,11 @@ def _build_canonical_table(variant_df: pd.DataFrame) -> pd.DataFrame:
                 "Approach": best["Approach"],
                 "NDCG@10 Mean": float(best["NDCG@10 Mean"]),
                 "NDCG@10 Std": float(best["NDCG@10 Std"]),
+                "NDCG@10 CI95 Low": float(best["NDCG@10 CI95 Low"]),
+                "NDCG@10 CI95 High": float(best["NDCG@10 CI95 High"]),
+                "NDCG@10 p-value vs Best": float(best["NDCG@10 p-value vs Best"])
+                if pd.notna(best["NDCG@10 p-value vs Best"])
+                else np.nan,
                 "Recall@10 Mean": float(best["Recall@10 Mean"]),
                 "MRR Mean": float(best["MRR Mean"]),
                 "Run Success Rate": float(best["Run Success Rate"]),
@@ -256,6 +265,7 @@ def run_all_approaches(
     total_runs = len(seeds)
     comparison_data: List[Dict[str, Any]] = []
     aggregated_results: List[Dict[str, Any]] = []
+    ndcg_samples_by_name: Dict[str, List[float]] = {}
 
     for name, rows in by_name.items():
         successful = [r for r in rows if r.get('success', False)]
@@ -278,6 +288,11 @@ def run_all_approaches(
             continue
 
         metric_summary = aggregate_numeric_dicts([r['metrics'] for r in successful])
+        ndcg_samples_by_name[name] = [
+            float(r['metrics'].get('ndcg@10'))
+            for r in successful
+            if isinstance(r['metrics'].get('ndcg@10'), (int, float)) and np.isfinite(r['metrics'].get('ndcg@10'))
+        ]
         time_summary = aggregate_numeric_dicts(
             [{'training_time': r.get('training_time', np.nan), 'inference_time': r.get('inference_time', np.nan)} for r in successful]
         )
@@ -299,11 +314,26 @@ def run_all_approaches(
             'Category': category,
             'NDCG@10 Mean': _safe_metric(metric_summary, 'ndcg@10', 'mean'),
             'NDCG@10 Std': _safe_metric(metric_summary, 'ndcg@10', 'std'),
+            'NDCG@10 CI95 Low': _safe_metric(metric_summary, 'ndcg@10', 'ci95_low'),
+            'NDCG@10 CI95 High': _safe_metric(metric_summary, 'ndcg@10', 'ci95_high'),
             'Recall@10 Mean': _safe_metric(metric_summary, 'recall@10', 'mean'),
             'MRR Mean': _safe_metric(metric_summary, 'mrr', 'mean'),
             'Training Time Mean (s)': _safe_metric(time_summary, 'training_time', 'mean'),
             'Run Success Rate': success_rate,
         })
+
+    ndcg_significance = compute_significance_vs_best(
+        ndcg_samples_by_name,
+        higher_is_better=True,
+    )
+
+    for row in aggregated_results:
+        if row.get('success', False):
+            row['significance_vs_best'] = ndcg_significance[row['name']]
+
+    for row in comparison_data:
+        significance = ndcg_significance.get(row['Approach'], {})
+        row['NDCG@10 p-value vs Best'] = significance.get('p_value', np.nan)
 
     variant_comparison_df = pd.DataFrame(comparison_data)
     canonical_comparison_df = _build_canonical_table(variant_comparison_df)
