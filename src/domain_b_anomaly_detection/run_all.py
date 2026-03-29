@@ -21,6 +21,7 @@ from .approach_09_hybrid import HybridAnomalyDetector
 from ..core.metrics import compute_anomaly_metrics
 from ..core.benchmark_utils import (
     aggregate_numeric_dicts,
+    compute_significance_vs_best,
     create_run_manifest,
     resolve_seed_list,
     save_json,
@@ -90,6 +91,9 @@ def _build_canonical_table(variant_df: pd.DataFrame) -> pd.DataFrame:
                     "Approach": "N/A",
                     "F1 Mean": np.nan,
                     "F1 Std": np.nan,
+                    "F1 CI95 Low": np.nan,
+                    "F1 CI95 High": np.nan,
+                    "F1 p-value vs Best": np.nan,
                     "Precision Mean": np.nan,
                     "Recall Mean": np.nan,
                     "Run Success Rate": 0.0,
@@ -106,6 +110,11 @@ def _build_canonical_table(variant_df: pd.DataFrame) -> pd.DataFrame:
                 "Approach": best["Approach"],
                 "F1 Mean": float(best["F1 Mean"]),
                 "F1 Std": float(best["F1 Std"]),
+                "F1 CI95 Low": float(best["F1 CI95 Low"]),
+                "F1 CI95 High": float(best["F1 CI95 High"]),
+                "F1 p-value vs Best": float(best["F1 p-value vs Best"])
+                if pd.notna(best["F1 p-value vs Best"])
+                else np.nan,
                 "Precision Mean": float(best["Precision Mean"]),
                 "Recall Mean": float(best["Recall Mean"]),
                 "Run Success Rate": float(best["Run Success Rate"]),
@@ -248,6 +257,7 @@ def run_all_approaches(
     comparison_data: List[Dict[str, Any]] = []
     aggregated_results: List[Dict[str, Any]] = []
     total_runs = len(seeds)
+    f1_samples_by_name: Dict[str, List[float]] = {}
 
     for name, rows in by_name.items():
         successful = [r for r in rows if r.get('success', False)]
@@ -270,6 +280,11 @@ def run_all_approaches(
             continue
 
         metric_summary = aggregate_numeric_dicts([r['metrics'] for r in successful])
+        f1_samples_by_name[name] = [
+            float(r['metrics'].get('f1'))
+            for r in successful
+            if isinstance(r['metrics'].get('f1'), (int, float)) and np.isfinite(r['metrics'].get('f1'))
+        ]
         time_summary = aggregate_numeric_dicts(
             [{'training_time': r.get('training_time', np.nan), 'inference_time': r.get('inference_time', np.nan)} for r in successful]
         )
@@ -296,10 +311,25 @@ def run_all_approaches(
             'Recall Std': _safe_metric(metric_summary, 'recall', 'std'),
             'F1 Mean': _safe_metric(metric_summary, 'f1', 'mean'),
             'F1 Std': _safe_metric(metric_summary, 'f1', 'std'),
+            'F1 CI95 Low': _safe_metric(metric_summary, 'f1', 'ci95_low'),
+            'F1 CI95 High': _safe_metric(metric_summary, 'f1', 'ci95_high'),
             'ROC-AUC Mean': _safe_metric(metric_summary, 'roc_auc', 'mean'),
             'Training Time Mean (s)': _safe_metric(time_summary, 'training_time', 'mean'),
             'Run Success Rate': success_rate,
         })
+
+    f1_significance = compute_significance_vs_best(
+        f1_samples_by_name,
+        higher_is_better=True,
+    )
+
+    for row in aggregated_results:
+        if row.get('success', False):
+            row['significance_vs_best'] = f1_significance[row['name']]
+
+    for row in comparison_data:
+        significance = f1_significance.get(row['Approach'], {})
+        row['F1 p-value vs Best'] = significance.get('p_value', np.nan)
 
     variant_comparison_df = pd.DataFrame(comparison_data)
     canonical_comparison_df = _build_canonical_table(variant_comparison_df)
