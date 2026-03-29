@@ -28,12 +28,15 @@ def _validate_summary_stats(summary: Dict[str, Any], metric_key: str) -> None:
     if not isinstance(stats, dict):
         raise ValueError(f"Summary stats for '{metric_key}' must be a dict")
 
-    for stat_key in ["mean", "std", "n"]:
+    for stat_key in ["mean", "std", "n", "sem", "ci95_low", "ci95_high"]:
         if stat_key not in stats:
             raise ValueError(f"Summary stats for '{metric_key}' missing '{stat_key}'")
 
     _validate_numeric(stats["mean"], f"{metric_key}.mean")
     _validate_numeric(stats["std"], f"{metric_key}.std")
+    _validate_numeric(stats["sem"], f"{metric_key}.sem")
+    _validate_numeric(stats["ci95_low"], f"{metric_key}.ci95_low")
+    _validate_numeric(stats["ci95_high"], f"{metric_key}.ci95_high")
 
     if not isinstance(stats["n"], (int, float)):
         raise ValueError(f"Summary stats for '{metric_key}' has non-numeric n")
@@ -169,6 +172,31 @@ def validate_aggregated_results(
                 raise ValueError(f"Aggregated row '{timing_summary_key}' must be dict")
             for timing_key in required_timing_keys:
                 _validate_summary_stats(timing_summary, timing_key)
+
+        significance = _require(row, "significance_vs_best")
+        if not isinstance(significance, dict):
+            raise ValueError("Aggregated row 'significance_vs_best' must be dict")
+
+        for key in ["best_approach", "best_mean", "higher_is_better", "alpha", "is_best", "mean_diff_vs_best", "p_value", "significantly_better_than_best"]:
+            if key not in significance:
+                raise ValueError(f"Aggregated row significance_vs_best missing '{key}'")
+
+        if not isinstance(significance["best_approach"], str) or not significance["best_approach"].strip():
+            raise ValueError("significance_vs_best.best_approach must be a non-empty string")
+        _validate_numeric(significance["best_mean"], "significance_vs_best.best_mean")
+        if not isinstance(significance["higher_is_better"], bool):
+            raise ValueError("significance_vs_best.higher_is_better must be bool")
+        _validate_numeric(significance["alpha"], "significance_vs_best.alpha")
+        if not isinstance(significance["is_best"], bool):
+            raise ValueError("significance_vs_best.is_best must be bool")
+        _validate_numeric(significance["mean_diff_vs_best"], "significance_vs_best.mean_diff_vs_best")
+        p_value = significance["p_value"]
+        if p_value is not None:
+            _validate_numeric(p_value, "significance_vs_best.p_value")
+            if not (0.0 <= float(p_value) <= 1.0):
+                raise ValueError("significance_vs_best.p_value must be in [0, 1]")
+        if not isinstance(significance["significantly_better_than_best"], bool):
+            raise ValueError("significance_vs_best.significantly_better_than_best must be bool")
 
 
 def validate_comparison_dataframe(df: Any, required_columns: List[str], label: str) -> None:
