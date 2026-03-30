@@ -15,6 +15,7 @@ from src.domain_a_information_extraction.run_all import run_all_approaches as ru
 from src.domain_b_anomaly_detection.run_all import run_all_approaches as run_b
 from src.domain_c_recommendation.run_all import run_all_approaches as run_c
 from src.domain_d_time_series.run_all import run_all_approaches as run_d
+from src.domain_e_tabular_decisioning.run_all import run_all_approaches as run_e
 from src.core.benchmark_utils import BENCHMARK_PROTOCOL_VERSION
 
 
@@ -77,6 +78,17 @@ REQUIRED_FILES = [
                 "smoke_test": True,
             },
         ),
+        (
+            "domain_e",
+            run_e,
+            {
+                "n_samples": 600,
+                "n_features": 16,
+                "n_runs": 1,
+                "seed": 42,
+                "smoke_test": True,
+            },
+        ),
     ],
 )
 def test_smoke_artifacts(domain_name, runner, kwargs, tmp_path):
@@ -120,6 +132,7 @@ def test_smoke_artifacts(domain_name, runner, kwargs, tmp_path):
                 "is_best",
                 "mean_diff_vs_best",
                 "p_value",
+                "cohens_d_vs_best",
                 "significantly_better_than_best",
             ]:
                 assert key in significance
