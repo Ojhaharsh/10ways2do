@@ -1,0 +1,83 @@
+{
+  "snapshot_tag": "v1.1-publish",
+  "generated_at_utc": "2026-03-30T22:32:43.593058+00:00",
+  "benchmark_protocol_version": "1.0.0",
+  "results_dir": "results",
+  "domains": [
+    {
+      "domain": "domain_a",
+      "domain_label": "Information Extraction",
+      "seed_count": 2,
+      "best_approach": "Pretrained Transformer (BERT)",
+      "primary_metric": "Exact Match",
+      "primary_metric_mean": 0.8127777777777778,
+      "higher_is_better": true,
+      "run_success_rate": 1.0,
+      "manifest": {
+        "benchmark_protocol_version": "1.0.0",
+        "git_commit_hash": "0366e354d959d377f8d4c2d0a20488010a1d75c9",
+        "generated_at_utc": "2026-03-29T11:07:40.450959+00:00"
+      }
+    },
+    {
+      "domain": "domain_b",
+      "domain_label": "Anomaly Detection",
+      "seed_count": 1,
+      "best_approach": "Statistical (MAD)",
+      "primary_metric": "F1",
+      "primary_metric_mean": 0.5970149253731343,
+      "higher_is_better": true,
+      "run_success_rate": 1.0,
+      "manifest": {
+        "benchmark_protocol_version": "1.0.0",
+        "git_commit_hash": "5c7f4d2df96acfc7e1b11f643b226581fbd65306",
+        "generated_at_utc": "2026-03-30T22:02:33.024885+00:00"
+      }
+    },
+    {
+      "domain": "domain_c",
+      "domain_label": "Recommendation",
+      "seed_count": 1,
+      "best_approach": "Matrix Factorization (SVD)",
+      "primary_metric": "NDCG@10",
+      "primary_metric_mean": 0.0251519196921923,
+      "higher_is_better": true,
+      "run_success_rate": 1.0,
+      "manifest": {
+        "benchmark_protocol_version": "1.0.0",
+        "git_commit_hash": "5c7f4d2df96acfc7e1b11f643b226581fbd65306",
+        "generated_at_utc": "2026-03-30T22:02:33.374413+00:00"
+      }
+    },
+    {
+      "domain": "domain_d",
+      "domain_label": "Time Series Forecasting",
+      "seed_count": 1,
+      "best_approach": "Tree-Based (XGBoost)",
+      "primary_metric": "MAE",
+      "primary_metric_mean": 0.3516951425581684,
+      "higher_is_better": false,
+      "run_success_rate": 1.0,
+      "manifest": {
+        "benchmark_protocol_version": "1.0.0",
+        "git_commit_hash": "b9a4cf0dbe62de13c53ccb63eb4e49188f0a5db1",
+        "generated_at_utc": "2026-03-30T22:03:54.362939+00:00"
+      }
+    },
+    {
+      "domain": "domain_e",
+      "domain_label": "Tabular Decisioning",
+      "seed_count": 1,
+      "best_approach": "Linear (Logistic Regression)",
+      "primary_metric": "F1",
+      "primary_metric_mean": 0.5,
+      "higher_is_better": true,
+      "run_success_rate": 1.0,
+      "manifest": {
+        "benchmark_protocol_version": "1.0.0",
+        "git_commit_hash": "b9a4cf0dbe62de13c53ccb63eb4e49188f0a5db1",
+        "generated_at_utc": "2026-03-30T22:03:54.986780+00:00"
+      }
+    }
+  ]
+}

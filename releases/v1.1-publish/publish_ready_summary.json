@@ -1,0 +1,33 @@
+{
+  "publish_tag": "v1.1-publish",
+  "generated_at_utc": "2026-03-30T22:32:43.596269+00:00",
+  "results_dir": "results",
+  "snapshot_dir": "releases\\v1.1-publish",
+  "overall_status": "PASS",
+  "stages": [
+    {
+      "name": "report_generation",
+      "status": "PASS",
+      "duration_seconds": 0.022,
+      "details": "Generated REPORT.md from latest artifacts"
+    },
+    {
+      "name": "artifact_validation",
+      "status": "PASS",
+      "duration_seconds": 0.027,
+      "details": "Validated domain artifact contract"
+    },
+    {
+      "name": "release_gate",
+      "status": "PASS",
+      "duration_seconds": 0.039,
+      "details": "Verified release-gate protocol/report checks"
+    },
+    {
+      "name": "release_snapshot",
+      "status": "PASS",
+      "duration_seconds": 0.048,
+      "details": "Generated versioned snapshot package"
+    }
+  ]
+}
