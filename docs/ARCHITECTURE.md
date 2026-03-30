@@ -566,7 +566,7 @@ pytest tests/test_benchmark_smoke_artifacts.py -v
 Full Benchmark = O(# domains × # seeds × # approaches × time_per_approach)
 
 Typical execution:
-├─ Domains: 4
+├─ Domains: 5
 ├─ Seeds: 5
 ├─ Approaches per domain: 10
 └─ Time per approach (training + inference):
@@ -581,7 +581,7 @@ Typical execution:
    ├─ Integration: ~20s
    └─ Total per domain: ~186s × 5 seeds = ~15 min
 
-Total for 4 domains: ~60 min + contingency = ~2 hours
+Total for 5 domains: ~75 min + contingency = ~2.5 hours
 ```
 
 ### 9.2 Memory Requirements

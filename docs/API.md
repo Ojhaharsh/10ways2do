@@ -235,6 +235,23 @@ y_train = dataset['train']['y']    # (n_samples, horizon, n_features)
 raw_series = dataset['raw_series'] # Original time series
 ```
 
+### Tabular Decisioning
+
+```python
+from src.domain_e_tabular_decisioning.data_generator import create_tabular_decision_dataset
+
+# Create dataset
+dataset = create_tabular_decision_dataset(
+    n_samples=6000,
+    n_features=24,
+    class_weight_positive=0.18,
+)
+
+# Access data
+X_train = dataset['train']['X']  # (n_samples, n_features)
+y_train = dataset['train']['y']  # binary labels
+```
+
 ## Running Benchmarks
 
 ### Run Single Domain
@@ -277,6 +294,7 @@ python main.py --domain a
 python main.py --domain b
 python main.py --domain c
 python main.py --domain d
+python main.py --domain e
 
 # Custom parameters
 python main.py --domain a --n-train 5000 --n-test 1000

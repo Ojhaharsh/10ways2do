@@ -121,8 +121,9 @@ python main.py --all
 # 2. Run all 10 approaches on Domain B (Anomaly Detection)
 # 3. Run all 10 approaches on Domain C (Recommendation)
 # 4. Run all 10 approaches on Domain D (Time Series)
-# 5. Generate comparison reports
-# 6. Save results to results/ directory
+# 5. Run all 10 approaches on Domain E (Tabular Decisioning)
+# 6. Generate comparison reports
+# 7. Save results to results/ directory
 ```
 
 ### Run All Domains with Custom Parameters
@@ -260,6 +261,33 @@ results = run_all_approaches(
 )
 
 print(results['comparison'])
+```
+
+### Domain E: Tabular Decisioning
+
+```bash
+# Command line
+python main.py --domain e
+
+# or
+python main.py --domain tabular
+
+# With custom parameters
+python main.py --domain e --n-train 6000 --n-test 1200
+```
+
+```python
+# Python API
+from src.domain_e_tabular_decisioning.run_all import run_all_approaches
+
+results = run_all_approaches(
+    n_samples=6000,
+    n_features=24,
+    save_results=True,
+    output_dir="results/domain_e"
+)
+
+print(results['canonical_comparison'])
 ```
 
 ---
@@ -1077,10 +1105,13 @@ pip install -e ".[full]"
 python main.py --all
 
 # Run single domain
-python main.py --domain a|b|c|d
+python main.py --domain a|b|c|d|e
 
 # Generate report
 python main.py --report
+
+# Validate artifacts
+python main.py --validate
 
 # Run tests
 pytest tests/ -v
