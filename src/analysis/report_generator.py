@@ -182,16 +182,18 @@ class ReportGenerator:
             p_value = significance.get('p_value')
             is_best = bool(significance.get('is_best', False))
             mean_diff = significance.get('mean_diff_vs_best', 0.0)
+            effect_size = significance.get('cohens_d_vs_best')
 
             p_value_str = f"{p_value:.4f}" if isinstance(p_value, (int, float)) else "N/A"
+            effect_size_str = f"{effect_size:.4f}" if isinstance(effect_size, (int, float)) else "N/A"
             if is_best:
                 significance_lines.append(
-                    f"- {r['name']}: reference best approach (p-value={p_value_str})"
+                    f"- {r['name']}: reference best approach (p-value={p_value_str}, Cohen's d={effect_size_str})"
                 )
             else:
                 significance_lines.append(
                     f"- {r['name']}: compared vs {best_approach}, "
-                    f"p-value={p_value_str}, mean difference={mean_diff:.4f}"
+                    f"p-value={p_value_str}, mean difference={mean_diff:.4f}, Cohen's d={effect_size_str}"
                 )
 
         if significance_lines:
