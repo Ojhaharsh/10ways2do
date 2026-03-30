@@ -307,12 +307,13 @@ class ReportGenerator:
         
         report.append("## Overview\n")
         report.append("""
-This benchmark evaluates 10 fundamentally different ML approaches across 4 real-world domains:
+This benchmark evaluates 10 fundamentally different ML approaches across 5 real-world domains:
 
 1. **Information Extraction** - Extracting structured data from text
 2. **Anomaly Detection** - Identifying unusual patterns in data
 3. **Recommendation** - Suggesting relevant items to users
 4. **Time Series Forecasting** - Predicting future values
+5. **Tabular Decisioning** - Risk scoring and binary decision support on structured features
 
 Each approach represents a different **mental model** for solving ML problems, with distinct 
 trade-offs in terms of accuracy, speed, interpretability, data efficiency, and robustness.
@@ -451,6 +452,11 @@ trade-offs in terms of accuracy, speed, interpretability, data efficiency, and r
 - Rule-based systems
 - Linear models with feature importance
 - Decision trees / SHAP explanations
+
+**Tabular Risk / Decisioning Workloads:**
+- Start with tree boosting and calibrated linear baselines
+- Use ensembles when operating point stability is critical
+- Tune threshold policies against precision-recall business targets
 
 **Production Reliability:**
 - Hybrid approaches with fallbacks
