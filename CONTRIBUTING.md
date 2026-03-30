@@ -30,6 +30,8 @@ pip install -r requirements.txt
 ```bash
 pytest tests -v
 python main.py --all --smoke-test --n-runs 1 --seed 42
+python main.py --validate
+python main.py --release-gate
 ```
 
 ## Add a new approach (existing domain)
@@ -66,6 +68,8 @@ python main.py --all --smoke-test --n-runs 1 --seed 42
 - [ ] Code compiles/runs locally
 - [ ] Tests pass
 - [ ] Smoke benchmark passes
+- [ ] Artifact validation passes
+- [ ] Release gate passes
 - [ ] Docs updated when behavior changes
 - [ ] No unrelated formatting churn
 

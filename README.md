@@ -134,6 +134,7 @@ Cross-domain report:
 - Insights: docs/INSIGHTS.md
 - API notes: docs/API.md
 - Contributing: CONTRIBUTING.md
+- Branch protection policy: docs/BRANCH_PROTECTION_POLICY.md
 - Roadmap: ROADMAP.md
 
 ## Tests
