@@ -102,12 +102,26 @@ Run full release-gate checks:
 python main.py --release-gate
 ```
 
+Create a versioned release snapshot:
+
+```bash
+python main.py --snapshot-tag v1.1
+```
+
+Run full publish-ready pipeline (smoke + report + gates + snapshot + summary):
+
+```bash
+python main.py --publish-ready-tag v1.1
+```
+
 Run the same quality-gate sequence used by CI:
 
 ```bash
 python main.py --all --smoke-test --n-runs 1 --seed 42
 python main.py --validate
 python main.py --release-gate
+python main.py --snapshot-tag v1.1
+python main.py --publish-ready-tag v1.1
 ```
 
 ## Output artifacts

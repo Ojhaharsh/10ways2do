@@ -1116,10 +1116,18 @@ python main.py --validate
 # Run full release gate
 python main.py --release-gate
 
+# Create a versioned snapshot package
+python main.py --snapshot-tag v1.1
+
+# Run complete publish-ready pipeline
+python main.py --publish-ready-tag v1.1
+
 # Local quality-gate sequence (matches CI intent)
 python main.py --all --smoke-test --n-runs 1 --seed 42
 python main.py --validate
 python main.py --release-gate
+python main.py --snapshot-tag v1.1
+python main.py --publish-ready-tag v1.1
 
 # Run tests
 pytest tests/ -v

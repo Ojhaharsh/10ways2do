@@ -6,6 +6,7 @@ Run all benchmarks across all domains and generate reports.
 """
 
 import argparse
+import time
 import sys
 from pathlib import Path
 
@@ -91,13 +92,14 @@ def run_all(**kwargs):
     return results
 
 
-def generate_report():
+def generate_report(results_dir: str = "results"):
     """Generate comprehensive report."""
     from src.analysis.report_generator import ReportGenerator
     
-    generator = ReportGenerator()
-    generator.save_report("results/REPORT.md")
-    print("Report generated: results/REPORT.md")
+    generator = ReportGenerator(results_dir=results_dir)
+    report_path = Path(results_dir) / "REPORT.md"
+    generator.save_report(str(report_path))
+    print(f"Report generated: {report_path}")
 
 
 def validate_artifacts(results_dir: str = "results"):
@@ -128,6 +130,109 @@ def run_release_gate_checks(results_dir: str = "results", require_report: bool =
     print("Release gate: PASSED")
 
 
+def generate_release_snapshot(tag: str, results_dir: str = "results", snapshots_dir: str = "releases"):
+    """Generate a versioned release snapshot after successful gate checks."""
+    from src.core.release_snapshot import ReleaseSnapshotError, create_release_snapshot
+
+    try:
+        output_dir = create_release_snapshot(
+            tag=tag,
+            results_dir=results_dir,
+            snapshots_root=snapshots_dir,
+        )
+    except ReleaseSnapshotError as exc:
+        print("Release snapshot: FAILED")
+        print(str(exc))
+        raise
+
+    print(f"Release snapshot: PASSED ({output_dir})")
+    return output_dir
+
+
+def run_publish_ready(
+    publish_tag: str,
+    results_dir: str = "results",
+    snapshots_dir: str = "releases",
+    n_train: int = 1000,
+    n_test: int = 200,
+    n_runs: int = 1,
+    seed: int = 42,
+    seed_list=None,
+    skip_smoke: bool = False,
+):
+    """Run a one-command publish-ready pipeline and write summary artifacts."""
+    from src.core.publish_ready import save_publish_ready_summary
+
+    stages = []
+
+    def _record_stage(name: str, fn, details: str = ""):
+        start = time.time()
+        fn()
+        stages.append(
+            {
+                "name": name,
+                "status": "PASS",
+                "duration_seconds": round(time.time() - start, 3),
+                "details": details,
+            }
+        )
+
+    if not skip_smoke:
+        _record_stage(
+            "smoke_benchmark",
+            lambda: run_all(
+                n_runs=n_runs,
+                seed=seed,
+                seed_list=seed_list,
+                n_train=n_train,
+                n_test=n_test,
+                output_dir=results_dir,
+                smoke_test=True,
+            ),
+            details="Ran --all in smoke mode",
+        )
+
+    _record_stage(
+        "report_generation",
+        lambda: generate_report(results_dir=results_dir),
+        details="Generated REPORT.md from latest artifacts",
+    )
+    _record_stage(
+        "artifact_validation",
+        lambda: validate_artifacts(results_dir=results_dir),
+        details="Validated domain artifact contract",
+    )
+    _record_stage(
+        "release_gate",
+        lambda: run_release_gate_checks(results_dir=results_dir, require_report=True),
+        details="Verified release-gate protocol/report checks",
+    )
+
+    snapshot_output = None
+
+    def _snapshot_stage():
+        nonlocal snapshot_output
+        snapshot_output = generate_release_snapshot(
+            tag=publish_tag,
+            results_dir=results_dir,
+            snapshots_dir=snapshots_dir,
+        )
+
+    _record_stage(
+        "release_snapshot",
+        _snapshot_stage,
+        details="Generated versioned snapshot package",
+    )
+
+    summary_output = save_publish_ready_summary(
+        publish_tag=publish_tag,
+        results_dir=results_dir,
+        snapshot_dir=snapshot_output,
+        stages=stages,
+    )
+    print(f"Publish-ready: PASSED ({summary_output})")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="ML Philosophy Benchmark",
@@ -140,6 +245,8 @@ Examples:
   python main.py --report                 # Generate report from existing results
     python main.py --validate               # Validate artifact completeness/shape
     python main.py --release-gate           # Validate release readiness checks
+    python main.py --snapshot-tag v1.1      # Create versioned release snapshot
+    python main.py --publish-ready-tag v1.1 # One-command publish-ready pipeline
         """
     )
     
@@ -150,6 +257,14 @@ Examples:
     parser.add_argument('--report', action='store_true', help='Generate report')
     parser.add_argument('--validate', action='store_true', help='Validate benchmark artifacts')
     parser.add_argument('--release-gate', action='store_true', help='Run full release-gate checks')
+    parser.add_argument('--snapshot-tag', type=str, default=None,
+                        help='Create versioned release snapshot (runs release-gate first)')
+    parser.add_argument('--publish-ready-tag', type=str, default=None,
+                        help='Run smoke+report+gates+snapshot and write publish-ready summary')
+    parser.add_argument('--snapshots-dir', type=str, default='releases',
+                        help='Output directory root for --snapshot-tag')
+    parser.add_argument('--skip-smoke', action='store_true',
+                        help='Skip smoke run when using --publish-ready-tag')
     parser.add_argument('--no-report-check', action='store_true',
                         help='Skip REPORT.md checks when running --release-gate')
     parser.add_argument('--n-train', type=int, default=1000, help='Training set size')
@@ -164,7 +279,32 @@ Examples:
     args = parser.parse_args()
     
     if args.report:
-        generate_report()
+        generate_report(results_dir=args.output_dir)
+    elif args.publish_ready_tag:
+        try:
+            run_publish_ready(
+                publish_tag=args.publish_ready_tag,
+                results_dir=args.output_dir,
+                snapshots_dir=args.snapshots_dir,
+                n_train=args.n_train,
+                n_test=args.n_test,
+                n_runs=args.n_runs,
+                seed=args.seed,
+                seed_list=args.seed_list,
+                skip_smoke=args.skip_smoke,
+            )
+        except Exception as exc:
+            print(f"Publish-ready: FAILED ({exc})")
+            sys.exit(1)
+    elif args.snapshot_tag:
+        try:
+            generate_release_snapshot(
+                tag=args.snapshot_tag,
+                results_dir=args.output_dir,
+                snapshots_dir=args.snapshots_dir,
+            )
+        except Exception:
+            sys.exit(1)
     elif args.release_gate:
         try:
             run_release_gate_checks(
@@ -188,7 +328,7 @@ Examples:
             output_dir=args.output_dir,
             smoke_test=args.smoke_test,
         )
-        generate_report()
+        generate_report(results_dir=args.output_dir)
     elif args.domain:
         kwargs = {
             'n_train': args.n_train,
