@@ -96,6 +96,20 @@ Validate artifact completeness and structure:
 python main.py --validate
 ```
 
+Run full release-gate checks:
+
+```bash
+python main.py --release-gate
+```
+
+Run the same quality-gate sequence used by CI:
+
+```bash
+python main.py --all --smoke-test --n-runs 1 --seed 42
+python main.py --validate
+python main.py --release-gate
+```
+
 ## Output artifacts
 
 Each domain writes outputs under results/domain_x:
