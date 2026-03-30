@@ -18,7 +18,8 @@ class ReportGenerator:
             'domain_a': 'Information Extraction',
             'domain_b': 'Anomaly Detection', 
             'domain_c': 'Recommendation',
-            'domain_d': 'Time Series Forecasting'
+            'domain_d': 'Time Series Forecasting',
+            'domain_e': 'Tabular Decisioning'
         }
 
     def _load_aggregated_rows(self, domain: str) -> List[Dict[str, Any]]:
@@ -239,7 +240,8 @@ class ReportGenerator:
             'domain_a': ('primary_metrics', 'overall_exact_match'),
             'domain_b': ('', 'f1'),
             'domain_c': ('', 'ndcg@10'),
-            'domain_d': ('', 'rmse')
+            'domain_d': ('', 'rmse'),
+            'domain_e': ('', 'f1')
         }
         
         container, metric = metrics_key.get(domain, ('', 'accuracy'))
