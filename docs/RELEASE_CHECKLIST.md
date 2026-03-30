@@ -13,6 +13,8 @@ Use this checklist before creating any benchmark release tag.
 
 - [ ] Smoke benchmark passes:
   - [ ] python main.py --all --smoke-test --n-runs 1 --seed 42
+- [ ] Publish-ready pipeline passes:
+  - [ ] python main.py --publish-ready-tag <version>
 - [ ] Full benchmark run completes for required domains.
 - [ ] No silent skips of methods.
 
