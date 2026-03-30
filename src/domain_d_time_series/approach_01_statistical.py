@@ -20,6 +20,17 @@ except ImportError:
 from ..core.base_model import BaseApproach
 
 
+def _fit_time_series_model(model: Any):
+    """Fit statsmodels models across API versions.
+
+    Newer statsmodels versions reject `disp`; older ones may still accept it.
+    """
+    try:
+        return model.fit()
+    except TypeError:
+        return model.fit(disp=False)
+
+
 class ARIMAForecaster(BaseApproach):
     """ARIMA-based forecaster."""
     
@@ -74,7 +85,7 @@ class ARIMAForecaster(BaseApproach):
                     enforce_invertibility=False
                 )
             
-            self.fitted_model = self.model.fit(disp=False)
+            self.fitted_model = _fit_time_series_model(self.model)
         except Exception as e:
             print(f"ARIMA fitting failed: {e}")
             self.fitted_model = None
