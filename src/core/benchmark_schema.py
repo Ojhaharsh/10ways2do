@@ -177,7 +177,7 @@ def validate_aggregated_results(
         if not isinstance(significance, dict):
             raise ValueError("Aggregated row 'significance_vs_best' must be dict")
 
-        for key in ["best_approach", "best_mean", "higher_is_better", "alpha", "is_best", "mean_diff_vs_best", "p_value", "significantly_better_than_best"]:
+        for key in ["best_approach", "best_mean", "higher_is_better", "alpha", "is_best", "mean_diff_vs_best", "p_value", "cohens_d_vs_best", "significantly_better_than_best"]:
             if key not in significance:
                 raise ValueError(f"Aggregated row significance_vs_best missing '{key}'")
 
@@ -195,6 +195,9 @@ def validate_aggregated_results(
             _validate_numeric(p_value, "significance_vs_best.p_value")
             if not (0.0 <= float(p_value) <= 1.0):
                 raise ValueError("significance_vs_best.p_value must be in [0, 1]")
+        cohens_d = significance["cohens_d_vs_best"]
+        if cohens_d is not None:
+            _validate_numeric(cohens_d, "significance_vs_best.cohens_d_vs_best")
         if not isinstance(significance["significantly_better_than_best"], bool):
             raise ValueError("significance_vs_best.significantly_better_than_best must be bool")
 
