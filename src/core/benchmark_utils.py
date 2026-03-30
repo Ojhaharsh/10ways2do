@@ -175,6 +175,40 @@ def _welch_ttest_pvalue_normal_approx(sample_a: List[float], sample_b: List[floa
     return p_value
 
 
+def _cohens_d_directional(sample_a: List[float], sample_b: List[float]) -> Optional[float]:
+    """Compute directional Cohen's d between two samples using pooled std.
+
+    Returns None when d cannot be estimated reliably (e.g., too few points or
+    near-zero pooled variance).
+    """
+    if len(sample_a) < 2 or len(sample_b) < 2:
+        return None
+
+    a = np.array(sample_a, dtype=float)
+    b = np.array(sample_b, dtype=float)
+
+    mean_a = float(np.mean(a))
+    mean_b = float(np.mean(b))
+    var_a = float(np.var(a, ddof=1))
+    var_b = float(np.var(b, ddof=1))
+
+    n_a = len(a)
+    n_b = len(b)
+    denom_df = (n_a + n_b - 2)
+    if denom_df <= 0:
+        return None
+
+    pooled_var = (((n_a - 1) * var_a) + ((n_b - 1) * var_b)) / denom_df
+    if not np.isfinite(pooled_var) or pooled_var <= 0:
+        return None
+
+    pooled_std = float(np.sqrt(pooled_var))
+    if not np.isfinite(pooled_std) or pooled_std <= 0:
+        return None
+
+    return float((mean_a - mean_b) / pooled_std)
+
+
 def compute_significance_vs_best(
     metric_samples_by_name: Dict[str, List[float]],
     higher_is_better: bool,
@@ -200,8 +234,11 @@ def compute_significance_vs_best(
         mean_value = means[name]
         if name == best_name:
             p_value: Optional[float] = 1.0
+            cohens_d_vs_best: Optional[float] = 0.0
         else:
             p_value = _welch_ttest_pvalue_normal_approx(samples, best_samples)
+            raw_d = _cohens_d_directional(samples, best_samples)
+            cohens_d_vs_best = None if raw_d is None else (raw_d if higher_is_better else -raw_d)
 
         if higher_is_better:
             mean_diff_vs_best = mean_value - best_mean
@@ -222,6 +259,7 @@ def compute_significance_vs_best(
             "is_best": name == best_name,
             "mean_diff_vs_best": float(mean_diff_vs_best),
             "p_value": p_value,
+            "cohens_d_vs_best": cohens_d_vs_best,
             "significantly_better_than_best": significantly_better,
         }
 
