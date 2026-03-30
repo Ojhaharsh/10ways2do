@@ -169,7 +169,23 @@ class ReportGenerator:
             report.append("\n")
 
         report.append("## Statistical Significance\n")
+        report.append(
+            "Cohen's d guide: |d| < 0.2 negligible, < 0.5 small, < 0.8 medium, >= 0.8 large.\n"
+        )
         significance_lines = []
+
+        def _cohens_d_label(value: Any) -> str:
+            if not isinstance(value, (int, float)):
+                return "N/A"
+            abs_value = abs(float(value))
+            if abs_value < 0.2:
+                return "negligible"
+            if abs_value < 0.5:
+                return "small"
+            if abs_value < 0.8:
+                return "medium"
+            return "large"
+
         for r in results:
             if not r.get('success', False):
                 continue
@@ -186,14 +202,17 @@ class ReportGenerator:
 
             p_value_str = f"{p_value:.4f}" if isinstance(p_value, (int, float)) else "N/A"
             effect_size_str = f"{effect_size:.4f}" if isinstance(effect_size, (int, float)) else "N/A"
+            effect_size_label = _cohens_d_label(effect_size)
             if is_best:
                 significance_lines.append(
-                    f"- {r['name']}: reference best approach (p-value={p_value_str}, Cohen's d={effect_size_str})"
+                    f"- {r['name']}: reference best approach (p-value={p_value_str}, "
+                    f"Cohen's d={effect_size_str}, effect={effect_size_label})"
                 )
             else:
                 significance_lines.append(
                     f"- {r['name']}: compared vs {best_approach}, "
-                    f"p-value={p_value_str}, mean difference={mean_diff:.4f}, Cohen's d={effect_size_str}"
+                    f"p-value={p_value_str}, mean difference={mean_diff:.4f}, "
+                    f"Cohen's d={effect_size_str}, effect={effect_size_label}"
                 )
 
         if significance_lines:
