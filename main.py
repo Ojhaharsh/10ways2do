@@ -52,6 +52,14 @@ def run_domain(domain: str, **kwargs):
             'output_dir': kwargs.get('output_dir', 'results/domain_d'),
         }
         return run_all_approaches(**common_kwargs, **domain_kwargs)
+    elif domain == 'e' or domain == 'tabular':
+        from src.domain_e_tabular_decisioning.run_all import run_all_approaches
+        domain_kwargs = {
+            'n_samples': kwargs.get('n_train', 6000),
+            'n_features': kwargs.get('n_test', 24),
+            'output_dir': kwargs.get('output_dir', 'results/domain_e'),
+        }
+        return run_all_approaches(**common_kwargs, **domain_kwargs)
     else:
         raise ValueError(f"Unknown domain: {domain}")
 
@@ -62,7 +70,7 @@ def run_all(**kwargs):
     print("ML PHILOSOPHY BENCHMARK: Running All Domains")
     print("=" * 80)
     
-    domains = ['a', 'b', 'c', 'd']
+    domains = ['a', 'b', 'c', 'd', 'e']
     results = {}
     base_output_dir = kwargs.get('output_dir', 'results')
     
@@ -107,7 +115,7 @@ Examples:
     
     parser.add_argument('--all', action='store_true', help='Run all domains')
     parser.add_argument('--domain', '-d', type=str, 
-                        choices=['a', 'b', 'c', 'd', 'ie', 'anomaly', 'rec', 'ts'],
+                        choices=['a', 'b', 'c', 'd', 'e', 'ie', 'anomaly', 'rec', 'ts', 'tabular'],
                         help='Run specific domain')
     parser.add_argument('--report', action='store_true', help='Generate report')
     parser.add_argument('--n-train', type=int, default=1000, help='Training set size')
