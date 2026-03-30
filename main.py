@@ -100,6 +100,34 @@ def generate_report():
     print("Report generated: results/REPORT.md")
 
 
+def validate_artifacts(results_dir: str = "results"):
+    """Validate benchmark artifacts across all configured domains."""
+    from src.core.artifact_validator import ArtifactValidationError, validate_results_tree
+
+    try:
+        validate_results_tree(results_dir=results_dir)
+    except ArtifactValidationError as exc:
+        print("Artifact validation: FAILED")
+        print(str(exc))
+        raise
+
+    print("Artifact validation: PASSED")
+
+
+def run_release_gate_checks(results_dir: str = "results", require_report: bool = True):
+    """Run full release-gate checks for artifacts, manifests, and report sections."""
+    from src.core.release_gate import ReleaseGateError, run_release_gate
+
+    try:
+        run_release_gate(results_dir=results_dir, require_report=require_report)
+    except ReleaseGateError as exc:
+        print("Release gate: FAILED")
+        print(str(exc))
+        raise
+
+    print("Release gate: PASSED")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="ML Philosophy Benchmark",
@@ -110,6 +138,8 @@ Examples:
   python main.py --domain a               # Run only Domain A (IE)
   python main.py --domain b --n-train 1000  # Run Domain B with custom size
   python main.py --report                 # Generate report from existing results
+    python main.py --validate               # Validate artifact completeness/shape
+    python main.py --release-gate           # Validate release readiness checks
         """
     )
     
@@ -118,6 +148,10 @@ Examples:
                         choices=['a', 'b', 'c', 'd', 'e', 'ie', 'anomaly', 'rec', 'ts', 'tabular'],
                         help='Run specific domain')
     parser.add_argument('--report', action='store_true', help='Generate report')
+    parser.add_argument('--validate', action='store_true', help='Validate benchmark artifacts')
+    parser.add_argument('--release-gate', action='store_true', help='Run full release-gate checks')
+    parser.add_argument('--no-report-check', action='store_true',
+                        help='Skip REPORT.md checks when running --release-gate')
     parser.add_argument('--n-train', type=int, default=1000, help='Training set size')
     parser.add_argument('--n-test', type=int, default=200, help='Test set size')
     parser.add_argument('--output-dir', type=str, default='results', help='Output directory')
@@ -131,6 +165,19 @@ Examples:
     
     if args.report:
         generate_report()
+    elif args.release_gate:
+        try:
+            run_release_gate_checks(
+                results_dir=args.output_dir,
+                require_report=not args.no_report_check,
+            )
+        except Exception:
+            sys.exit(1)
+    elif args.validate:
+        try:
+            validate_artifacts(results_dir=args.output_dir)
+        except Exception:
+            sys.exit(1)
     elif args.all:
         run_all(
             n_runs=args.n_runs,
