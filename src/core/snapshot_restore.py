@@ -74,6 +74,8 @@ def restore_snapshot(
     
     # Validate protocol version
     manifest_protocol = snapshot_manifest.get("protocol_version")
+    if manifest_protocol is None:
+        manifest_protocol = snapshot_manifest.get("benchmark_protocol_version")
     result["protocol_version"] = manifest_protocol
     
     if manifest_protocol != BENCHMARK_PROTOCOL_VERSION:
