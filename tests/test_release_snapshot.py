@@ -118,4 +118,8 @@ def test_create_release_snapshot_creates_expected_files(tmp_path):
     payload = json.loads((out / "snapshot.json").read_text(encoding="utf-8"))
     assert payload["snapshot_tag"] == "v1.1-test"
     assert payload["benchmark_protocol_version"] == BENCHMARK_PROTOCOL_VERSION
+    assert payload["protocol_version"] == BENCHMARK_PROTOCOL_VERSION
+    assert len(payload["domain_summaries"]) == 5
     assert len(payload["domains"]) == 5
+    assert "domain_a" in payload["domains"]
+    assert "comparison_canonical.csv" in payload["domains"]["domain_a"]["artifacts"]
