@@ -257,6 +257,36 @@ def run_publish_ready(
     print(f"Publish-ready: PASSED ({summary_output})")
 
 
+def restore_snapshot_from_releases(
+    snapshot_tag: str,
+    snapshots_dir: str = "releases",
+    output_dir: str = "results",
+):
+    """Restore benchmark artifacts from a versioned snapshot."""
+    from src.core.snapshot_restore import restore_snapshot
+    
+    print("=" * 80)
+    print(f"RESTORING SNAPSHOT: {snapshot_tag}")
+    print("=" * 80)
+    
+    result = restore_snapshot(
+        snapshot_tag=snapshot_tag,
+        snapshots_root=Path(snapshots_dir),
+        output_dir=Path(output_dir),
+    )
+    
+    if result["status"] == "FAIL":
+        raise RuntimeError(result.get("error", "Unknown restoration error"))
+    
+    print(f"\n✓ Restored {len(result['domains_restored'])} domains from {snapshot_tag}")
+    print(f"  Domains: {', '.join(result['domains_restored'])}")
+    print(f"  Protocol version: {result['protocol_version']}")
+    print(f"  Details: {result['details']}")
+    
+    if result.get("error"):
+        print(f"\n⚠ Warnings: {result['error']}")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="ML Philosophy Benchmark",
@@ -267,10 +297,11 @@ Examples:
   python main.py --domain a               # Run only Domain A (IE)
   python main.py --domain b --n-train 1000  # Run Domain B with custom size
   python main.py --report                 # Generate report from existing results
-    python main.py --validate               # Validate artifact completeness/shape
-    python main.py --release-gate           # Validate release readiness checks
-    python main.py --snapshot-tag v1.1      # Create versioned release snapshot
-    python main.py --publish-ready-tag v1.1 # One-command publish-ready pipeline
+  python main.py --validate               # Validate artifact completeness/shape
+  python main.py --release-gate           # Validate release readiness checks
+  python main.py --snapshot-tag v1.1      # Create versioned release snapshot
+  python main.py --restore-snapshot v1.1  # Restore artifacts from snapshot
+  python main.py --publish-ready-tag v1.1 # One-command publish-ready pipeline
         """
     )
     
@@ -285,6 +316,8 @@ Examples:
                         help='Create versioned release snapshot (runs release-gate first)')
     parser.add_argument('--publish-ready-tag', type=str, default=None,
                         help='Run smoke+report+gates+snapshot and write publish-ready summary')
+    parser.add_argument('--restore-snapshot', type=str, default=None,
+                        help='Restore benchmark artifacts from a versioned snapshot (tag name)')
     parser.add_argument('--snapshots-dir', type=str, default='releases',
                         help='Output directory root for --snapshot-tag')
     parser.add_argument('--skip-smoke', action='store_true',
@@ -306,7 +339,17 @@ Examples:
     
     args = parser.parse_args()
     
-    if args.report:
+    if args.restore_snapshot:
+        try:
+            restore_snapshot_from_releases(
+                snapshot_tag=args.restore_snapshot,
+                snapshots_dir=args.snapshots_dir,
+                output_dir=args.output_dir,
+            )
+        except Exception as exc:
+            print(f"Restore snapshot: FAILED ({exc})")
+            sys.exit(1)
+    elif args.report:
         generate_report(results_dir=args.output_dir)
     elif args.publish_ready_tag:
         try:
