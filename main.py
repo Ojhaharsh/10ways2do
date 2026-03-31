@@ -159,6 +159,8 @@ def run_publish_ready(
     seed: int = 42,
     seed_list=None,
     skip_smoke: bool = False,
+    prune_nightly_keep: int | None = None,
+    protect_tag_prefixes=None,
 ):
     """Run a one-command publish-ready pipeline and write summary artifacts."""
     from src.core.publish_ready import save_publish_ready_summary
@@ -224,6 +226,28 @@ def run_publish_ready(
         details="Generated versioned snapshot package",
     )
 
+    if prune_nightly_keep is not None:
+        from src.core.snapshot_retention import prune_snapshot_directories
+
+        retention_start = time.time()
+        retention_summary = prune_snapshot_directories(
+            snapshots_root=snapshots_dir,
+            keep_nightly=prune_nightly_keep,
+            protect_prefixes=protect_tag_prefixes or ["v", "stable", "release"],
+        )
+        stages.append(
+            {
+                "name": "snapshot_retention",
+                "status": "PASS",
+                "duration_seconds": round(time.time() - retention_start, 3),
+                "details": (
+                    f"Kept nightly={prune_nightly_keep}, "
+                    f"deleted={len(retention_summary.get('deleted', []))}, "
+                    f"protected={len(retention_summary.get('protected', []))}"
+                ),
+            }
+        )
+
     summary_output = save_publish_ready_summary(
         publish_tag=publish_tag,
         results_dir=results_dir,
@@ -265,6 +289,10 @@ Examples:
                         help='Output directory root for --snapshot-tag')
     parser.add_argument('--skip-smoke', action='store_true',
                         help='Skip smoke run when using --publish-ready-tag')
+    parser.add_argument('--prune-nightly-keep', type=int, default=None,
+                        help='After publish-ready, keep only latest N nightly-* snapshots in --snapshots-dir')
+    parser.add_argument('--protect-tag-prefixes', nargs='+', default=['v', 'stable', 'release'],
+                        help='Protected tag prefixes for snapshot retention pruning')
     parser.add_argument('--no-report-check', action='store_true',
                         help='Skip REPORT.md checks when running --release-gate')
     parser.add_argument('--n-train', type=int, default=1000, help='Training set size')
@@ -292,6 +320,8 @@ Examples:
                 seed=args.seed,
                 seed_list=args.seed_list,
                 skip_smoke=args.skip_smoke,
+                prune_nightly_keep=args.prune_nightly_keep,
+                protect_tag_prefixes=args.protect_tag_prefixes,
             )
         except Exception as exc:
             print(f"Publish-ready: FAILED ({exc})")
