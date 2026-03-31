@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import json
+import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
 import pandas as pd
 
-from .artifact_validator import DEFAULT_DOMAIN_DIRS
+from .artifact_validator import DEFAULT_DOMAIN_DIRS, REQUIRED_FILES
 from .benchmark_utils import BENCHMARK_PROTOCOL_VERSION
 from .release_gate import run_release_gate
 
@@ -109,7 +110,7 @@ def _build_snapshot_markdown(tag: str, snapshot: Dict[str, Any]) -> str:
     lines.append("| Domain | Best Approach | Primary Metric | Mean | Success Rate |")
     lines.append("|--------|---------------|----------------|------|--------------|")
 
-    for row in snapshot["domains"]:
+    for row in snapshot["domain_summaries"]:
         lines.append(
             f"| {row['domain_label']} | {row['best_approach']} | {row['primary_metric']} | {row['primary_metric_mean']:.4f} | {row['run_success_rate']:.2f} |"
         )
@@ -140,15 +141,35 @@ def create_release_snapshot(
     run_release_gate(results_dir=results_path, require_report=True)
 
     domain_summaries = []
+    domain_artifacts: Dict[str, Dict[str, Any]] = {}
     for domain_name in DEFAULT_DOMAIN_DIRS:
-        domain_summaries.append(_domain_summary(results_path / domain_name))
+        domain_path = results_path / domain_name
+        domain_summaries.append(_domain_summary(domain_path))
+
+        copied_files: Dict[str, str] = {}
+        target_domain_dir = output_dir / domain_name
+        target_domain_dir.mkdir(parents=True, exist_ok=True)
+
+        for filename in REQUIRED_FILES:
+            source = domain_path / filename
+            if not source.exists():
+                continue
+            destination = target_domain_dir / filename
+            shutil.copy2(source, destination)
+            copied_files[filename] = filename
+
+        domain_artifacts[domain_name] = {
+            "artifacts": copied_files,
+        }
 
     snapshot = {
         "snapshot_tag": clean_tag,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "protocol_version": BENCHMARK_PROTOCOL_VERSION,
         "benchmark_protocol_version": BENCHMARK_PROTOCOL_VERSION,
         "results_dir": str(results_path),
-        "domains": domain_summaries,
+        "domain_summaries": domain_summaries,
+        "domains": domain_artifacts,
     }
 
     output_dir.mkdir(parents=True, exist_ok=True)
