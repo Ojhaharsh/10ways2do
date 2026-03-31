@@ -1122,12 +1122,16 @@ python main.py --snapshot-tag v1.1
 # Run complete publish-ready pipeline
 python main.py --publish-ready-tag v1.1
 
+# Publish-ready with snapshot retention policy
+python main.py --publish-ready-tag nightly-20260331 --prune-nightly-keep 30 --protect-tag-prefixes v stable release
+
 # Local quality-gate sequence (matches CI intent)
 python main.py --all --smoke-test --n-runs 1 --seed 42
 python main.py --validate
 python main.py --release-gate
 python main.py --snapshot-tag v1.1
 python main.py --publish-ready-tag v1.1
+python main.py --publish-ready-tag nightly-20260331 --prune-nightly-keep 30 --protect-tag-prefixes v stable release
 
 # Run tests
 pytest tests/ -v

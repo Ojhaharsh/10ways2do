@@ -114,6 +114,12 @@ Run full publish-ready pipeline (smoke + report + gates + snapshot + summary):
 python main.py --publish-ready-tag v1.1
 ```
 
+Publish-ready with retention policy (keep latest 30 nightly snapshots, protect stable tags):
+
+```bash
+python main.py --publish-ready-tag nightly-20260331 --prune-nightly-keep 30 --protect-tag-prefixes v stable release
+```
+
 Run the same quality-gate sequence used by CI:
 
 ```bash
@@ -150,6 +156,14 @@ Cross-domain report:
 - Contributing: CONTRIBUTING.md
 - Branch protection policy: docs/BRANCH_PROTECTION_POLICY.md
 - Roadmap: ROADMAP.md
+
+## CI automation
+
+- PR/merge quality gates:
+	- `.github/workflows/benchmark-smoke.yml`
+	- `.github/workflows/release-quality-gate.yml`
+- Nightly publish-ready snapshot:
+	- `.github/workflows/nightly-publish-ready.yml`
 
 ## Tests
 

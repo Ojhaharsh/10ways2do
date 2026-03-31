@@ -47,3 +47,16 @@ pytest tests/test_artifact_validator.py tests/test_release_gate.py -v
 ## Change Control
 
 Any change to CI workflow names/jobs should update this file so required check names stay accurate.
+
+## Nightly Snapshot Automation
+
+The nightly publish-ready workflow is informational and archival (not a required PR status check):
+
+- `.github/workflows/nightly-publish-ready.yml`
+
+It runs the publish-ready pipeline on a schedule and uploads `releases/<tag>` as a workflow artifact.
+
+The workflow also enforces snapshot retention policy for nightly tags:
+
+- keeps latest 30 `nightly-*` snapshots
+- protects stable tags by prefix (`v`, `stable`, `release`)
