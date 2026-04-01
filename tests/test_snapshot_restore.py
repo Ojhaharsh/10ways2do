@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 
+from src.core.release_snapshot import create_release_snapshot
 from src.core.snapshot_restore import restore_snapshot
 
 
@@ -154,3 +155,38 @@ def test_restore_snapshot_partial_artifacts(tmp_path):
     assert "domain_a" in result["domains_restored"]
     # The one existing artifact should be restored
     assert (output_dir / "domain_a" / "manifest.json").exists()
+
+
+def test_restore_snapshot_from_generated_release_snapshot(tmp_path):
+    """Generated snapshots should be directly restorable by restore_snapshot."""
+    from tests.test_release_snapshot import _seed_domain_artifacts, _seed_report
+
+    results_dir = tmp_path / "results"
+    snapshots_dir = tmp_path / "releases"
+
+    _seed_domain_artifacts(results_dir, "domain_a", "Overall Exact Match Mean", "Rule-Based IE")
+    _seed_domain_artifacts(results_dir, "domain_b", "F1 Mean", "Statistical")
+    _seed_domain_artifacts(results_dir, "domain_c", "NDCG@10 Mean", "Popularity")
+    _seed_domain_artifacts(results_dir, "domain_d", "MAE Mean", "Exp Smoothing")
+    _seed_domain_artifacts(results_dir, "domain_e", "F1 Mean", "Linear")
+    _seed_report(results_dir)
+
+    create_release_snapshot("v9.9-test", results_dir=results_dir, snapshots_root=snapshots_dir)
+
+    restored_dir = tmp_path / "restored_results"
+    restore_result = restore_snapshot(
+        snapshot_tag="v9.9-test",
+        snapshots_root=snapshots_dir,
+        output_dir=restored_dir,
+    )
+
+    assert restore_result["status"] == "PASS"
+    assert sorted(restore_result["domains_restored"]) == [
+        "domain_a",
+        "domain_b",
+        "domain_c",
+        "domain_d",
+        "domain_e",
+    ]
+    assert (restored_dir / "domain_a" / "run_manifest.json").exists()
+    assert (restored_dir / "domain_e" / "comparison_canonical.csv").exists()
