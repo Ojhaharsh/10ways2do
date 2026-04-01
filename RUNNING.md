@@ -1119,6 +1119,9 @@ python main.py --release-gate
 # Create a versioned snapshot package
 python main.py --snapshot-tag v1.1
 
+# Restore artifacts from a snapshot package
+python main.py --restore-snapshot v1.1
+
 # Run complete publish-ready pipeline
 python main.py --publish-ready-tag v1.1
 

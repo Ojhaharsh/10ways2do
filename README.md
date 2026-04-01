@@ -108,6 +108,12 @@ Create a versioned release snapshot:
 python main.py --snapshot-tag v1.1
 ```
 
+Restore artifacts from a versioned snapshot:
+
+```bash
+python main.py --restore-snapshot v1.1
+```
+
 Run full publish-ready pipeline (smoke + report + gates + snapshot + summary):
 
 ```bash
