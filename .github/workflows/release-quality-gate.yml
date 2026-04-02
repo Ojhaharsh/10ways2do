@@ -39,6 +39,12 @@ jobs:
         run: |
           python main.py --release-gate
 
+      - name: Verify snapshot restore flow
+        run: |
+          python main.py --snapshot-tag ci-restore-check
+          python main.py --restore-snapshot ci-restore-check --output-dir restored_results
+          python main.py --release-gate --output-dir restored_results
+
       - name: Run reliability gate tests
         run: |
-          pytest tests/test_artifact_validator.py tests/test_release_gate.py -v
+          pytest tests/test_artifact_validator.py tests/test_release_gate.py tests/test_release_snapshot.py tests/test_snapshot_restore.py -v
