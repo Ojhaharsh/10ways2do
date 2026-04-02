@@ -123,3 +123,5 @@ def test_create_release_snapshot_creates_expected_files(tmp_path):
     assert len(payload["domains"]) == 5
     assert "domain_a" in payload["domains"]
     assert "comparison_canonical.csv" in payload["domains"]["domain_a"]["artifacts"]
+    assert payload["report_artifacts"]["report"] == "REPORT.md"
+    assert (out / "REPORT.md").exists()
