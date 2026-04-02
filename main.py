@@ -9,6 +9,7 @@ import argparse
 import time
 import sys
 from pathlib import Path
+from typing import Optional
 
 
 def run_domain(domain: str, **kwargs):
@@ -159,7 +160,7 @@ def run_publish_ready(
     seed: int = 42,
     seed_list=None,
     skip_smoke: bool = False,
-    prune_nightly_keep: int | None = None,
+    prune_nightly_keep: Optional[int] = None,
     protect_tag_prefixes=None,
 ):
     """Run a one-command publish-ready pipeline and write summary artifacts."""
