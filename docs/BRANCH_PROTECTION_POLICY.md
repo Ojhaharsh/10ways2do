@@ -14,7 +14,8 @@ These checks ensure:
 - smoke benchmark execution is healthy,
 - artifact contract validation passes,
 - release-gate report/protocol checks pass,
-- reliability tests for validator/release-gate continue to pass.
+- reliability tests for validator/release-gate continue to pass,
+- snapshot restore flow is validated (`snapshot -> restore -> release-gate`).
 
 ## GitHub Settings (Repository Admin)
 

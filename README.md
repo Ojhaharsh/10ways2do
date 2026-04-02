@@ -114,6 +114,14 @@ Restore artifacts from a versioned snapshot:
 python main.py --restore-snapshot v1.1
 ```
 
+Restore-fidelity check (snapshot -> restore -> gate):
+
+```bash
+python main.py --snapshot-tag restore-check
+python main.py --restore-snapshot restore-check --output-dir restored_results
+python main.py --release-gate --output-dir restored_results
+```
+
 Run full publish-ready pipeline (smoke + report + gates + snapshot + summary):
 
 ```bash
