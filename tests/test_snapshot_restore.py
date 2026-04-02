@@ -190,3 +190,9 @@ def test_restore_snapshot_from_generated_release_snapshot(tmp_path):
     ]
     assert (restored_dir / "domain_a" / "run_manifest.json").exists()
     assert (restored_dir / "domain_e" / "comparison_canonical.csv").exists()
+    assert (restored_dir / "REPORT.md").exists()
+
+    from src.core.release_gate import run_release_gate
+
+    # Restored snapshot should satisfy full release-gate checks including report.
+    run_release_gate(results_dir=restored_dir, require_report=True)
