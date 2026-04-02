@@ -162,6 +162,13 @@ def create_release_snapshot(
             "artifacts": copied_files,
         }
 
+    report_artifacts: Dict[str, str] = {}
+    report_path = results_path / "REPORT.md"
+    if report_path.exists():
+        destination = output_dir / "REPORT.md"
+        shutil.copy2(report_path, destination)
+        report_artifacts["report"] = "REPORT.md"
+
     snapshot = {
         "snapshot_tag": clean_tag,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -170,6 +177,7 @@ def create_release_snapshot(
         "results_dir": str(results_path),
         "domain_summaries": domain_summaries,
         "domains": domain_artifacts,
+        "report_artifacts": report_artifacts,
     }
 
     output_dir.mkdir(parents=True, exist_ok=True)
