@@ -124,6 +124,21 @@ def restore_snapshot(
         
         if copied_count > 0:
             domains_restored.append(domain_name)
+
+    # Restore top-level artifacts (e.g., REPORT.md) when present.
+    report_artifacts = snapshot_manifest.get("report_artifacts", {})
+    for _artifact_key, artifact_filename in report_artifacts.items():
+        source_file = snapshot_dir / artifact_filename
+        target_file = output_dir / artifact_filename
+
+        if not source_file.exists():
+            errors.append(f"Artifact not found: {artifact_filename}")
+            continue
+
+        try:
+            shutil.copy2(source_file, target_file)
+        except Exception as e:
+            errors.append(f"Failed to copy {artifact_filename}: {e}")
     
     result["status"] = "PASS" if not errors else "PASS_WITH_WARNINGS"
     result["domains_restored"] = domains_restored
