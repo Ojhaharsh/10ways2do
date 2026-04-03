@@ -23,6 +23,7 @@ def list_available_snapshots(snapshots_root: Path = Path("releases")) -> List[Di
             "protocol_version": None,
             "domain_count": 0,
             "has_report": (entry / "REPORT.md").exists(),
+            "restorable": False,
             "valid": False,
         }
 
@@ -35,7 +36,17 @@ def list_available_snapshots(snapshots_root: Path = Path("releases")) -> List[Di
                     "benchmark_protocol_version"
                 )
                 domains = payload.get("domains", {})
-                row["domain_count"] = len(domains) if isinstance(domains, dict) else 0
+                if isinstance(domains, dict):
+                    row["domain_count"] = len(domains)
+                    row["restorable"] = any(
+                        isinstance(domain_data, dict) and domain_data.get("artifacts")
+                        for domain_data in domains.values()
+                    )
+                else:
+                    # Older schemas may store domain summaries as a list.
+                    domain_summaries = payload.get("domain_summaries", domains if isinstance(domains, list) else [])
+                    row["domain_count"] = len(domain_summaries) if isinstance(domain_summaries, list) else 0
+                    row["restorable"] = False
                 row["valid"] = True
             except Exception:
                 row["valid"] = False
@@ -64,15 +75,34 @@ def get_snapshot_info(snapshot_tag: str, snapshots_root: Path = Path("releases")
 
     domains = payload.get("domains", {})
     report_artifacts = payload.get("report_artifacts", {})
+    if isinstance(domains, dict):
+        domain_names = sorted(list(domains.keys()))
+        restorable = any(
+            isinstance(domain_data, dict) and domain_data.get("artifacts")
+            for domain_data in domains.values()
+        )
+        domain_count = len(domain_names)
+    else:
+        # Older snapshots may only have summaries and no artifact map.
+        domain_summaries = payload.get("domain_summaries", domains if isinstance(domains, list) else [])
+        domain_names = []
+        for row in domain_summaries if isinstance(domain_summaries, list) else []:
+            if isinstance(row, dict) and row.get("domain"):
+                domain_names.append(str(row["domain"]))
+        domain_names = sorted(domain_names)
+        restorable = False
+        domain_count = len(domain_names)
+
     return {
         "tag": snapshot_tag,
         "path": str(snapshot_dir),
         "generated_at_utc": payload.get("generated_at_utc"),
         "protocol_version": payload.get("protocol_version")
         or payload.get("benchmark_protocol_version"),
-        "domain_count": len(domains) if isinstance(domains, dict) else 0,
-        "domains": sorted(list(domains.keys())) if isinstance(domains, dict) else [],
+        "domain_count": domain_count,
+        "domains": domain_names,
         "has_report": bool(report_artifacts.get("report")) and (snapshot_dir / "REPORT.md").exists(),
+        "restorable": restorable,
     }
 
 
@@ -163,7 +193,15 @@ def restore_snapshot(
     domains_restored = []
     errors = []
     
-    for domain_name, domain_data in snapshot_manifest.get("domains", {}).items():
+    domains_payload = snapshot_manifest.get("domains", {})
+    if not isinstance(domains_payload, dict):
+        result["error"] = (
+            "Snapshot does not contain restorable domain artifacts (legacy schema detected). "
+            "Recreate snapshot with current --snapshot-tag flow."
+        )
+        return result
+
+    for domain_name, domain_data in domains_payload.items():
         domain_artifacts = domain_data.get("artifacts", {})
         
         if not domain_artifacts:
@@ -211,6 +249,14 @@ def restore_snapshot(
         except Exception as e:
             errors.append(f"Failed to copy {artifact_filename}: {e}")
     
+    if not domains_restored:
+        result["error"] = (
+            "No domain artifacts were restored from this snapshot. "
+            "Snapshot may be incomplete or non-restorable."
+        )
+        result["details"] = "0 domains restored"
+        return result
+
     result["status"] = "PASS" if not errors else "PASS_WITH_WARNINGS"
     result["domains_restored"] = domains_restored
     
