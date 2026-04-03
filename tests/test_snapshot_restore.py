@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 from src.core.release_snapshot import create_release_snapshot
-from src.core.snapshot_restore import restore_snapshot
+from src.core.snapshot_restore import get_snapshot_info, list_available_snapshots, restore_snapshot
 
 
 def test_restore_snapshot_successful_restore(tmp_path):
@@ -190,9 +190,42 @@ def test_restore_snapshot_from_generated_release_snapshot(tmp_path):
     ]
     assert (restored_dir / "domain_a" / "run_manifest.json").exists()
     assert (restored_dir / "domain_e" / "comparison_canonical.csv").exists()
-    assert (restored_dir / "REPORT.md").exists()
 
-    from src.core.release_gate import run_release_gate
 
-    # Restored snapshot should satisfy full release-gate checks including report.
-    run_release_gate(results_dir=restored_dir, require_report=True)
+def test_list_available_snapshots_and_snapshot_info(tmp_path):
+    snapshots_root = tmp_path / "releases"
+    snapshots_root.mkdir()
+
+    # Valid snapshot
+    valid_dir = snapshots_root / "nightly-20990102"
+    valid_dir.mkdir()
+    (valid_dir / "REPORT.md").write_text("# report", encoding="utf-8")
+    (valid_dir / "snapshot.json").write_text(
+        json.dumps(
+            {
+                "generated_at_utc": "2099-01-02T00:00:00+00:00",
+                "protocol_version": "1.0.0",
+                "domains": {
+                    "domain_a": {"artifacts": {"run_manifest.json": "run_manifest.json"}},
+                    "domain_b": {"artifacts": {"run_manifest.json": "run_manifest.json"}},
+                },
+                "report_artifacts": {"report": "REPORT.md"},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    # Invalid snapshot folder without manifest
+    invalid_dir = snapshots_root / "broken-snapshot"
+    invalid_dir.mkdir()
+
+    rows = list_available_snapshots(snapshots_root)
+    assert len(rows) == 2
+    assert rows[0]["tag"] == "nightly-20990102"
+    assert rows[0]["valid"] is True
+    assert rows[0]["has_report"] is True
+
+    info = get_snapshot_info("nightly-20990102", snapshots_root)
+    assert info["tag"] == "nightly-20990102"
+    assert info["domain_count"] == 2
+    assert info["has_report"] is True

@@ -2,7 +2,78 @@
 import json
 import shutil
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, List
+
+
+def list_available_snapshots(snapshots_root: Path = Path("releases")) -> List[Dict[str, Any]]:
+    """List available snapshots with lightweight metadata."""
+    snapshots_root = Path(snapshots_root)
+    if not snapshots_root.exists() or not snapshots_root.is_dir():
+        return []
+
+    rows: List[Dict[str, Any]] = []
+    for entry in snapshots_root.iterdir():
+        if not entry.is_dir():
+            continue
+
+        snapshot_file = entry / "snapshot.json"
+        row: Dict[str, Any] = {
+            "tag": entry.name,
+            "generated_at_utc": None,
+            "protocol_version": None,
+            "domain_count": 0,
+            "has_report": (entry / "REPORT.md").exists(),
+            "valid": False,
+        }
+
+        if snapshot_file.exists():
+            try:
+                with open(snapshot_file, encoding="utf-8") as f:
+                    payload = json.load(f)
+                row["generated_at_utc"] = payload.get("generated_at_utc")
+                row["protocol_version"] = payload.get("protocol_version") or payload.get(
+                    "benchmark_protocol_version"
+                )
+                domains = payload.get("domains", {})
+                row["domain_count"] = len(domains) if isinstance(domains, dict) else 0
+                row["valid"] = True
+            except Exception:
+                row["valid"] = False
+
+        rows.append(row)
+
+    # Sort newest first by generated timestamp when present, then tag name.
+    rows.sort(
+        key=lambda r: (str(r.get("generated_at_utc") or ""), str(r.get("tag") or "")),
+        reverse=True,
+    )
+    return rows
+
+
+def get_snapshot_info(snapshot_tag: str, snapshots_root: Path = Path("releases")) -> Dict[str, Any]:
+    """Load full metadata for a single snapshot tag."""
+    snapshot_dir = Path(snapshots_root) / snapshot_tag
+    snapshot_file = snapshot_dir / "snapshot.json"
+    if not snapshot_dir.exists():
+        raise FileNotFoundError(f"Snapshot directory not found: {snapshot_dir}")
+    if not snapshot_file.exists():
+        raise FileNotFoundError(f"snapshot.json not found in {snapshot_dir}")
+
+    with open(snapshot_file, encoding="utf-8") as f:
+        payload = json.load(f)
+
+    domains = payload.get("domains", {})
+    report_artifacts = payload.get("report_artifacts", {})
+    return {
+        "tag": snapshot_tag,
+        "path": str(snapshot_dir),
+        "generated_at_utc": payload.get("generated_at_utc"),
+        "protocol_version": payload.get("protocol_version")
+        or payload.get("benchmark_protocol_version"),
+        "domain_count": len(domains) if isinstance(domains, dict) else 0,
+        "domains": sorted(list(domains.keys())) if isinstance(domains, dict) else [],
+        "has_report": bool(report_artifacts.get("report")) and (snapshot_dir / "REPORT.md").exists(),
+    }
 
 
 def restore_snapshot(
