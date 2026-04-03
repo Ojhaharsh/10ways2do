@@ -115,6 +115,33 @@ def test_restore_snapshot_protocol_version_mismatch(tmp_path):
     assert result["domains_restored"] == []
 
 
+def test_restore_snapshot_fails_for_legacy_non_restorable_schema(tmp_path):
+    """Legacy snapshots without domain artifact mapping should fail fast with guidance."""
+    snapshots_root = tmp_path / "releases"
+    snapshots_root.mkdir()
+    snapshot_dir = snapshots_root / "legacy-v1"
+    snapshot_dir.mkdir()
+
+    snapshot_manifest = {
+        "protocol_version": "1.0.0",
+        "tag": "legacy-v1",
+        "domains": [
+            {"domain": "domain_a", "best_approach": "Rule-Based IE"},
+            {"domain": "domain_b", "best_approach": "Statistical"},
+        ],
+    }
+    (snapshot_dir / "snapshot.json").write_text(json.dumps(snapshot_manifest), encoding="utf-8")
+
+    result = restore_snapshot(
+        snapshot_tag="legacy-v1",
+        snapshots_root=snapshots_root,
+        output_dir=tmp_path / "results",
+    )
+
+    assert result["status"] == "FAIL"
+    assert "legacy schema" in result["error"].lower()
+
+
 def test_restore_snapshot_partial_artifacts(tmp_path):
     """Test restoration succeeds even if some artifacts are missing."""
     snapshots_root = tmp_path / "releases"
@@ -224,8 +251,15 @@ def test_list_available_snapshots_and_snapshot_info(tmp_path):
     assert rows[0]["tag"] == "nightly-20990102"
     assert rows[0]["valid"] is True
     assert rows[0]["has_report"] is True
+    assert rows[0]["restorable"] is True
 
     info = get_snapshot_info("nightly-20990102", snapshots_root)
     assert info["tag"] == "nightly-20990102"
     assert info["domain_count"] == 2
     assert info["has_report"] is True
+    assert info["restorable"] is True
+
+    # Broken snapshot folder should still be listed but marked invalid/non-restorable.
+    invalid = [r for r in rows if r["tag"] == "broken-snapshot"][0]
+    assert invalid["valid"] is False
+    assert invalid["restorable"] is False
