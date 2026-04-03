@@ -1,0 +1,63 @@
+name: nightly-publish-ready
+
+on:
+  schedule:
+    - cron: "30 2 * * *"
+  workflow_dispatch:
+    inputs:
+      snapshot_tag:
+        description: "Optional snapshot tag (defaults to nightly-YYYYMMDD)"
+        required: false
+        type: string
+      skip_smoke:
+        description: "Skip smoke benchmark stage in publish-ready pipeline"
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  nightly-publish-ready:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[full]"
+          pip install faker statsmodels memory-profiler pytest
+
+      - name: Resolve snapshot tag
+        id: tag
+        run: |
+          if [ -n "${{ github.event.inputs.snapshot_tag }}" ]; then
+            SNAP_TAG="${{ github.event.inputs.snapshot_tag }}"
+          else
+            SNAP_TAG="nightly-$(date -u +%Y%m%d)"
+          fi
+          echo "SNAP_TAG=$SNAP_TAG" >> "$GITHUB_ENV"
+          echo "snapshot_tag=$SNAP_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Run publish-ready pipeline
+        run: |
+          if [ "${{ github.event.inputs.skip_smoke }}" = "true" ]; then
+            python main.py --publish-ready-tag "$SNAP_TAG" --skip-smoke --prune-nightly-keep 30 --protect-tag-prefixes v stable release
+          else
+            python main.py --publish-ready-tag "$SNAP_TAG" --prune-nightly-keep 30 --protect-tag-prefixes v stable release
+          fi
+
+      - name: Upload publish-ready artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: publish-ready-${{ steps.tag.outputs.snapshot_tag }}
+          path: releases/${{ steps.tag.outputs.snapshot_tag }}
+          if-no-files-found: error
+          retention-days: 30
