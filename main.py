@@ -288,6 +288,39 @@ def restore_snapshot_from_releases(
         print(f"\n⚠ Warnings: {result['error']}")
 
 
+def list_snapshots(snapshots_dir: str = "releases"):
+    """List available snapshots with summary metadata."""
+    from src.core.snapshot_restore import list_available_snapshots
+
+    rows = list_available_snapshots(Path(snapshots_dir))
+    if not rows:
+        print(f"No snapshots found in: {snapshots_dir}")
+        return
+
+    print(f"Found {len(rows)} snapshots in {snapshots_dir}:")
+    for row in rows:
+        print(
+            f"- {row['tag']} | generated={row['generated_at_utc'] or 'N/A'} | "
+            f"protocol={row['protocol_version'] or 'N/A'} | domains={row['domain_count']} | "
+            f"report={'yes' if row['has_report'] else 'no'} | valid={'yes' if row['valid'] else 'no'}"
+        )
+
+
+def show_snapshot_info(snapshot_tag: str, snapshots_dir: str = "releases"):
+    """Show detailed metadata for a single snapshot tag."""
+    from src.core.snapshot_restore import get_snapshot_info
+
+    info = get_snapshot_info(snapshot_tag=snapshot_tag, snapshots_root=Path(snapshots_dir))
+    print("=" * 80)
+    print(f"SNAPSHOT INFO: {info['tag']}")
+    print("=" * 80)
+    print(f"Path: {info['path']}")
+    print(f"Generated UTC: {info['generated_at_utc']}")
+    print(f"Protocol: {info['protocol_version']}")
+    print(f"Domains ({info['domain_count']}): {', '.join(info['domains'])}")
+    print(f"Has REPORT.md: {'yes' if info['has_report'] else 'no'}")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="ML Philosophy Benchmark",
@@ -302,6 +335,8 @@ Examples:
   python main.py --release-gate           # Validate release readiness checks
   python main.py --snapshot-tag v1.1      # Create versioned release snapshot
   python main.py --restore-snapshot v1.1  # Restore artifacts from snapshot
+    python main.py --list-snapshots          # List available snapshots
+    python main.py --snapshot-info v1.1      # Show snapshot metadata
   python main.py --publish-ready-tag v1.1 # One-command publish-ready pipeline
         """
     )
@@ -319,6 +354,10 @@ Examples:
                         help='Run smoke+report+gates+snapshot and write publish-ready summary')
     parser.add_argument('--restore-snapshot', type=str, default=None,
                         help='Restore benchmark artifacts from a versioned snapshot (tag name)')
+    parser.add_argument('--list-snapshots', action='store_true',
+                        help='List available snapshots in --snapshots-dir')
+    parser.add_argument('--snapshot-info', type=str, default=None,
+                        help='Show detailed metadata for a snapshot tag')
     parser.add_argument('--snapshots-dir', type=str, default='releases',
                         help='Output directory root for --snapshot-tag')
     parser.add_argument('--skip-smoke', action='store_true',
@@ -340,7 +379,15 @@ Examples:
     
     args = parser.parse_args()
     
-    if args.restore_snapshot:
+    if args.list_snapshots:
+        list_snapshots(snapshots_dir=args.snapshots_dir)
+    elif args.snapshot_info:
+        try:
+            show_snapshot_info(snapshot_tag=args.snapshot_info, snapshots_dir=args.snapshots_dir)
+        except Exception as exc:
+            print(f"Snapshot info: FAILED ({exc})")
+            sys.exit(1)
+    elif args.restore_snapshot:
         try:
             restore_snapshot_from_releases(
                 snapshot_tag=args.restore_snapshot,
