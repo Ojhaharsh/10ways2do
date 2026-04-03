@@ -5,7 +5,7 @@ Generate comprehensive reports from benchmark results.
 import json
 from pathlib import Path
 from typing import Dict, List, Any, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import pandas as pd
 
 
@@ -21,6 +21,7 @@ class ReportGenerator:
             'domain_d': 'Time Series Forecasting',
             'domain_e': 'Tabular Decisioning'
         }
+        self._latest_cross_domain_frontier: Optional[Dict[str, Any]] = None
 
     def _load_aggregated_rows(self, domain: str) -> List[Dict[str, Any]]:
         """Load successful aggregated rows for a domain when available."""
@@ -394,7 +395,9 @@ trade-offs in terms of accuracy, speed, interpretability, data efficiency, and r
 
         dynamic_block = "\n".join(dynamic_lines)
 
-        return dynamic_block + "\n\n" + """
+        pareto_block = self._generate_cross_domain_pareto_frontier()
+
+        return dynamic_block + "\n\n" + pareto_block + "\n\n" + """
 ## Universal Patterns
 
 ### 1. Rule-Based Methods
@@ -427,6 +430,255 @@ trade-offs in terms of accuracy, speed, interpretability, data efficiency, and r
 - **Key metrics**: Latency, throughput, memory, cost
 - **Best practice**: Always evaluate with production constraints
 """
+
+    def _extract_quality_signal(self, row: Dict[str, Any]) -> Optional[float]:
+        """Extract a comparable per-approach quality signal from aggregated rows."""
+        significance = row.get("significance_vs_best")
+        if isinstance(significance, dict):
+            best_mean = significance.get("best_mean")
+            mean_diff = significance.get("mean_diff_vs_best", 0.0)
+            if isinstance(best_mean, (int, float)) and isinstance(mean_diff, (int, float)):
+                return float(best_mean) + float(mean_diff)
+
+        primary = row.get("primary_metrics_summary")
+        if not isinstance(primary, dict):
+            return None
+
+        for stats in primary.values():
+            if isinstance(stats, dict):
+                mean_val = stats.get("mean")
+                if isinstance(mean_val, (int, float)):
+                    return float(mean_val)
+
+        return None
+
+    @staticmethod
+    def _normalize_higher(values: List[float]) -> List[float]:
+        """Normalize values to [0, 1] where higher is better."""
+        if not values:
+            return []
+
+        min_v = min(values)
+        max_v = max(values)
+        if max_v == min_v:
+            return [1.0 for _ in values]
+        return [(v - min_v) / (max_v - min_v) for v in values]
+
+    @staticmethod
+    def _normalize_lower(values: List[float]) -> List[float]:
+        """Normalize values to [0, 1] where lower is better."""
+        if not values:
+            return []
+
+        min_v = min(values)
+        max_v = max(values)
+        if max_v == min_v:
+            return [1.0 for _ in values]
+        return [(max_v - v) / (max_v - min_v) for v in values]
+
+    @staticmethod
+    def _pareto_frontier(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Compute simple Pareto frontier over score, speed_score, and resilience."""
+        frontier: List[Dict[str, Any]] = []
+
+        for candidate in entries:
+            dominated = False
+            for other in entries:
+                if other is candidate:
+                    continue
+
+                better_or_equal_all = (
+                    other["score"] >= candidate["score"]
+                    and other["speed_score"] >= candidate["speed_score"]
+                    and other["resilience"] >= candidate["resilience"]
+                )
+                strictly_better_any = (
+                    other["score"] > candidate["score"]
+                    or other["speed_score"] > candidate["speed_score"]
+                    or other["resilience"] > candidate["resilience"]
+                )
+                if better_or_equal_all and strictly_better_any:
+                    dominated = True
+                    break
+
+            if not dominated:
+                frontier.append(candidate)
+
+        frontier.sort(key=lambda x: x["extraordinary_index"], reverse=True)
+        return frontier
+
+    def _generate_cross_domain_pareto_frontier(self) -> str:
+        """Generate an extraordinary cross-domain Pareto frontier summary."""
+        lines: List[str] = []
+        lines.append("## Cross-Domain Pareto Frontier")
+        lines.append(
+            "Extraordinary Index combines normalized quality, speed efficiency, "
+            "budget resilience, and execution consistency to identify practical champions."
+        )
+
+        global_scores: Dict[str, List[float]] = {}
+        domain_payload: List[Dict[str, Any]] = []
+
+        for domain, domain_name in self.domains.items():
+            rows = self._load_aggregated_rows(domain)
+            if not rows:
+                lines.append(f"- {domain_name}: no aggregated results available.")
+                continue
+
+            higher_is_better = True
+            entries: List[Dict[str, Any]] = []
+
+            for row in rows:
+                significance = row.get("significance_vs_best")
+                if isinstance(significance, dict):
+                    higher_is_better = bool(significance.get("higher_is_better", True))
+
+                score = self._extract_quality_signal(row)
+                if not isinstance(score, (int, float)):
+                    continue
+
+                systems = row.get("systems_metrics_summary") if isinstance(row.get("systems_metrics_summary"), dict) else {}
+                latency = (
+                    systems.get("inference_latency_p95", {}).get("mean")
+                    if isinstance(systems.get("inference_latency_p95"), dict)
+                    else None
+                )
+                train_time = (
+                    systems.get("training_time", {}).get("mean")
+                    if isinstance(systems.get("training_time"), dict)
+                    else None
+                )
+
+                speed_basis = latency if isinstance(latency, (int, float)) else train_time
+                budget = row.get("budget_summary") if isinstance(row.get("budget_summary"), dict) else {}
+                out_of_budget_rate = budget.get("out_of_budget_rate", 0.0)
+                if not isinstance(out_of_budget_rate, (int, float)):
+                    out_of_budget_rate = 0.0
+
+                success_rate = row.get("success_rate", 1.0)
+                if not isinstance(success_rate, (int, float)):
+                    success_rate = 1.0
+
+                entries.append(
+                    {
+                        "name": row.get("name", "unknown"),
+                        "score": float(score),
+                        "speed_basis": float(speed_basis) if isinstance(speed_basis, (int, float)) else None,
+                        "resilience": max(0.0, 1.0 - float(out_of_budget_rate)),
+                        "consistency": max(0.0, min(1.0, float(success_rate))),
+                    }
+                )
+
+            if not entries:
+                lines.append(f"- {domain_name}: insufficient metrics for Pareto analysis.")
+                continue
+
+            raw_scores = [e["score"] for e in entries]
+            normalized_scores = (
+                self._normalize_higher(raw_scores)
+                if higher_is_better
+                else self._normalize_lower(raw_scores)
+            )
+
+            speed_values = [e["speed_basis"] for e in entries if isinstance(e["speed_basis"], float)]
+            normalized_speed_values = self._normalize_lower(speed_values)
+            speed_map: Dict[float, List[float]] = {}
+            for raw, norm in zip(speed_values, normalized_speed_values):
+                speed_map.setdefault(raw, []).append(norm)
+
+            for idx, entry in enumerate(entries):
+                entry["score"] = normalized_scores[idx]
+
+                if isinstance(entry["speed_basis"], float):
+                    # Use average normalized speed when duplicates are present.
+                    candidates = speed_map.get(entry["speed_basis"], [0.5])
+                    entry["speed_score"] = sum(candidates) / len(candidates)
+                else:
+                    entry["speed_score"] = 0.5
+
+                entry["extraordinary_index"] = (
+                    0.45 * entry["score"]
+                    + 0.25 * entry["speed_score"]
+                    + 0.20 * entry["resilience"]
+                    + 0.10 * entry["consistency"]
+                )
+
+            frontier = self._pareto_frontier(entries)
+            champion = max(entries, key=lambda x: x["extraordinary_index"])
+
+            frontier_names = ", ".join(item["name"] for item in frontier[:3])
+            lines.append(
+                f"- {domain_name}: champion={champion['name']} (index={champion['extraordinary_index']:.3f}), "
+                f"Pareto top={frontier_names}."
+            )
+
+            ranked_entries = sorted(entries, key=lambda x: x["extraordinary_index"], reverse=True)
+            domain_payload.append(
+                {
+                    "domain": domain,
+                    "domain_name": domain_name,
+                    "champion": {
+                        "name": champion["name"],
+                        "extraordinary_index": round(float(champion["extraordinary_index"]), 6),
+                    },
+                    "pareto_frontier": [
+                        {
+                            "name": item["name"],
+                            "extraordinary_index": round(float(item["extraordinary_index"]), 6),
+                            "quality_score": round(float(item["score"]), 6),
+                            "speed_score": round(float(item["speed_score"]), 6),
+                            "resilience": round(float(item["resilience"]), 6),
+                            "consistency": round(float(item["consistency"]), 6),
+                        }
+                        for item in frontier
+                    ],
+                    "top_candidates": [
+                        {
+                            "name": item["name"],
+                            "extraordinary_index": round(float(item["extraordinary_index"]), 6),
+                        }
+                        for item in ranked_entries[:5]
+                    ],
+                }
+            )
+
+            for entry in entries:
+                global_scores.setdefault(entry["name"], []).append(entry["extraordinary_index"])
+
+        global_rankings: List[Dict[str, Any]] = []
+        if global_scores:
+            ranked = sorted(
+                (
+                    (name, sum(scores) / len(scores), len(scores))
+                    for name, scores in global_scores.items()
+                ),
+                key=lambda x: x[1],
+                reverse=True,
+            )
+            lines.append("- Cross-domain generalists (avg Extraordinary Index):")
+            for name, score, count in ranked[:5]:
+                lines.append(f"  - {name}: {score:.3f} across {count} domain(s)")
+                global_rankings.append(
+                    {
+                        "name": name,
+                        "avg_extraordinary_index": round(float(score), 6),
+                        "domains_covered": int(count),
+                    }
+                )
+
+        self._latest_cross_domain_frontier = {
+            "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+            "weights": {
+                "quality": 0.45,
+                "speed": 0.25,
+                "resilience": 0.20,
+                "consistency": 0.10,
+            },
+            "domains": domain_payload,
+            "cross_domain_generalists": global_rankings,
+        }
+
+        return "\n".join(lines)
     
     def _generate_recommendations(self) -> str:
         """Generate use-case based recommendations."""
@@ -476,7 +728,11 @@ trade-offs in terms of accuracy, speed, interpretability, data efficiency, and r
         output = Path(output_path)
         output.parent.mkdir(parents=True, exist_ok=True)
         
-        with open(output, 'w') as f:
+        with open(output, 'w', encoding='utf-8') as f:
             f.write(report)
+
+        frontier_path = output.parent / "CROSS_DOMAIN_FRONTIER.json"
+        with open(frontier_path, 'w', encoding='utf-8') as f:
+            json.dump(self._latest_cross_domain_frontier or {}, f, indent=2)
         
         print(f"Report saved to {output_path}")

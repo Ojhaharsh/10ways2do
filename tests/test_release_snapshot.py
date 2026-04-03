@@ -93,9 +93,26 @@ def _seed_report(results_dir: Path):
             "# Tabular Decisioning: Benchmark Report",
             "## Statistical Significance",
             "## Cross-Domain Statistical Summary",
+            "## Cross-Domain Pareto Frontier",
         ]
     )
     (results_dir / "REPORT.md").write_text(report, encoding="utf-8")
+
+
+def _seed_frontier(results_dir: Path):
+    payload = {
+        "domains": [
+            {
+                "domain": "domain_a",
+                "champion": {"name": "Rule-Based IE", "extraordinary_index": 0.88},
+                "pareto_frontier": [{"name": "Rule-Based IE", "extraordinary_index": 0.88}],
+            }
+        ],
+        "cross_domain_generalists": [
+            {"name": "Rule-Based IE", "avg_extraordinary_index": 0.88, "domains_covered": 1}
+        ],
+    }
+    (results_dir / "CROSS_DOMAIN_FRONTIER.json").write_text(json.dumps(payload), encoding="utf-8")
 
 
 def test_create_release_snapshot_creates_expected_files(tmp_path):
@@ -108,6 +125,7 @@ def test_create_release_snapshot_creates_expected_files(tmp_path):
     _seed_domain_artifacts(results_dir, "domain_d", "MAE Mean", "Exp Smoothing")
     _seed_domain_artifacts(results_dir, "domain_e", "F1 Mean", "Linear")
     _seed_report(results_dir)
+    _seed_frontier(results_dir)
 
     out = create_release_snapshot("v1.1-test", results_dir=results_dir, snapshots_root=snapshots_dir)
 
@@ -124,4 +142,6 @@ def test_create_release_snapshot_creates_expected_files(tmp_path):
     assert "domain_a" in payload["domains"]
     assert "comparison_canonical.csv" in payload["domains"]["domain_a"]["artifacts"]
     assert payload["report_artifacts"]["report"] == "REPORT.md"
+    assert payload["report_artifacts"]["cross_domain_frontier"] == "CROSS_DOMAIN_FRONTIER.json"
     assert (out / "REPORT.md").exists()
+    assert (out / "CROSS_DOMAIN_FRONTIER.json").exists()

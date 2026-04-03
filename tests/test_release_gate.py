@@ -92,7 +92,28 @@ def _create_report(path: Path):
                 "# Tabular Decisioning: Benchmark Report",
                 "## Statistical Significance",
                 "## Cross-Domain Statistical Summary",
+                "## Cross-Domain Pareto Frontier",
             ]
+        ),
+        encoding="utf-8",
+    )
+
+
+def _create_frontier(path: Path):
+    path.write_text(
+        json.dumps(
+            {
+                "domains": [
+                    {
+                        "domain": "domain_a",
+                        "champion": {"name": "Dummy", "extraordinary_index": 1.0},
+                        "pareto_frontier": [{"name": "Dummy", "extraordinary_index": 1.0}],
+                    }
+                ],
+                "cross_domain_generalists": [
+                    {"name": "Dummy", "avg_extraordinary_index": 1.0, "domains_covered": 1}
+                ],
+            }
         ),
         encoding="utf-8",
     )
@@ -103,6 +124,7 @@ def test_release_gate_passes_on_valid_bundle(tmp_path):
     for name in ["domain_a", "domain_b", "domain_c", "domain_d", "domain_e"]:
         _create_domain_bundle(results_dir / name)
     _create_report(results_dir / "REPORT.md")
+    _create_frontier(results_dir / "CROSS_DOMAIN_FRONTIER.json")
 
     run_release_gate(results_dir=results_dir)
 
@@ -112,6 +134,7 @@ def test_release_gate_fails_when_report_missing_section(tmp_path):
     for name in ["domain_a", "domain_b", "domain_c", "domain_d", "domain_e"]:
         _create_domain_bundle(results_dir / name)
     (results_dir / "REPORT.md").write_text("# Incomplete report", encoding="utf-8")
+    _create_frontier(results_dir / "CROSS_DOMAIN_FRONTIER.json")
 
     with pytest.raises(ReleaseGateError):
         run_release_gate(results_dir=results_dir)

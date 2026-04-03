@@ -169,6 +169,12 @@ def create_release_snapshot(
         shutil.copy2(report_path, destination)
         report_artifacts["report"] = "REPORT.md"
 
+    frontier_path = results_path / "CROSS_DOMAIN_FRONTIER.json"
+    if frontier_path.exists():
+        destination = output_dir / "CROSS_DOMAIN_FRONTIER.json"
+        shutil.copy2(frontier_path, destination)
+        report_artifacts["cross_domain_frontier"] = "CROSS_DOMAIN_FRONTIER.json"
+
     snapshot = {
         "snapshot_tag": clean_tag,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),

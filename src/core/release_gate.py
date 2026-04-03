@@ -67,6 +67,8 @@ def _validate_report(report_path: Path, errors: List[str]) -> None:
 
     if "## Cross-Domain Statistical Summary" not in report_text:
         errors.append(f"{report_path}: missing 'Cross-Domain Statistical Summary' section")
+    if "## Cross-Domain Pareto Frontier" not in report_text:
+        errors.append(f"{report_path}: missing 'Cross-Domain Pareto Frontier' section")
 
     for header in EXPECTED_DOMAIN_HEADERS:
         if header not in report_text:
@@ -77,6 +79,24 @@ def _validate_report(report_path: Path, errors: List[str]) -> None:
         errors.append(
             f"{report_path}: expected at least {len(EXPECTED_DOMAIN_HEADERS)} 'Statistical Significance' sections, found {significance_count}"
         )
+
+
+def _validate_frontier_artifact(path: Path, errors: List[str]) -> None:
+    if not path.exists():
+        errors.append(f"{path}: missing cross-domain frontier artifact")
+        return
+
+    try:
+        payload = _load_json(path)
+    except Exception as exc:
+        errors.append(f"{path}: cannot parse JSON ({exc})")
+        return
+
+    if not isinstance(payload.get("domains"), list):
+        errors.append(f"{path}: missing 'domains' list")
+
+    if not isinstance(payload.get("cross_domain_generalists"), list):
+        errors.append(f"{path}: missing 'cross_domain_generalists' list")
 
 
 
@@ -97,6 +117,7 @@ def run_release_gate(results_dir: str | Path = "results", require_report: bool =
 
     if require_report:
         _validate_report(root / "REPORT.md", errors)
+        _validate_frontier_artifact(root / "CROSS_DOMAIN_FRONTIER.json", errors)
 
     if errors:
         preview = "\n".join(f"- {err}" for err in errors[:25])

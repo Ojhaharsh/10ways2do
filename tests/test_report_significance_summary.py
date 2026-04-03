@@ -71,9 +71,11 @@ def test_full_report_includes_cross_domain_statistical_summary(tmp_path: Path) -
     report = ReportGenerator(results_dir=str(tmp_path)).generate_full_report()
 
     assert "## Cross-Domain Statistical Summary" in report
+    assert "## Cross-Domain Pareto Frontier" in report
     assert "Information Extraction: best=AlphaModel" in report
     assert "Anomaly Detection: best=BetaModel" in report
     assert "Most frequent domain winner" in report
+    assert "champion=AlphaModel" in report
 
 
 def test_save_report_persists_statistical_summary(tmp_path: Path) -> None:
@@ -85,4 +87,9 @@ def test_save_report_persists_statistical_summary(tmp_path: Path) -> None:
 
     saved = output_path.read_text(encoding="utf-8")
     assert "## Cross-Domain Statistical Summary" in saved
+    assert "## Cross-Domain Pareto Frontier" in saved
     assert "Information Extraction: best=AlphaModel" in saved
+
+    frontier_payload = json.loads((tmp_path / "CROSS_DOMAIN_FRONTIER.json").read_text(encoding="utf-8"))
+    assert isinstance(frontier_payload.get("domains"), list)
+    assert isinstance(frontier_payload.get("cross_domain_generalists"), list)
