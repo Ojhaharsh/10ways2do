@@ -302,7 +302,9 @@ def list_snapshots(snapshots_dir: str = "releases"):
         print(
             f"- {row['tag']} | generated={row['generated_at_utc'] or 'N/A'} | "
             f"protocol={row['protocol_version'] or 'N/A'} | domains={row['domain_count']} | "
-            f"report={'yes' if row['has_report'] else 'no'} | valid={'yes' if row['valid'] else 'no'}"
+            f"report={'yes' if row['has_report'] else 'no'} | "
+            f"restorable={'yes' if row['restorable'] else 'no'} | "
+            f"valid={'yes' if row['valid'] else 'no'}"
         )
 
 
@@ -319,6 +321,7 @@ def show_snapshot_info(snapshot_tag: str, snapshots_dir: str = "releases"):
     print(f"Protocol: {info['protocol_version']}")
     print(f"Domains ({info['domain_count']}): {', '.join(info['domains'])}")
     print(f"Has REPORT.md: {'yes' if info['has_report'] else 'no'}")
+    print(f"Restorable: {'yes' if info['restorable'] else 'no'}")
 
 
 def main():
