@@ -1,0 +1,496 @@
+{
+  "approaches": [
+    {
+      "name": "Statistical (Z-score + IQR)",
+      "category": "statistical",
+      "success_rate": 1.0,
+      "metrics_summary": {
+        "accuracy": {
+          "mean": 0.585,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.585,
+          "ci95_high": 0.585
+        },
+        "precision": {
+          "mean": 0.2857142857142857,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.2857142857142857,
+          "ci95_high": 0.2857142857142857
+        },
+        "recall": {
+          "mean": 0.7894736842105263,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.7894736842105263,
+          "ci95_high": 0.7894736842105263
+        },
+        "f1": {
+          "mean": 0.4195804195804196,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.4195804195804196,
+          "ci95_high": 0.4195804195804196
+        },
+        "true_positives": {
+          "mean": 30.0,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 30.0,
+          "ci95_high": 30.0
+        },
+        "true_negatives": {
+          "mean": 87.0,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 87.0,
+          "ci95_high": 87.0
+        },
+        "false_positives": {
+          "mean": 75.0,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 75.0,
+          "ci95_high": 75.0
+        },
+        "false_negatives": {
+          "mean": 8.0,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 8.0,
+          "ci95_high": 8.0
+        },
+        "false_positive_rate": {
+          "mean": 0.46296296296296297,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.46296296296296297,
+          "ci95_high": 0.46296296296296297
+        },
+        "specificity": {
+          "mean": 0.5370370370370371,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.5370370370370371,
+          "ci95_high": 0.5370370370370371
+        },
+        "roc_auc": {
+          "mean": 0.794996751137102,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.794996751137102,
+          "ci95_high": 0.794996751137102
+        },
+        "avg_precision": {
+          "mean": 0.6440635860717265,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.6440635860717265,
+          "ci95_high": 0.6440635860717265
+        },
+        "precision_at_10": {
+          "mean": 0.9,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.9,
+          "ci95_high": 0.9
+        },
+        "precision_at_50": {
+          "mean": 0.48,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.48,
+          "ci95_high": 0.48
+        },
+        "precision_at_100": {
+          "mean": 0.3,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.3,
+          "ci95_high": 0.3
+        }
+      },
+      "timing_summary": {
+        "training_time": {
+          "mean": 0.0010848045349121094,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.0010848045349121094,
+          "ci95_high": 0.0010848045349121094
+        },
+        "inference_time": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        }
+      },
+      "budget_summary": {
+        "train_time_cap_seconds": 30.0,
+        "memory_cap_mb": 4096.0,
+        "tuning_trials_cap": 0,
+        "out_of_budget_count": 0,
+        "out_of_budget_rate": 0.0
+      },
+      "success": true,
+      "significance_vs_best": {
+        "best_approach": "Statistical (MAD)",
+        "best_mean": 0.5970149253731343,
+        "higher_is_better": true,
+        "alpha": 0.05,
+        "is_best": false,
+        "mean_diff_vs_best": -0.1774345057927147,
+        "p_value": null,
+        "cohens_d_vs_best": null,
+        "significantly_better_than_best": false
+      }
+    },
+    {
+      "name": "Statistical (MAD)",
+      "category": "statistical",
+      "success_rate": 1.0,
+      "metrics_summary": {
+        "accuracy": {
+          "mean": 0.865,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.865,
+          "ci95_high": 0.865
+        },
+        "precision": {
+          "mean": 0.6896551724137931,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.6896551724137931,
+          "ci95_high": 0.6896551724137931
+        },
+        "recall": {
+          "mean": 0.5263157894736842,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.5263157894736842,
+          "ci95_high": 0.5263157894736842
+        },
+        "f1": {
+          "mean": 0.5970149253731343,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.5970149253731343,
+          "ci95_high": 0.5970149253731343
+        },
+        "true_positives": {
+          "mean": 20.0,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 20.0,
+          "ci95_high": 20.0
+        },
+        "true_negatives": {
+          "mean": 153.0,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 153.0,
+          "ci95_high": 153.0
+        },
+        "false_positives": {
+          "mean": 9.0,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 9.0,
+          "ci95_high": 9.0
+        },
+        "false_negatives": {
+          "mean": 18.0,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 18.0,
+          "ci95_high": 18.0
+        },
+        "false_positive_rate": {
+          "mean": 0.05555555555555555,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.05555555555555555,
+          "ci95_high": 0.05555555555555555
+        },
+        "specificity": {
+          "mean": 0.9444444444444444,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.9444444444444444,
+          "ci95_high": 0.9444444444444444
+        },
+        "roc_auc": {
+          "mean": 0.7353801169590642,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.7353801169590642,
+          "ci95_high": 0.7353801169590642
+        },
+        "avg_precision": {
+          "mean": 0.45297640653357535,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.45297640653357535,
+          "ci95_high": 0.45297640653357535
+        },
+        "precision_at_10": {
+          "mean": 0.7,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.7,
+          "ci95_high": 0.7
+        },
+        "precision_at_50": {
+          "mean": 0.44,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.44,
+          "ci95_high": 0.44
+        },
+        "precision_at_100": {
+          "mean": 0.3,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.3,
+          "ci95_high": 0.3
+        }
+      },
+      "timing_summary": {
+        "training_time": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "inference_time": {
+          "mean": 0.0009913444519042969,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.0009913444519042969,
+          "ci95_high": 0.0009913444519042969
+        }
+      },
+      "budget_summary": {
+        "train_time_cap_seconds": 30.0,
+        "memory_cap_mb": 4096.0,
+        "tuning_trials_cap": 0,
+        "out_of_budget_count": 0,
+        "out_of_budget_rate": 0.0
+      },
+      "success": true,
+      "significance_vs_best": {
+        "best_approach": "Statistical (MAD)",
+        "best_mean": 0.5970149253731343,
+        "higher_is_better": true,
+        "alpha": 0.05,
+        "is_best": true,
+        "mean_diff_vs_best": 0.0,
+        "p_value": 1.0,
+        "cohens_d_vs_best": 0.0,
+        "significantly_better_than_best": false
+      }
+    },
+    {
+      "name": "Tree-Based (Isolation Forest)",
+      "category": "tree",
+      "success_rate": 1.0,
+      "metrics_summary": {
+        "accuracy": {
+          "mean": 0.675,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.675,
+          "ci95_high": 0.675
+        },
+        "precision": {
+          "mean": 0.3373493975903614,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.3373493975903614,
+          "ci95_high": 0.3373493975903614
+        },
+        "recall": {
+          "mean": 0.7368421052631579,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.7368421052631579,
+          "ci95_high": 0.7368421052631579
+        },
+        "f1": {
+          "mean": 0.4628099173553719,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.4628099173553719,
+          "ci95_high": 0.4628099173553719
+        },
+        "true_positives": {
+          "mean": 28.0,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 28.0,
+          "ci95_high": 28.0
+        },
+        "true_negatives": {
+          "mean": 107.0,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 107.0,
+          "ci95_high": 107.0
+        },
+        "false_positives": {
+          "mean": 55.0,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 55.0,
+          "ci95_high": 55.0
+        },
+        "false_negatives": {
+          "mean": 10.0,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 10.0,
+          "ci95_high": 10.0
+        },
+        "false_positive_rate": {
+          "mean": 0.3395061728395062,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.3395061728395062,
+          "ci95_high": 0.3395061728395062
+        },
+        "specificity": {
+          "mean": 0.6604938271604939,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.6604938271604939,
+          "ci95_high": 0.6604938271604939
+        },
+        "roc_auc": {
+          "mean": 0.7664879792072774,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.7664879792072774,
+          "ci95_high": 0.7664879792072774
+        },
+        "avg_precision": {
+          "mean": 0.4216632017505966,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.4216632017505966,
+          "ci95_high": 0.4216632017505966
+        },
+        "precision_at_10": {
+          "mean": 0.3,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.3,
+          "ci95_high": 0.3
+        },
+        "precision_at_50": {
+          "mean": 0.46,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.46,
+          "ci95_high": 0.46
+        },
+        "precision_at_100": {
+          "mean": 0.3,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.3,
+          "ci95_high": 0.3
+        }
+      },
+      "timing_summary": {
+        "training_time": {
+          "mean": 0.06814432144165039,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.06814432144165039,
+          "ci95_high": 0.06814432144165039
+        },
+        "inference_time": {
+          "mean": 0.004983186721801758,
+          "std": 0.0,
+          "n": 1,
+          "sem": 0.0,
+          "ci95_low": 0.004983186721801758,
+          "ci95_high": 0.004983186721801758
+        }
+      },
+      "budget_summary": {
+        "train_time_cap_seconds": 30.0,
+        "memory_cap_mb": 4096.0,
+        "tuning_trials_cap": 0,
+        "out_of_budget_count": 0,
+        "out_of_budget_rate": 0.0
+      },
+      "success": true,
+      "significance_vs_best": {
+        "best_approach": "Statistical (MAD)",
+        "best_mean": 0.5970149253731343,
+        "higher_is_better": true,
+        "alpha": 0.05,
+        "is_best": false,
+        "mean_diff_vs_best": -0.13420500801776236,
+        "p_value": null,
+        "cohens_d_vs_best": null,
+        "significantly_better_than_best": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+Category,Approach,F1 Mean,F1 Std,F1 CI95 Low,F1 CI95 High,F1 p-value vs Best,Precision Mean,Recall Mean,Run Success Rate,Available
+statistical,Statistical (MAD),0.5970149253731343,0.0,0.5970149253731343,0.5970149253731343,1.0,0.6896551724137931,0.5263157894736842,1.0,True
+distance,N/A,,,,,,,,0.0,False
+tree,Tree-Based (Isolation Forest),0.4628099173553719,0.0,0.4628099173553719,0.4628099173553719,,0.3373493975903614,0.7368421052631579,1.0,True
+autoencoder,N/A,,,,,,,,0.0,False
+rnn_lstm,N/A,,,,,,,,0.0,False
+transformer,N/A,,,,,,,,0.0,False
+graph,N/A,,,,,,,,0.0,False
+ensemble,N/A,,,,,,,,0.0,False
+hybrid,N/A,,,,,,,,0.0,False
+systems,N/A,,,,,,,,0.0,False
