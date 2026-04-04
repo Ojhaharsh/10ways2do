@@ -1,0 +1,210 @@
+{
+  "generated_at_utc": "2026-04-03T21:59:33.909779+00:00",
+  "weights": {
+    "quality": 0.45,
+    "speed": 0.25,
+    "resilience": 0.2,
+    "consistency": 0.1
+  },
+  "domains": [
+    {
+      "domain": "domain_a",
+      "domain_name": "Information Extraction",
+      "champion": {
+        "name": "Prompt-Based LLM",
+        "extraordinary_index": 0.92989
+      },
+      "pareto_frontier": [
+        {
+          "name": "Prompt-Based LLM",
+          "extraordinary_index": 0.92989,
+          "quality_score": 0.8442,
+          "speed_score": 1.0,
+          "resilience": 1.0,
+          "consistency": 1.0
+        },
+        {
+          "name": "Pretrained Transformer (BERT)",
+          "extraordinary_index": 0.55,
+          "quality_score": 1.0,
+          "speed_score": 0.0,
+          "resilience": 0.0,
+          "consistency": 1.0
+        }
+      ],
+      "top_candidates": [
+        {
+          "name": "Prompt-Based LLM",
+          "extraordinary_index": 0.92989
+        },
+        {
+          "name": "Rule-Based IE",
+          "extraordinary_index": 0.905466
+        },
+        {
+          "name": "Hybrid (Rules + ML)",
+          "extraordinary_index": 0.686442
+        },
+        {
+          "name": "Classical ML (CRF-style)",
+          "extraordinary_index": 0.623898
+        },
+        {
+          "name": "CNN Sequence",
+          "extraordinary_index": 0.595515
+        }
+      ]
+    },
+    {
+      "domain": "domain_b",
+      "domain_name": "Anomaly Detection",
+      "champion": {
+        "name": "Statistical (MAD)",
+        "extraordinary_index": 0.875
+      },
+      "pareto_frontier": [
+        {
+          "name": "Statistical (MAD)",
+          "extraordinary_index": 0.875,
+          "quality_score": 1.0,
+          "speed_score": 0.5,
+          "resilience": 1.0,
+          "consistency": 1.0
+        }
+      ],
+      "top_candidates": [
+        {
+          "name": "Statistical (MAD)",
+          "extraordinary_index": 0.875
+        },
+        {
+          "name": "Tree-Based (Isolation Forest)",
+          "extraordinary_index": 0.534636
+        },
+        {
+          "name": "Statistical (Z-score + IQR)",
+          "extraordinary_index": 0.425
+        }
+      ]
+    },
+    {
+      "domain": "domain_c",
+      "domain_name": "Recommendation",
+      "champion": {
+        "name": "Matrix Factorization (SVD)",
+        "extraordinary_index": 0.875
+      },
+      "pareto_frontier": [
+        {
+          "name": "Matrix Factorization (SVD)",
+          "extraordinary_index": 0.875,
+          "quality_score": 1.0,
+          "speed_score": 0.5,
+          "resilience": 1.0,
+          "consistency": 1.0
+        }
+      ],
+      "top_candidates": [
+        {
+          "name": "Matrix Factorization (SVD)",
+          "extraordinary_index": 0.875
+        },
+        {
+          "name": "Popularity-Based",
+          "extraordinary_index": 0.596728
+        },
+        {
+          "name": "User-Based CF",
+          "extraordinary_index": 0.425
+        }
+      ]
+    },
+    {
+      "domain": "domain_d",
+      "domain_name": "Time Series Forecasting",
+      "champion": {
+        "name": "Exponential Smoothing",
+        "extraordinary_index": 0.875
+      },
+      "pareto_frontier": [
+        {
+          "name": "Exponential Smoothing",
+          "extraordinary_index": 0.875,
+          "quality_score": 1.0,
+          "speed_score": 0.5,
+          "resilience": 1.0,
+          "consistency": 1.0
+        }
+      ],
+      "top_candidates": [
+        {
+          "name": "Exponential Smoothing",
+          "extraordinary_index": 0.875
+        },
+        {
+          "name": "Tree-Based (XGBoost)",
+          "extraordinary_index": 0.225
+        }
+      ]
+    },
+    {
+      "domain": "domain_e",
+      "domain_name": "Tabular Decisioning",
+      "champion": {
+        "name": "Linear (Logistic Regression)",
+        "extraordinary_index": 0.875
+      },
+      "pareto_frontier": [
+        {
+          "name": "Linear (Logistic Regression)",
+          "extraordinary_index": 0.875,
+          "quality_score": 1.0,
+          "speed_score": 0.5,
+          "resilience": 1.0,
+          "consistency": 1.0
+        }
+      ],
+      "top_candidates": [
+        {
+          "name": "Linear (Logistic Regression)",
+          "extraordinary_index": 0.875
+        },
+        {
+          "name": "Rule-Based Thresholding",
+          "extraordinary_index": 0.846277
+        },
+        {
+          "name": "Tree-Based (Random Forest)",
+          "extraordinary_index": 0.425
+        }
+      ]
+    }
+  ],
+  "cross_domain_generalists": [
+    {
+      "name": "Prompt-Based LLM",
+      "avg_extraordinary_index": 0.92989,
+      "domains_covered": 1
+    },
+    {
+      "name": "Rule-Based IE",
+      "avg_extraordinary_index": 0.905466,
+      "domains_covered": 1
+    },
+    {
+      "name": "Statistical (MAD)",
+      "avg_extraordinary_index": 0.875,
+      "domains_covered": 1
+    },
+    {
+      "name": "Matrix Factorization (SVD)",
+      "avg_extraordinary_index": 0.875,
+      "domains_covered": 1
+    },
+    {
+      "name": "Exponential Smoothing",
+      "avg_extraordinary_index": 0.875,
+      "domains_covered": 1
+    }
+  ]
+}
