@@ -100,15 +100,17 @@ def _create_report(path: Path):
 
 
 def _create_frontier(path: Path):
+    domains = ["domain_a", "domain_b", "domain_c", "domain_d", "domain_e"]
     path.write_text(
         json.dumps(
             {
                 "domains": [
                     {
-                        "domain": "domain_a",
+                        "domain": domain,
                         "champion": {"name": "Dummy", "extraordinary_index": 1.0},
                         "pareto_frontier": [{"name": "Dummy", "extraordinary_index": 1.0}],
                     }
+                    for domain in domains
                 ],
                 "cross_domain_generalists": [
                     {"name": "Dummy", "avg_extraordinary_index": 1.0, "domains_covered": 1}
@@ -135,6 +137,33 @@ def test_release_gate_fails_when_report_missing_section(tmp_path):
         _create_domain_bundle(results_dir / name)
     (results_dir / "REPORT.md").write_text("# Incomplete report", encoding="utf-8")
     _create_frontier(results_dir / "CROSS_DOMAIN_FRONTIER.json")
+
+    with pytest.raises(ReleaseGateError):
+        run_release_gate(results_dir=results_dir)
+
+
+def test_release_gate_fails_when_frontier_semantics_invalid(tmp_path):
+    results_dir = tmp_path / "results"
+    for name in ["domain_a", "domain_b", "domain_c", "domain_d", "domain_e"]:
+        _create_domain_bundle(results_dir / name)
+    _create_report(results_dir / "REPORT.md")
+
+    # Missing domain coverage and empty Pareto list should fail semantic frontier checks.
+    (results_dir / "CROSS_DOMAIN_FRONTIER.json").write_text(
+        json.dumps(
+            {
+                "domains": [
+                    {
+                        "domain": "domain_a",
+                        "champion": {"name": "Dummy", "extraordinary_index": 1.2},
+                        "pareto_frontier": [],
+                    }
+                ],
+                "cross_domain_generalists": [],
+            }
+        ),
+        encoding="utf-8",
+    )
 
     with pytest.raises(ReleaseGateError):
         run_release_gate(results_dir=results_dir)

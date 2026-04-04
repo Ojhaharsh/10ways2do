@@ -94,9 +94,79 @@ def _validate_frontier_artifact(path: Path, errors: List[str]) -> None:
 
     if not isinstance(payload.get("domains"), list):
         errors.append(f"{path}: missing 'domains' list")
+        return
 
     if not isinstance(payload.get("cross_domain_generalists"), list):
         errors.append(f"{path}: missing 'cross_domain_generalists' list")
+        return
+
+    domains = payload.get("domains", [])
+    if not domains:
+        errors.append(f"{path}: 'domains' list must be non-empty")
+        return
+
+    domain_map = {}
+    for idx, row in enumerate(domains):
+        if not isinstance(row, dict):
+            errors.append(f"{path}: domains[{idx}] is not an object")
+            continue
+
+        domain_name = row.get("domain")
+        if not isinstance(domain_name, str) or not domain_name.strip():
+            errors.append(f"{path}: domains[{idx}] missing non-empty 'domain'")
+            continue
+
+        domain_map[domain_name] = row
+
+    missing_domains = [d for d in DEFAULT_DOMAIN_DIRS if d not in domain_map]
+    if missing_domains:
+        errors.append(f"{path}: missing expected domains {missing_domains}")
+
+    for domain_name, row in domain_map.items():
+        champion = row.get("champion")
+        if not isinstance(champion, dict):
+            errors.append(f"{path}: domain '{domain_name}' missing champion object")
+            continue
+
+        champion_name = champion.get("name")
+        champion_index = champion.get("extraordinary_index")
+        if not isinstance(champion_name, str) or not champion_name.strip():
+            errors.append(f"{path}: domain '{domain_name}' champion missing non-empty name")
+        if not isinstance(champion_index, (int, float)):
+            errors.append(f"{path}: domain '{domain_name}' champion missing numeric extraordinary_index")
+        elif not (0.0 <= float(champion_index) <= 1.0):
+            errors.append(
+                f"{path}: domain '{domain_name}' champion extraordinary_index out of range [0,1]: {champion_index}"
+            )
+
+        pareto_frontier = row.get("pareto_frontier")
+        if not isinstance(pareto_frontier, list) or not pareto_frontier:
+            errors.append(f"{path}: domain '{domain_name}' pareto_frontier must be non-empty list")
+            continue
+
+        for p_idx, candidate in enumerate(pareto_frontier):
+            if not isinstance(candidate, dict):
+                errors.append(f"{path}: domain '{domain_name}' pareto_frontier[{p_idx}] is not an object")
+                continue
+
+            name = candidate.get("name")
+            score = candidate.get("extraordinary_index")
+            if not isinstance(name, str) or not name.strip():
+                errors.append(
+                    f"{path}: domain '{domain_name}' pareto_frontier[{p_idx}] missing non-empty name"
+                )
+            if not isinstance(score, (int, float)):
+                errors.append(
+                    f"{path}: domain '{domain_name}' pareto_frontier[{p_idx}] missing numeric extraordinary_index"
+                )
+            elif not (0.0 <= float(score) <= 1.0):
+                errors.append(
+                    f"{path}: domain '{domain_name}' pareto_frontier[{p_idx}] extraordinary_index out of range [0,1]: {score}"
+                )
+
+    generalists = payload.get("cross_domain_generalists", [])
+    if not generalists:
+        errors.append(f"{path}: 'cross_domain_generalists' must be non-empty")
 
 
 
