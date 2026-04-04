@@ -1,0 +1,2047 @@
+{
+  "approaches": [
+    {
+      "name": "Rule-Based IE",
+      "category": "rule_based",
+      "success_rate": 1.0,
+      "primary_metrics_summary": {
+        "name_exact_match": {
+          "mean": 0.72,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.72,
+          "ci95_high": 0.72
+        },
+        "name_partial_match": {
+          "mean": 0.7366666666666667,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.7366666666666667,
+          "ci95_high": 0.7366666666666667
+        },
+        "email_exact_match": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 1.0,
+          "ci95_high": 1.0
+        },
+        "email_partial_match": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 1.0,
+          "ci95_high": 1.0
+        },
+        "phone_exact_match": {
+          "mean": 0.315,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.315,
+          "ci95_high": 0.315
+        },
+        "phone_partial_match": {
+          "mean": 0.315,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.315,
+          "ci95_high": 0.315
+        },
+        "location_exact_match": {
+          "mean": 0.795,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.795,
+          "ci95_high": 0.795
+        },
+        "location_partial_match": {
+          "mean": 0.9316666666666665,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.9316666666666665,
+          "ci95_high": 0.9316666666666665
+        },
+        "job_title_exact_match": {
+          "mean": 0.655,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.655,
+          "ci95_high": 0.655
+        },
+        "job_title_partial_match": {
+          "mean": 0.7560000000000001,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.7560000000000001,
+          "ci95_high": 0.7560000000000001
+        },
+        "company_exact_match": {
+          "mean": 0.52,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.52,
+          "ci95_high": 0.52
+        },
+        "company_partial_match": {
+          "mean": 0.52,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.52,
+          "ci95_high": 0.52
+        },
+        "years_experience_exact_match": {
+          "mean": 0.75,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.75,
+          "ci95_high": 0.75
+        },
+        "years_experience_partial_match": {
+          "mean": 0.75,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.75,
+          "ci95_high": 0.75
+        },
+        "education_exact_match": {
+          "mean": 0.51,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.51,
+          "ci95_high": 0.51
+        },
+        "education_partial_match": {
+          "mean": 0.5763333333333334,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.5763333333333334,
+          "ci95_high": 0.5763333333333334
+        },
+        "degree_exact_match": {
+          "mean": 0.52,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.52,
+          "ci95_high": 0.52
+        },
+        "degree_partial_match": {
+          "mean": 0.8088988095238094,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.8088988095238094,
+          "ci95_high": 0.8088988095238094
+        },
+        "overall_exact_match": {
+          "mean": 0.6427777777777778,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.6427777777777778,
+          "ci95_high": 0.6427777777777778
+        },
+        "overall_partial_match": {
+          "mean": 0.7105072751322751,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.7105072751322751,
+          "ci95_high": 0.7105072751322751
+        },
+        "overall_f1": {
+          "mean": 0.6749476513431713,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.6749476513431713,
+          "ci95_high": 0.6749476513431713
+        }
+      },
+      "systems_metrics_summary": {
+        "training_time": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "inference_latency_p95": {
+          "mean": 0.12037499900543477,
+          "std": 0.0284500006273447,
+          "n": 2,
+          "sem": 0.020117188368356968,
+          "ci95_low": 0.08094530980345511,
+          "ci95_high": 0.15980468820741445
+        },
+        "memory_inference_mb": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "model_size_mb": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        }
+      },
+      "budget_summary": {
+        "train_time_cap_seconds": 300.0,
+        "memory_cap_mb": 4096.0,
+        "tuning_trials_cap": 0,
+        "out_of_budget_count": 0,
+        "out_of_budget_rate": 0.0
+      },
+      "success": true,
+      "significance_vs_best": {
+        "best_approach": "Pretrained Transformer (BERT)",
+        "best_mean": 0.8127777777777778,
+        "higher_is_better": true,
+        "alpha": 0.05,
+        "is_best": false,
+        "mean_diff_vs_best": -0.17000000000000004,
+        "p_value": 1.8296295167217222e-10,
+        "significantly_better_than_best": false
+      }
+    },
+    {
+      "name": "Classical ML (CRF-style)",
+      "category": "classical_ml",
+      "success_rate": 1.0,
+      "primary_metrics_summary": {
+        "name_exact_match": {
+          "mean": 0.1,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.1,
+          "ci95_high": 0.1
+        },
+        "name_partial_match": {
+          "mean": 0.3120833333333333,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.3120833333333333,
+          "ci95_high": 0.3120833333333333
+        },
+        "email_exact_match": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 1.0,
+          "ci95_high": 1.0
+        },
+        "email_partial_match": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 1.0,
+          "ci95_high": 1.0
+        },
+        "phone_exact_match": {
+          "mean": 0.315,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.315,
+          "ci95_high": 0.315
+        },
+        "phone_partial_match": {
+          "mean": 0.315,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.315,
+          "ci95_high": 0.315
+        },
+        "location_exact_match": {
+          "mean": 0.05,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.05,
+          "ci95_high": 0.05
+        },
+        "location_partial_match": {
+          "mean": 0.12100000000000001,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.12100000000000001,
+          "ci95_high": 0.12100000000000001
+        },
+        "job_title_exact_match": {
+          "mean": 0.02,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.02,
+          "ci95_high": 0.02
+        },
+        "job_title_partial_match": {
+          "mean": 0.05874999999999999,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.05874999999999999,
+          "ci95_high": 0.05874999999999999
+        },
+        "company_exact_match": {
+          "mean": 0.085,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.085,
+          "ci95_high": 0.085
+        },
+        "company_partial_match": {
+          "mean": 0.11625,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.11625,
+          "ci95_high": 0.11625
+        },
+        "years_experience_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "years_experience_partial_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "education_exact_match": {
+          "mean": 0.185,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.185,
+          "ci95_high": 0.185
+        },
+        "education_partial_match": {
+          "mean": 0.33651190476190473,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.33651190476190473,
+          "ci95_high": 0.33651190476190473
+        },
+        "degree_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "degree_partial_match": {
+          "mean": 0.15023809523809523,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.15023809523809523,
+          "ci95_high": 0.15023809523809523
+        },
+        "overall_exact_match": {
+          "mean": 0.195,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.195,
+          "ci95_high": 0.195
+        },
+        "overall_partial_match": {
+          "mean": 0.26775925925925925,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.26775925925925925,
+          "ci95_high": 0.26775925925925925
+        },
+        "overall_f1": {
+          "mean": 0.2256596853873212,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.2256596853873212,
+          "ci95_high": 0.2256596853873212
+        }
+      },
+      "systems_metrics_summary": {
+        "training_time": {
+          "mean": 1.6705013513565063,
+          "std": 0.08967030048370361,
+          "n": 2,
+          "sem": 0.06340647754306217,
+          "ci95_low": 1.5462246553721044,
+          "ci95_high": 1.7947780473409083
+        },
+        "inference_latency_p95": {
+          "mean": 32.77960749956037,
+          "std": 0.25085249972107704,
+          "n": 2,
+          "sem": 0.17737950363037008,
+          "ci95_low": 32.431943672444845,
+          "ci95_high": 33.127271326675896
+        },
+        "memory_inference_mb": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "model_size_mb": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        }
+      },
+      "budget_summary": {
+        "train_time_cap_seconds": 300.0,
+        "memory_cap_mb": 4096.0,
+        "tuning_trials_cap": 0,
+        "out_of_budget_count": 0,
+        "out_of_budget_rate": 0.0
+      },
+      "success": true,
+      "significance_vs_best": {
+        "best_approach": "Pretrained Transformer (BERT)",
+        "best_mean": 0.8127777777777778,
+        "higher_is_better": true,
+        "alpha": 0.05,
+        "is_best": false,
+        "mean_diff_vs_best": -0.6177777777777778,
+        "p_value": 9.875365971579619e-119,
+        "significantly_better_than_best": false
+      }
+    },
+    {
+      "name": "Tree-Based (XGBoost)",
+      "category": "tree_based",
+      "success_rate": 1.0,
+      "primary_metrics_summary": {
+        "name_exact_match": {
+          "mean": 0.015,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.015,
+          "ci95_high": 0.015
+        },
+        "name_partial_match": {
+          "mean": 0.075,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.075,
+          "ci95_high": 0.075
+        },
+        "email_exact_match": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 1.0,
+          "ci95_high": 1.0
+        },
+        "email_partial_match": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 1.0,
+          "ci95_high": 1.0
+        },
+        "phone_exact_match": {
+          "mean": 0.115,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.115,
+          "ci95_high": 0.115
+        },
+        "phone_partial_match": {
+          "mean": 0.115,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.115,
+          "ci95_high": 0.115
+        },
+        "location_exact_match": {
+          "mean": 0.06,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.06,
+          "ci95_high": 0.06
+        },
+        "location_partial_match": {
+          "mean": 0.16108333333333336,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.16108333333333336,
+          "ci95_high": 0.16108333333333336
+        },
+        "job_title_exact_match": {
+          "mean": 0.21,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.21,
+          "ci95_high": 0.21
+        },
+        "job_title_partial_match": {
+          "mean": 0.46299999999999997,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.46299999999999997,
+          "ci95_high": 0.46299999999999997
+        },
+        "company_exact_match": {
+          "mean": 0.035,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.035,
+          "ci95_high": 0.035
+        },
+        "company_partial_match": {
+          "mean": 0.06708333333333333,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.06708333333333333,
+          "ci95_high": 0.06708333333333333
+        },
+        "years_experience_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "years_experience_partial_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "education_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "education_partial_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "degree_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "degree_partial_match": {
+          "mean": 0.3668154761904762,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.3668154761904762,
+          "ci95_high": 0.3668154761904762
+        },
+        "overall_exact_match": {
+          "mean": 0.15944444444444444,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.15944444444444444,
+          "ci95_high": 0.15944444444444444
+        },
+        "overall_partial_match": {
+          "mean": 0.24977579365079366,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.24977579365079366,
+          "ci95_high": 0.24977579365079366
+        },
+        "overall_f1": {
+          "mean": 0.19464023512860198,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.19464023512860198,
+          "ci95_high": 0.19464023512860198
+        }
+      },
+      "systems_metrics_summary": {
+        "training_time": {
+          "mean": 2.218902826309204,
+          "std": 0.02303600311279297,
+          "n": 2,
+          "sem": 0.016288914012490323,
+          "ci95_low": 2.186976554844723,
+          "ci95_high": 2.250829097773685
+        },
+        "inference_latency_p95": {
+          "mean": 71.51397249981528,
+          "std": 0.4035874999317457,
+          "n": 2,
+          "sem": 0.28537945800386266,
+          "ci95_low": 70.95462876212771,
+          "ci95_high": 72.07331623750285
+        },
+        "memory_inference_mb": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "model_size_mb": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        }
+      },
+      "budget_summary": {
+        "train_time_cap_seconds": 300.0,
+        "memory_cap_mb": 4096.0,
+        "tuning_trials_cap": 0,
+        "out_of_budget_count": 0,
+        "out_of_budget_rate": 0.0
+      },
+      "success": true,
+      "significance_vs_best": {
+        "best_approach": "Pretrained Transformer (BERT)",
+        "best_mean": 0.8127777777777778,
+        "higher_is_better": true,
+        "alpha": 0.05,
+        "is_best": false,
+        "mean_diff_vs_best": -0.6533333333333333,
+        "p_value": 1.4771413722979943e-132,
+        "significantly_better_than_best": false
+      }
+    },
+    {
+      "name": "RNN/LSTM",
+      "category": "rnn_lstm",
+      "success_rate": 1.0,
+      "primary_metrics_summary": {
+        "name_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "name_partial_match": {
+          "mean": 0.7501666666666666,
+          "std": 0.03258333333333341,
+          "n": 2,
+          "sem": 0.023039895953661724,
+          "ci95_low": 0.7050084705974897,
+          "ci95_high": 0.7953248627358436
+        },
+        "email_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "email_partial_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "phone_exact_match": {
+          "mean": 0.030000000000000002,
+          "std": 0.005000000000000001,
+          "n": 2,
+          "sem": 0.003535533905932738,
+          "ci95_low": 0.023070353544371834,
+          "ci95_high": 0.03692964645562817
+        },
+        "phone_partial_match": {
+          "mean": 0.037500000000000006,
+          "std": 0.005000000000000001,
+          "n": 2,
+          "sem": 0.003535533905932738,
+          "ci95_low": 0.03057035354437184,
+          "ci95_high": 0.04442964645562817
+        },
+        "location_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "location_partial_match": {
+          "mean": 0.2022470238095238,
+          "std": 0.010671626984126978,
+          "n": 2,
+          "sem": 0.00754597980676953,
+          "ci95_low": 0.18745690338825552,
+          "ci95_high": 0.2170371442307921
+        },
+        "job_title_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "job_title_partial_match": {
+          "mean": 0.6237083333333333,
+          "std": 0.013208333333333322,
+          "n": 2,
+          "sem": 0.009339702068172306,
+          "ci95_low": 0.6054025172797156,
+          "ci95_high": 0.642014149386951
+        },
+        "company_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "company_partial_match": {
+          "mean": 0.39,
+          "std": 0.07,
+          "n": 2,
+          "sem": 0.049497474683058325,
+          "ci95_low": 0.2929849496212057,
+          "ci95_high": 0.48701505037879433
+        },
+        "years_experience_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "years_experience_partial_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "education_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "education_partial_match": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 1.0,
+          "ci95_high": 1.0
+        },
+        "degree_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "degree_partial_match": {
+          "mean": 0.8679464285714287,
+          "std": 0.0050416666666666665,
+          "n": 2,
+          "sem": 0.0035649966884821766,
+          "ci95_low": 0.8609590350620036,
+          "ci95_high": 0.8749338220808538
+        },
+        "overall_exact_match": {
+          "mean": 0.003333333333333333,
+          "std": 0.0005555555555555554,
+          "n": 2,
+          "sem": 0.00039283710065919294,
+          "ci95_low": 0.0025633726160413147,
+          "ci95_high": 0.0041032940506253515
+        },
+        "overall_partial_match": {
+          "mean": 0.4301742724867725,
+          "std": 0.007926477072310367,
+          "n": 2,
+          "sem": 0.005604865688750352,
+          "ci95_low": 0.4191887357368218,
+          "ci95_high": 0.44115980923672315
+        },
+        "overall_f1": {
+          "mean": 0.006614295428887185,
+          "std": 0.0010950486390418758,
+          "n": 2,
+          "sem": 0.0007743163183956103,
+          "ci95_low": 0.005096635444831789,
+          "ci95_high": 0.008131955412942581
+        }
+      },
+      "systems_metrics_summary": {
+        "training_time": {
+          "mean": 79.02871835231781,
+          "std": 1.7247587442398071,
+          "n": 2,
+          "sem": 1.2195886039627617,
+          "ci95_low": 76.6383246885508,
+          "ci95_high": 81.41911201608482
+        },
+        "inference_latency_p95": {
+          "mean": 3.2095050005409576,
+          "std": 0.030335002065839944,
+          "n": 2,
+          "sem": 0.021450085668063352,
+          "ci95_low": 3.1674628326315535,
+          "ci95_high": 3.2515471684503616
+        },
+        "memory_inference_mb": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "model_size_mb": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        }
+      },
+      "budget_summary": {
+        "train_time_cap_seconds": 300.0,
+        "memory_cap_mb": 4096.0,
+        "tuning_trials_cap": 0,
+        "out_of_budget_count": 0,
+        "out_of_budget_rate": 0.0
+      },
+      "success": true,
+      "significance_vs_best": {
+        "best_approach": "Pretrained Transformer (BERT)",
+        "best_mean": 0.8127777777777778,
+        "higher_is_better": true,
+        "alpha": 0.05,
+        "is_best": false,
+        "mean_diff_vs_best": -0.8094444444444445,
+        "p_value": 2.7040353623504216e-202,
+        "significantly_better_than_best": false
+      }
+    },
+    {
+      "name": "CNN Sequence",
+      "category": "cnn",
+      "success_rate": 1.0,
+      "primary_metrics_summary": {
+        "name_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "name_partial_match": {
+          "mean": 0.11033333333333334,
+          "std": 0.08333333333333334,
+          "n": 2,
+          "sem": 0.05892556509887896,
+          "ci95_low": -0.005160774260469417,
+          "ci95_high": 0.22582744092713608
+        },
+        "email_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "email_partial_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "phone_exact_match": {
+          "mean": 0.0275,
+          "std": 0.0125,
+          "n": 2,
+          "sem": 0.008838834764831844,
+          "ci95_low": 0.010175883860929585,
+          "ci95_high": 0.04482411613907042
+        },
+        "phone_partial_match": {
+          "mean": 0.0325,
+          "std": 0.0075,
+          "n": 2,
+          "sem": 0.005303300858899106,
+          "ci95_low": 0.022105530316557754,
+          "ci95_high": 0.04289446968344225
+        },
+        "location_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "location_partial_match": {
+          "mean": 0.174375,
+          "std": 0.05762499999999999,
+          "n": 2,
+          "sem": 0.04074702826587479,
+          "ci95_low": 0.0945108245988854,
+          "ci95_high": 0.2542391754011146
+        },
+        "job_title_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "job_title_partial_match": {
+          "mean": 0.6313749999999999,
+          "std": 0.181875,
+          "n": 2,
+          "sem": 0.12860504582830332,
+          "ci95_low": 0.3793091101765254,
+          "ci95_high": 0.8834408898234745
+        },
+        "company_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "company_partial_match": {
+          "mean": 0.865,
+          "std": 0.11499999999999999,
+          "n": 2,
+          "sem": 0.08131727983645295,
+          "ci95_low": 0.7056181315205522,
+          "ci95_high": 1.024381868479448
+        },
+        "years_experience_exact_match": {
+          "mean": 0.7525,
+          "std": 0.0025000000000000022,
+          "n": 2,
+          "sem": 0.0017677669529663704,
+          "ci95_low": 0.7490351767721859,
+          "ci95_high": 0.755964823227814
+        },
+        "years_experience_partial_match": {
+          "mean": 0.7525,
+          "std": 0.0025000000000000022,
+          "n": 2,
+          "sem": 0.0017677669529663704,
+          "ci95_low": 0.7490351767721859,
+          "ci95_high": 0.755964823227814
+        },
+        "education_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "education_partial_match": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 1.0,
+          "ci95_high": 1.0
+        },
+        "degree_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "degree_partial_match": {
+          "mean": 0.9745178571428572,
+          "std": 0.005791666666666639,
+          "n": 2,
+          "sem": 0.004095326774372068,
+          "ci95_low": 0.966491016665088,
+          "ci95_high": 0.9825446976206265
+        },
+        "overall_exact_match": {
+          "mean": 0.08666666666666667,
+          "std": 0.0011111111111111113,
+          "n": 2,
+          "sem": 0.0007856742013183862,
+          "ci95_low": 0.08512674523208263,
+          "ci95_high": 0.0882065881012507
+        },
+        "overall_partial_match": {
+          "mean": 0.5045112433862434,
+          "std": 0.010375000000000023,
+          "n": 2,
+          "sem": 0.007336232854810446,
+          "ci95_low": 0.49013222699081493,
+          "ci95_high": 0.5188902597816719
+        },
+        "overall_f1": {
+          "mean": 0.14790203708786637,
+          "std": 0.0011721527100349849,
+          "n": 2,
+          "sem": 0.0008288371298519266,
+          "ci95_low": 0.1462775163133566,
+          "ci95_high": 0.14952655786237615
+        }
+      },
+      "systems_metrics_summary": {
+        "training_time": {
+          "mean": 9.100890755653381,
+          "std": 0.07964599132537842,
+          "n": 2,
+          "sem": 0.05631822056050002,
+          "ci95_low": 8.990507043354802,
+          "ci95_high": 9.211274467951961
+        },
+        "inference_latency_p95": {
+          "mean": 0.9086424987799546,
+          "std": 0.06530749897137861,
+          "n": 2,
+          "sem": 0.04617937538499529,
+          "ci95_low": 0.8181309230253638,
+          "ci95_high": 0.9991540745345454
+        },
+        "memory_inference_mb": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "model_size_mb": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        }
+      },
+      "budget_summary": {
+        "train_time_cap_seconds": 300.0,
+        "memory_cap_mb": 4096.0,
+        "tuning_trials_cap": 0,
+        "out_of_budget_count": 0,
+        "out_of_budget_rate": 0.0
+      },
+      "success": true,
+      "significance_vs_best": {
+        "best_approach": "Pretrained Transformer (BERT)",
+        "best_mean": 0.8127777777777778,
+        "higher_is_better": true,
+        "alpha": 0.05,
+        "is_best": false,
+        "mean_diff_vs_best": -0.7261111111111112,
+        "p_value": 5.581943525553412e-163,
+        "significantly_better_than_best": false
+      }
+    },
+    {
+      "name": "Transformer (Scratch)",
+      "category": "transformer_scratch",
+      "success_rate": 1.0,
+      "primary_metrics_summary": {
+        "name_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "name_partial_match": {
+          "mean": 0.3436666666666667,
+          "std": 0.027166666666666645,
+          "n": 2,
+          "sem": 0.019209734222234525,
+          "ci95_low": 0.306015587591087,
+          "ci95_high": 0.38131774574224636
+        },
+        "email_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "email_partial_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "phone_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "phone_partial_match": {
+          "mean": 0.005416666666666666,
+          "std": 0.005416666666666666,
+          "n": 2,
+          "sem": 0.003830161731427132,
+          "ci95_low": -0.002090450326930512,
+          "ci95_high": 0.012923783660263845
+        },
+        "location_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "location_partial_match": {
+          "mean": 0.1276904761904762,
+          "std": 0.014357142857142853,
+          "n": 2,
+          "sem": 0.010152033072749714,
+          "ci95_low": 0.10779249136788675,
+          "ci95_high": 0.14758846101306564
+        },
+        "job_title_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "job_title_partial_match": {
+          "mean": 0.20208333333333334,
+          "std": 0.027916666666666687,
+          "n": 2,
+          "sem": 0.019740064308124465,
+          "ci95_low": 0.1633928072894094,
+          "ci95_high": 0.2407738593772573
+        },
+        "company_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "company_partial_match": {
+          "mean": 0.16749999999999998,
+          "std": 0.0775,
+          "n": 2,
+          "sem": 0.054800775541957426,
+          "ci95_low": 0.060090479937763425,
+          "ci95_high": 0.27490952006223657
+        },
+        "years_experience_exact_match": {
+          "mean": 0.035,
+          "std": 0.035,
+          "n": 2,
+          "sem": 0.024748737341529162,
+          "ci95_low": -0.013507525189397157,
+          "ci95_high": 0.08350752518939716
+        },
+        "years_experience_partial_match": {
+          "mean": 0.035,
+          "std": 0.035,
+          "n": 2,
+          "sem": 0.024748737341529162,
+          "ci95_low": -0.013507525189397157,
+          "ci95_high": 0.08350752518939716
+        },
+        "education_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "education_partial_match": {
+          "mean": 0.5608333333333333,
+          "std": 0.06949999999999998,
+          "n": 2,
+          "sem": 0.04914392129246503,
+          "ci95_low": 0.4645112476001018,
+          "ci95_high": 0.6571554190665647
+        },
+        "degree_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "degree_partial_match": {
+          "mean": 0.9509880952380951,
+          "std": 0.04526190476190478,
+          "n": 2,
+          "sem": 0.03200499978656256,
+          "ci95_low": 0.8882582956564326,
+          "ci95_high": 1.0137178948197578
+        },
+        "overall_exact_match": {
+          "mean": 0.0038888888888888888,
+          "std": 0.0038888888888888888,
+          "n": 2,
+          "sem": 0.002749859704614351,
+          "ci95_low": -0.0015008361321552392,
+          "ci95_high": 0.009278613909933016
+        },
+        "overall_partial_match": {
+          "mean": 0.2659087301587301,
+          "std": 0.004142857142857115,
+          "n": 2,
+          "sem": 0.002929442379201391,
+          "ci95_low": 0.2601670230954954,
+          "ci95_high": 0.27165043722196486
+        },
+        "overall_f1": {
+          "mean": 0.007553346957330537,
+          "std": 0.007553346957330537,
+          "n": 2,
+          "sem": 0.005341022854183198,
+          "ci95_low": -0.0029150578368685315,
+          "ci95_high": 0.018021751751529605
+        }
+      },
+      "systems_metrics_summary": {
+        "training_time": {
+          "mean": 36.95362377166748,
+          "std": 0.6309545040130615,
+          "n": 2,
+          "sem": 0.4461522084078305,
+          "ci95_low": 36.07916544318813,
+          "ci95_high": 37.82808210014683
+        },
+        "inference_latency_p95": {
+          "mean": 2.843874999871331,
+          "std": 0.18910500066340385,
+          "n": 2,
+          "sem": 0.13371742832537942,
+          "ci95_low": 2.5817888403535876,
+          "ci95_high": 3.1059611593890746
+        },
+        "memory_inference_mb": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "model_size_mb": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        }
+      },
+      "budget_summary": {
+        "train_time_cap_seconds": 300.0,
+        "memory_cap_mb": 4096.0,
+        "tuning_trials_cap": 0,
+        "out_of_budget_count": 0,
+        "out_of_budget_rate": 0.0
+      },
+      "success": true,
+      "significance_vs_best": {
+        "best_approach": "Pretrained Transformer (BERT)",
+        "best_mean": 0.8127777777777778,
+        "higher_is_better": true,
+        "alpha": 0.05,
+        "is_best": false,
+        "mean_diff_vs_best": -0.8088888888888889,
+        "p_value": 6.0987694922527235e-198,
+        "significantly_better_than_best": false
+      }
+    },
+    {
+      "name": "Prompt-Based LLM",
+      "category": "llm_prompting",
+      "success_rate": 1.0,
+      "primary_metrics_summary": {
+        "name_exact_match": {
+          "mean": 0.72,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.72,
+          "ci95_high": 0.72
+        },
+        "name_partial_match": {
+          "mean": 0.7366666666666667,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.7366666666666667,
+          "ci95_high": 0.7366666666666667
+        },
+        "email_exact_match": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 1.0,
+          "ci95_high": 1.0
+        },
+        "email_partial_match": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 1.0,
+          "ci95_high": 1.0
+        },
+        "phone_exact_match": {
+          "mean": 0.315,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.315,
+          "ci95_high": 0.315
+        },
+        "phone_partial_match": {
+          "mean": 0.315,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.315,
+          "ci95_high": 0.315
+        },
+        "location_exact_match": {
+          "mean": 0.795,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.795,
+          "ci95_high": 0.795
+        },
+        "location_partial_match": {
+          "mean": 0.9316666666666665,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.9316666666666665,
+          "ci95_high": 0.9316666666666665
+        },
+        "job_title_exact_match": {
+          "mean": 0.64,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.64,
+          "ci95_high": 0.64
+        },
+        "job_title_partial_match": {
+          "mean": 0.64,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.64,
+          "ci95_high": 0.64
+        },
+        "company_exact_match": {
+          "mean": 0.91,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.91,
+          "ci95_high": 0.91
+        },
+        "company_partial_match": {
+          "mean": 0.91,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.91,
+          "ci95_high": 0.91
+        },
+        "years_experience_exact_match": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 1.0,
+          "ci95_high": 1.0
+        },
+        "years_experience_partial_match": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 1.0,
+          "ci95_high": 1.0
+        },
+        "education_exact_match": {
+          "mean": 0.33,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.33,
+          "ci95_high": 0.33
+        },
+        "education_partial_match": {
+          "mean": 0.5324166666666666,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.5324166666666666,
+          "ci95_high": 0.5324166666666666
+        },
+        "degree_exact_match": {
+          "mean": 0.47,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.47,
+          "ci95_high": 0.47
+        },
+        "degree_partial_match": {
+          "mean": 0.7378273809523809,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.7378273809523809,
+          "ci95_high": 0.7378273809523809
+        },
+        "overall_exact_match": {
+          "mean": 0.6866666666666666,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.6866666666666666,
+          "ci95_high": 0.6866666666666666
+        },
+        "overall_partial_match": {
+          "mean": 0.7559530423280424,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.7559530423280424,
+          "ci95_high": 0.7559530423280424
+        },
+        "overall_f1": {
+          "mean": 0.7196460008097619,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.7196460008097619,
+          "ci95_high": 0.7196460008097619
+        }
+      },
+      "systems_metrics_summary": {
+        "training_time": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "inference_latency_p95": {
+          "mean": 0.09526499907224206,
+          "std": 3.637978807091713e-10,
+          "n": 2,
+          "sem": 2.5724394843074966e-10,
+          "ci95_low": 0.09526499856804392,
+          "ci95_high": 0.0952649995764402
+        },
+        "memory_inference_mb": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "model_size_mb": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        }
+      },
+      "budget_summary": {
+        "train_time_cap_seconds": 300.0,
+        "memory_cap_mb": 4096.0,
+        "tuning_trials_cap": 0,
+        "out_of_budget_count": 0,
+        "out_of_budget_rate": 0.0
+      },
+      "success": true,
+      "significance_vs_best": {
+        "best_approach": "Pretrained Transformer (BERT)",
+        "best_mean": 0.8127777777777778,
+        "higher_is_better": true,
+        "alpha": 0.05,
+        "is_best": false,
+        "mean_diff_vs_best": -0.12611111111111117,
+        "p_value": 2.2544326173244666e-06,
+        "significantly_better_than_best": false
+      }
+    },
+    {
+      "name": "Pretrained Transformer (BERT)",
+      "category": "pretrained_transformer",
+      "success_rate": 1.0,
+      "primary_metrics_summary": {
+        "name_exact_match": {
+          "mean": 0.5275,
+          "std": 0.3125,
+          "n": 2,
+          "sem": 0.22097086912079608,
+          "ci95_low": 0.09439709652323963,
+          "ci95_high": 0.9606029034767603
+        },
+        "name_partial_match": {
+          "mean": 0.569375,
+          "std": 0.354375,
+          "n": 2,
+          "sem": 0.25058096558298276,
+          "ci95_low": 0.07823630745735377,
+          "ci95_high": 1.0605136925426462
+        },
+        "email_exact_match": {
+          "mean": 0.855,
+          "std": 0.025000000000000022,
+          "n": 2,
+          "sem": 0.017677669529663702,
+          "ci95_low": 0.8203517677218591,
+          "ci95_high": 0.8896482322781408
+        },
+        "email_partial_match": {
+          "mean": 0.855,
+          "std": 0.025000000000000022,
+          "n": 2,
+          "sem": 0.017677669529663702,
+          "ci95_low": 0.8203517677218591,
+          "ci95_high": 0.8896482322781408
+        },
+        "phone_exact_match": {
+          "mean": 0.985,
+          "std": 0.010000000000000009,
+          "n": 2,
+          "sem": 0.007071067811865481,
+          "ci95_low": 0.9711407070887437,
+          "ci95_high": 0.9988592929112563
+        },
+        "phone_partial_match": {
+          "mean": 0.985,
+          "std": 0.010000000000000009,
+          "n": 2,
+          "sem": 0.007071067811865481,
+          "ci95_low": 0.9711407070887437,
+          "ci95_high": 0.9988592929112563
+        },
+        "location_exact_match": {
+          "mean": 0.8525,
+          "std": 0.14750000000000002,
+          "n": 2,
+          "sem": 0.10429825022501577,
+          "ci95_low": 0.6480754295589691,
+          "ci95_high": 1.0569245704410308
+        },
+        "location_partial_match": {
+          "mean": 0.8525,
+          "std": 0.14750000000000002,
+          "n": 2,
+          "sem": 0.10429825022501577,
+          "ci95_low": 0.6480754295589691,
+          "ci95_high": 1.0569245704410308
+        },
+        "job_title_exact_match": {
+          "mean": 0.6775,
+          "std": 0.10250000000000004,
+          "n": 2,
+          "sem": 0.07247844507162114,
+          "ci95_low": 0.5354422476596226,
+          "ci95_high": 0.8195577523403774
+        },
+        "job_title_partial_match": {
+          "mean": 0.6975,
+          "std": 0.1225,
+          "n": 2,
+          "sem": 0.08662058069535207,
+          "ci95_low": 0.52772366183711,
+          "ci95_high": 0.8672763381628901
+        },
+        "company_exact_match": {
+          "mean": 0.705,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.705,
+          "ci95_high": 0.705
+        },
+        "company_partial_match": {
+          "mean": 0.705,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.705,
+          "ci95_high": 0.705
+        },
+        "years_experience_exact_match": {
+          "mean": 0.7224999999999999,
+          "std": 0.10749999999999998,
+          "n": 2,
+          "sem": 0.07601397897755384,
+          "ci95_low": 0.5735126012039944,
+          "ci95_high": 0.8714873987960055
+        },
+        "years_experience_partial_match": {
+          "mean": 0.7224999999999999,
+          "std": 0.10749999999999998,
+          "n": 2,
+          "sem": 0.07601397897755384,
+          "ci95_low": 0.5735126012039944,
+          "ci95_high": 0.8714873987960055
+        },
+        "education_exact_match": {
+          "mean": 0.99,
+          "std": 0.0050000000000000044,
+          "n": 2,
+          "sem": 0.0035355339059327407,
+          "ci95_low": 0.9830703535443718,
+          "ci95_high": 0.9969296464556282
+        },
+        "education_partial_match": {
+          "mean": 0.99125,
+          "std": 0.006250000000000033,
+          "n": 2,
+          "sem": 0.004419417382415945,
+          "ci95_low": 0.9825879419304647,
+          "ci95_high": 0.9999120580695352
+        },
+        "degree_exact_match": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 1.0,
+          "ci95_high": 1.0
+        },
+        "degree_partial_match": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 1.0,
+          "ci95_high": 1.0
+        },
+        "overall_exact_match": {
+          "mean": 0.8127777777777778,
+          "std": 0.026666666666666672,
+          "n": 2,
+          "sem": 0.01885618083164127,
+          "ci95_low": 0.775819663347761,
+          "ci95_high": 0.8497358922077947
+        },
+        "overall_partial_match": {
+          "mean": 0.8197916666666667,
+          "std": 0.02923611111111113,
+          "n": 2,
+          "sem": 0.020673052422190048,
+          "ci95_low": 0.7792724839191743,
+          "ci95_high": 0.8603108494141591
+        },
+        "overall_f1": {
+          "mean": 0.8162679869934043,
+          "std": 0.027940922852341843,
+          "n": 2,
+          "sem": 0.019757216021501087,
+          "ci95_low": 0.7775438435912622,
+          "ci95_high": 0.8549921303955464
+        }
+      },
+      "systems_metrics_summary": {
+        "training_time": {
+          "mean": 968.9918285608292,
+          "std": 1.329748272895813,
+          "n": 2,
+          "sem": 0.9402740210357291,
+          "ci95_low": 967.1488914795991,
+          "ci95_high": 970.8347656420592
+        },
+        "inference_latency_p95": {
+          "mean": 250.30426750090555,
+          "std": 2.313142498678644,
+          "n": 2,
+          "sem": 1.6356387466664637,
+          "ci95_low": 247.0984155574393,
+          "ci95_high": 253.5101194443718
+        },
+        "memory_inference_mb": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "model_size_mb": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        }
+      },
+      "budget_summary": {
+        "train_time_cap_seconds": 300.0,
+        "memory_cap_mb": 4096.0,
+        "tuning_trials_cap": 0,
+        "out_of_budget_count": 2,
+        "out_of_budget_rate": 1.0
+      },
+      "success": true,
+      "significance_vs_best": {
+        "best_approach": "Pretrained Transformer (BERT)",
+        "best_mean": 0.8127777777777778,
+        "higher_is_better": true,
+        "alpha": 0.05,
+        "is_best": true,
+        "mean_diff_vs_best": 0.0,
+        "p_value": 1.0,
+        "significantly_better_than_best": false
+      }
+    },
+    {
+      "name": "Hybrid (Rules + ML)",
+      "category": "rule_based",
+      "success_rate": 1.0,
+      "primary_metrics_summary": {
+        "name_exact_match": {
+          "mean": 0.35,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.35,
+          "ci95_high": 0.35
+        },
+        "name_partial_match": {
+          "mean": 0.56875,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.56875,
+          "ci95_high": 0.56875
+        },
+        "email_exact_match": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 1.0,
+          "ci95_high": 1.0
+        },
+        "email_partial_match": {
+          "mean": 1.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 1.0,
+          "ci95_high": 1.0
+        },
+        "phone_exact_match": {
+          "mean": 0.315,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.315,
+          "ci95_high": 0.315
+        },
+        "phone_partial_match": {
+          "mean": 0.315,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.315,
+          "ci95_high": 0.315
+        },
+        "location_exact_match": {
+          "mean": 0.07,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.07,
+          "ci95_high": 0.07
+        },
+        "location_partial_match": {
+          "mean": 0.14766666666666667,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.14766666666666667,
+          "ci95_high": 0.14766666666666667
+        },
+        "job_title_exact_match": {
+          "mean": 0.02,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.02,
+          "ci95_high": 0.02
+        },
+        "job_title_partial_match": {
+          "mean": 0.05874999999999999,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.05874999999999999,
+          "ci95_high": 0.05874999999999999
+        },
+        "company_exact_match": {
+          "mean": 0.085,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.085,
+          "ci95_high": 0.085
+        },
+        "company_partial_match": {
+          "mean": 0.11625,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.11625,
+          "ci95_high": 0.11625
+        },
+        "years_experience_exact_match": {
+          "mean": 0.75,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.75,
+          "ci95_high": 0.75
+        },
+        "years_experience_partial_match": {
+          "mean": 0.75,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.75,
+          "ci95_high": 0.75
+        },
+        "education_exact_match": {
+          "mean": 0.185,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.185,
+          "ci95_high": 0.185
+        },
+        "education_partial_match": {
+          "mean": 0.33651190476190473,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.33651190476190473,
+          "ci95_high": 0.33651190476190473
+        },
+        "degree_exact_match": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "degree_partial_match": {
+          "mean": 0.15023809523809523,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.15023809523809523,
+          "ci95_high": 0.15023809523809523
+        },
+        "overall_exact_match": {
+          "mean": 0.30833333333333335,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.30833333333333335,
+          "ci95_high": 0.30833333333333335
+        },
+        "overall_partial_match": {
+          "mean": 0.382574074074074,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.382574074074074,
+          "ci95_high": 0.382574074074074
+        },
+        "overall_f1": {
+          "mean": 0.3414649677631559,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.3414649677631559,
+          "ci95_high": 0.3414649677631559
+        }
+      },
+      "systems_metrics_summary": {
+        "training_time": {
+          "mean": 1.6290432214736938,
+          "std": 0.0044754743576049805,
+          "n": 2,
+          "sem": 0.003164638267288989,
+          "ci95_low": 1.6228405304698075,
+          "ci95_high": 1.6352459124775802
+        },
+        "inference_latency_p95": {
+          "mean": 33.24152999994112,
+          "std": 0.6547200007844332,
+          "n": 2,
+          "sem": 0.4629569523331344,
+          "ci95_low": 32.33413437336818,
+          "ci95_high": 34.148925626514064
+        },
+        "memory_inference_mb": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        },
+        "model_size_mb": {
+          "mean": 0.0,
+          "std": 0.0,
+          "n": 2,
+          "sem": 0.0,
+          "ci95_low": 0.0,
+          "ci95_high": 0.0
+        }
+      },
+      "budget_summary": {
+        "train_time_cap_seconds": 300.0,
+        "memory_cap_mb": 4096.0,
+        "tuning_trials_cap": 0,
+        "out_of_budget_count": 0,
+        "out_of_budget_rate": 0.0
+      },
+      "success": true,
+      "significance_vs_best": {
+        "best_approach": "Pretrained Transformer (BERT)",
+        "best_mean": 0.8127777777777778,
+        "higher_is_better": true,
+        "alpha": 0.05,
+        "is_best": false,
+        "mean_diff_vs_best": -0.5044444444444445,
+        "p_value": 8.314978668174937e-80,
+        "significantly_better_than_best": false
+      }
+    }
+  ]
+}
