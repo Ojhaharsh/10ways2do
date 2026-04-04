@@ -1,0 +1,87 @@
+{
+  "runs": [
+    [
+      {
+        "name": "Rule-Based Thresholding",
+        "category": "rule_based",
+        "philosophy": {
+          "mental_model": "Risk is explicit thresholds over key signals.",
+          "inductive_bias": "Linear threshold rules with domain-intuitive logic.",
+          "strengths": "Transparent, auditable, and stable.",
+          "weaknesses": "Limited interaction modeling.",
+          "best_for": "Regulated environments requiring explainability."
+        },
+        "metrics": {
+          "accuracy": 0.75,
+          "precision": 0.38596491228070173,
+          "recall": 0.5945945945945946,
+          "f1": 0.46808510638297873,
+          "roc_auc": 0.7875974133642846,
+          "pr_auc": 0.6057420814395007
+        },
+        "training_time": 0.0,
+        "inference_time": 0.0,
+        "seed": 42,
+        "train_time_cap_seconds": 30.0,
+        "memory_cap_mb": 4096.0,
+        "tuning_trials_cap": 0,
+        "out_of_budget": false,
+        "success": true
+      },
+      {
+        "name": "Linear (Logistic Regression)",
+        "category": "linear",
+        "philosophy": {
+          "mental_model": "Risk is a weighted sum of evidence.",
+          "inductive_bias": "Approximately linear log-odds relationship.",
+          "strengths": "Simple, calibrated, robust baseline.",
+          "weaknesses": "Misses non-linear interactions.",
+          "best_for": "Strong baseline and transparent scorecards."
+        },
+        "metrics": {
+          "accuracy": 0.8,
+          "precision": 0.46511627906976744,
+          "recall": 0.5405405405405406,
+          "f1": 0.5,
+          "roc_auc": 0.8199303598076605,
+          "pr_auc": 0.5946166447988055
+        },
+        "training_time": 0.2214980125427246,
+        "inference_time": 0.0,
+        "seed": 42,
+        "train_time_cap_seconds": 30.0,
+        "memory_cap_mb": 4096.0,
+        "tuning_trials_cap": 0,
+        "out_of_budget": false,
+        "success": true
+      },
+      {
+        "name": "Tree-Based (Random Forest)",
+        "category": "tree",
+        "philosophy": {
+          "mental_model": "Risk comes from many decision paths averaged together.",
+          "inductive_bias": "Hierarchical threshold interactions.",
+          "strengths": "Strong tabular performance and robustness.",
+          "weaknesses": "Can be less calibrated than linear models.",
+          "best_for": "General-purpose tabular decisioning."
+        },
+        "metrics": {
+          "accuracy": 0.815,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "roc_auc": 0.8076604211573537,
+          "pr_auc": 0.505816477310465
+        },
+        "training_time": 0.11840581893920898,
+        "inference_time": 0.07493114471435547,
+        "seed": 42,
+        "train_time_cap_seconds": 30.0,
+        "memory_cap_mb": 4096.0,
+        "tuning_trials_cap": 0,
+        "out_of_budget": false,
+        "success": true
+      }
+    ]
+  ]
+}

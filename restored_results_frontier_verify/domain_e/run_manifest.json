@@ -1,0 +1,33 @@
+{
+  "generated_at_utc": "2026-03-30T22:03:54.986780+00:00",
+  "domain": "domain_e",
+  "benchmark_protocol_version": "1.0.0",
+  "git_commit_hash": "b9a4cf0dbe62de13c53ccb63eb4e49188f0a5db1",
+  "config": {
+    "n_samples": 1000,
+    "n_features": 200,
+    "n_runs": 1,
+    "smoke_test": true,
+    "train_time_cap_seconds": 30.0,
+    "memory_cap_mb": 4096.0,
+    "tuning_trials_cap": 0
+  },
+  "seeds": [
+    42
+  ],
+  "environment": {
+    "python_version": "3.12.6",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "machine": "AMD64",
+    "processor": "AMD64 Family 23 Model 104 Stepping 1, AuthenticAMD",
+    "executable": "C:\\Users\\KIIT\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+  },
+  "package_versions": {
+    "numpy": "2.4.2",
+    "pandas": "2.2.2",
+    "scikit-learn": "1.8.0",
+    "torch": "2.10.0",
+    "transformers": "4.37.2",
+    "statsmodels": "0.14.6"
+  }
+}

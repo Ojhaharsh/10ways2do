@@ -1,0 +1,120 @@
+{
+  "runs": [
+    [
+      {
+        "name": "Popularity-Based",
+        "category": "popularity",
+        "philosophy": {
+          "mental_model": "Popular items are likely relevant to everyone",
+          "inductive_bias": "Assumes homogeneous preferences across users",
+          "strengths": "Simple, fast, no cold start for items, strong baseline",
+          "weaknesses": "No personalization, popularity bias, ignores user preferences",
+          "best_for": "Cold start, baseline comparison, when personalization not critical"
+        },
+        "metrics": {
+          "precision@5": 0.0032,
+          "recall@5": 0.41809523809523813,
+          "f1@5": 0.006351388009765802,
+          "precision@10": 0.004,
+          "recall@10": 0.43780952380952387,
+          "f1@10": 0.007927570597111445,
+          "precision@20": 0.004285714285714286,
+          "recall@20": 0.4690857142857143,
+          "f1@20": 0.008493826308891497,
+          "ndcg@5": 0.012127232013954036,
+          "ndcg@10": 0.01874058755165774,
+          "ndcg@20": 0.027272513844428182,
+          "mrr": 0.01752176272791045,
+          "hit_rate@5": 0.016,
+          "hit_rate@10": 0.04,
+          "hit_rate@20": 0.08457142857142858,
+          "coverage": 0.10362694300518134
+        },
+        "training_time": 0.0010831356048583984,
+        "inference_time": 0.0005266666412353516,
+        "seed": 42,
+        "train_time_cap_seconds": 30.0,
+        "memory_cap_mb": 4096.0,
+        "tuning_trials_cap": 0,
+        "out_of_budget": false,
+        "success": true
+      },
+      {
+        "name": "User-Based CF",
+        "category": "collaborative_filtering",
+        "philosophy": {
+          "mental_model": "Users with similar rating patterns will like similar items",
+          "inductive_bias": "User behavior is the best predictor of preferences",
+          "strengths": "Interpretable, captures user taste, serendipitous recommendations",
+          "weaknesses": "Sparsity issues, scalability, cold start for new users",
+          "best_for": "When user similarity is meaningful, smaller user bases"
+        },
+        "metrics": {
+          "precision@5": 0.0036571428571428575,
+          "recall@5": 0.4173333333333333,
+          "f1@5": 0.007250746538774773,
+          "precision@10": 0.004228571428571429,
+          "recall@10": 0.43441904761904765,
+          "f1@10": 0.008375615838414919,
+          "precision@20": 0.005085714285714286,
+          "recall@20": 0.4796952380952381,
+          "f1@20": 0.010064722688415276,
+          "ndcg@5": 0.008698209063743282,
+          "ndcg@10": 0.014784002624489137,
+          "ndcg@20": 0.026877080871228254,
+          "mrr": 0.015228218373596523,
+          "hit_rate@5": 0.018285714285714287,
+          "hit_rate@10": 0.04228571428571429,
+          "hit_rate@20": 0.10057142857142858,
+          "coverage": 1.0362694300518134
+        },
+        "training_time": 0.017297744750976562,
+        "inference_time": 0.1265568733215332,
+        "seed": 42,
+        "train_time_cap_seconds": 30.0,
+        "memory_cap_mb": 4096.0,
+        "tuning_trials_cap": 0,
+        "out_of_budget": false,
+        "success": true
+      },
+      {
+        "name": "Matrix Factorization (SVD)",
+        "category": "matrix_factorization",
+        "philosophy": {
+          "mental_model": "Users and items exist in a shared latent space",
+          "inductive_bias": "Preferences can be explained by low-rank structure",
+          "strengths": "Captures complex patterns, handles sparsity, scalable",
+          "weaknesses": "Cold start problem, implicit feedback handling",
+          "best_for": "Large sparse matrices, when latent factors are meaningful"
+        },
+        "metrics": {
+          "precision@5": 0.0063999999999999994,
+          "recall@5": 0.425047619047619,
+          "f1@5": 0.01261012758818595,
+          "precision@10": 0.007085714285714286,
+          "recall@10": 0.45380952380952383,
+          "f1@10": 0.013953559768330195,
+          "precision@20": 0.006114285714285714,
+          "recall@20": 0.49217142857142854,
+          "f1@20": 0.012078519003931846,
+          "ndcg@5": 0.01519475030540294,
+          "ndcg@10": 0.025151919692192326,
+          "ndcg@20": 0.0356435708830253,
+          "mrr": 0.023907499449295114,
+          "hit_rate@5": 0.030857142857142857,
+          "hit_rate@10": 0.06857142857142857,
+          "hit_rate@20": 0.11771428571428572,
+          "coverage": 0.9689119170984456
+        },
+        "training_time": 0.01454925537109375,
+        "inference_time": 0.010434865951538086,
+        "seed": 42,
+        "train_time_cap_seconds": 30.0,
+        "memory_cap_mb": 4096.0,
+        "tuning_trials_cap": 0,
+        "out_of_budget": false,
+        "success": true
+      }
+    ]
+  ]
+}
