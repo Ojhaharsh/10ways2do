@@ -90,6 +90,12 @@ Generate report from existing outputs:
 python main.py --report
 ```
 
+Generate strategy playbook from cross-domain frontier:
+
+```bash
+python main.py --strategy-playbook
+```
+
 Validate artifact completeness and structure:
 
 ```bash
@@ -157,6 +163,9 @@ Each domain writes outputs under results/domain_x:
 Cross-domain report:
 
 - results/REPORT.md
+- results/CROSS_DOMAIN_FRONTIER.json
+- results/STRATEGY_PLAYBOOK.json
+- results/STRATEGY_PLAYBOOK.md
 
 ## Documentation
 

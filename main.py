@@ -101,6 +101,17 @@ def generate_report(results_dir: str = "results"):
     report_path = Path(results_dir) / "REPORT.md"
     generator.save_report(str(report_path))
     print(f"Report generated: {report_path}")
+    generate_strategy_playbook(results_dir=results_dir)
+
+
+def generate_strategy_playbook(results_dir: str = "results"):
+    """Generate scenario-based strategy playbook from frontier artifacts."""
+    from src.analysis.strategy_playbook import StrategyPlaybookGenerator
+
+    generator = StrategyPlaybookGenerator(results_dir=results_dir)
+    outputs = generator.save()
+    print(f"Strategy playbook generated: {outputs['json']}")
+    print(f"Strategy playbook generated: {outputs['markdown']}")
 
 
 def validate_artifacts(results_dir: str = "results"):
@@ -334,6 +345,7 @@ Examples:
   python main.py --domain a               # Run only Domain A (IE)
   python main.py --domain b --n-train 1000  # Run Domain B with custom size
   python main.py --report                 # Generate report from existing results
+    python main.py --strategy-playbook      # Generate strategy playbook from frontier artifact
   python main.py --validate               # Validate artifact completeness/shape
   python main.py --release-gate           # Validate release readiness checks
   python main.py --snapshot-tag v1.1      # Create versioned release snapshot
@@ -349,6 +361,8 @@ Examples:
                         choices=['a', 'b', 'c', 'd', 'e', 'ie', 'anomaly', 'rec', 'ts', 'tabular'],
                         help='Run specific domain')
     parser.add_argument('--report', action='store_true', help='Generate report')
+    parser.add_argument('--strategy-playbook', action='store_true',
+                        help='Generate strategy playbook from CROSS_DOMAIN_FRONTIER.json')
     parser.add_argument('--validate', action='store_true', help='Validate benchmark artifacts')
     parser.add_argument('--release-gate', action='store_true', help='Run full release-gate checks')
     parser.add_argument('--snapshot-tag', type=str, default=None,
@@ -402,6 +416,12 @@ Examples:
             sys.exit(1)
     elif args.report:
         generate_report(results_dir=args.output_dir)
+    elif args.strategy_playbook:
+        try:
+            generate_strategy_playbook(results_dir=args.output_dir)
+        except Exception as exc:
+            print(f"Strategy playbook: FAILED ({exc})")
+            sys.exit(1)
     elif args.publish_ready_tag:
         try:
             run_publish_ready(

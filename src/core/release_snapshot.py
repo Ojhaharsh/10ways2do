@@ -175,6 +175,18 @@ def create_release_snapshot(
         shutil.copy2(frontier_path, destination)
         report_artifacts["cross_domain_frontier"] = "CROSS_DOMAIN_FRONTIER.json"
 
+    strategy_json = results_path / "STRATEGY_PLAYBOOK.json"
+    if strategy_json.exists():
+        destination = output_dir / "STRATEGY_PLAYBOOK.json"
+        shutil.copy2(strategy_json, destination)
+        report_artifacts["strategy_playbook_json"] = "STRATEGY_PLAYBOOK.json"
+
+    strategy_md = results_path / "STRATEGY_PLAYBOOK.md"
+    if strategy_md.exists():
+        destination = output_dir / "STRATEGY_PLAYBOOK.md"
+        shutil.copy2(strategy_md, destination)
+        report_artifacts["strategy_playbook_markdown"] = "STRATEGY_PLAYBOOK.md"
+
     snapshot = {
         "snapshot_tag": clean_tag,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),

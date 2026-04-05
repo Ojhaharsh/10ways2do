@@ -121,12 +121,41 @@ def _create_frontier(path: Path):
     )
 
 
+def _create_strategy_playbook(json_path: Path, md_path: Path):
+    json_path.write_text(
+        json.dumps(
+            {
+                "scenarios": {
+                    "balanced_production": {
+                        "recommendations": [{"domain": "domain_a", "recommended_approach": "Dummy"}]
+                    },
+                    "accuracy_first": {
+                        "recommendations": [{"domain": "domain_a", "recommended_approach": "Dummy"}]
+                    },
+                    "latency_first": {
+                        "recommendations": [{"domain": "domain_a", "recommended_approach": "Dummy"}]
+                    },
+                    "reliability_first": {
+                        "recommendations": [{"domain": "domain_a", "recommended_approach": "Dummy"}]
+                    },
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    md_path.write_text("# Strategy Playbook\n", encoding="utf-8")
+
+
 def test_release_gate_passes_on_valid_bundle(tmp_path):
     results_dir = tmp_path / "results"
     for name in ["domain_a", "domain_b", "domain_c", "domain_d", "domain_e"]:
         _create_domain_bundle(results_dir / name)
     _create_report(results_dir / "REPORT.md")
     _create_frontier(results_dir / "CROSS_DOMAIN_FRONTIER.json")
+    _create_strategy_playbook(
+        results_dir / "STRATEGY_PLAYBOOK.json",
+        results_dir / "STRATEGY_PLAYBOOK.md",
+    )
 
     run_release_gate(results_dir=results_dir)
 
@@ -137,6 +166,10 @@ def test_release_gate_fails_when_report_missing_section(tmp_path):
         _create_domain_bundle(results_dir / name)
     (results_dir / "REPORT.md").write_text("# Incomplete report", encoding="utf-8")
     _create_frontier(results_dir / "CROSS_DOMAIN_FRONTIER.json")
+    _create_strategy_playbook(
+        results_dir / "STRATEGY_PLAYBOOK.json",
+        results_dir / "STRATEGY_PLAYBOOK.md",
+    )
 
     with pytest.raises(ReleaseGateError):
         run_release_gate(results_dir=results_dir)
@@ -147,6 +180,10 @@ def test_release_gate_fails_when_frontier_semantics_invalid(tmp_path):
     for name in ["domain_a", "domain_b", "domain_c", "domain_d", "domain_e"]:
         _create_domain_bundle(results_dir / name)
     _create_report(results_dir / "REPORT.md")
+    _create_strategy_playbook(
+        results_dir / "STRATEGY_PLAYBOOK.json",
+        results_dir / "STRATEGY_PLAYBOOK.md",
+    )
 
     # Missing domain coverage and empty Pareto list should fail semantic frontier checks.
     (results_dir / "CROSS_DOMAIN_FRONTIER.json").write_text(
@@ -164,6 +201,17 @@ def test_release_gate_fails_when_frontier_semantics_invalid(tmp_path):
         ),
         encoding="utf-8",
     )
+
+    with pytest.raises(ReleaseGateError):
+        run_release_gate(results_dir=results_dir)
+
+
+def test_release_gate_fails_when_strategy_playbook_missing(tmp_path):
+    results_dir = tmp_path / "results"
+    for name in ["domain_a", "domain_b", "domain_c", "domain_d", "domain_e"]:
+        _create_domain_bundle(results_dir / name)
+    _create_report(results_dir / "REPORT.md")
+    _create_frontier(results_dir / "CROSS_DOMAIN_FRONTIER.json")
 
     with pytest.raises(ReleaseGateError):
         run_release_gate(results_dir=results_dir)

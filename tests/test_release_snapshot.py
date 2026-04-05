@@ -103,16 +103,38 @@ def _seed_frontier(results_dir: Path):
     payload = {
         "domains": [
             {
-                "domain": "domain_a",
+                "domain": domain,
                 "champion": {"name": "Rule-Based IE", "extraordinary_index": 0.88},
                 "pareto_frontier": [{"name": "Rule-Based IE", "extraordinary_index": 0.88}],
             }
+            for domain in ["domain_a", "domain_b", "domain_c", "domain_d", "domain_e"]
         ],
         "cross_domain_generalists": [
             {"name": "Rule-Based IE", "avg_extraordinary_index": 0.88, "domains_covered": 1}
         ],
     }
     (results_dir / "CROSS_DOMAIN_FRONTIER.json").write_text(json.dumps(payload), encoding="utf-8")
+
+
+def _seed_strategy_playbook(results_dir: Path):
+    playbook = {
+        "scenarios": {
+            "balanced_production": {
+                "recommendations": [{"domain": "domain_a", "recommended_approach": "Rule-Based IE"}]
+            },
+            "accuracy_first": {
+                "recommendations": [{"domain": "domain_a", "recommended_approach": "Rule-Based IE"}]
+            },
+            "latency_first": {
+                "recommendations": [{"domain": "domain_a", "recommended_approach": "Rule-Based IE"}]
+            },
+            "reliability_first": {
+                "recommendations": [{"domain": "domain_a", "recommended_approach": "Rule-Based IE"}]
+            },
+        }
+    }
+    (results_dir / "STRATEGY_PLAYBOOK.json").write_text(json.dumps(playbook), encoding="utf-8")
+    (results_dir / "STRATEGY_PLAYBOOK.md").write_text("# Strategy Playbook\n", encoding="utf-8")
 
 
 def test_create_release_snapshot_creates_expected_files(tmp_path):
@@ -126,6 +148,7 @@ def test_create_release_snapshot_creates_expected_files(tmp_path):
     _seed_domain_artifacts(results_dir, "domain_e", "F1 Mean", "Linear")
     _seed_report(results_dir)
     _seed_frontier(results_dir)
+    _seed_strategy_playbook(results_dir)
 
     out = create_release_snapshot("v1.1-test", results_dir=results_dir, snapshots_root=snapshots_dir)
 
@@ -143,5 +166,9 @@ def test_create_release_snapshot_creates_expected_files(tmp_path):
     assert "comparison_canonical.csv" in payload["domains"]["domain_a"]["artifacts"]
     assert payload["report_artifacts"]["report"] == "REPORT.md"
     assert payload["report_artifacts"]["cross_domain_frontier"] == "CROSS_DOMAIN_FRONTIER.json"
+    assert payload["report_artifacts"]["strategy_playbook_json"] == "STRATEGY_PLAYBOOK.json"
+    assert payload["report_artifacts"]["strategy_playbook_markdown"] == "STRATEGY_PLAYBOOK.md"
     assert (out / "REPORT.md").exists()
     assert (out / "CROSS_DOMAIN_FRONTIER.json").exists()
+    assert (out / "STRATEGY_PLAYBOOK.json").exists()
+    assert (out / "STRATEGY_PLAYBOOK.md").exists()

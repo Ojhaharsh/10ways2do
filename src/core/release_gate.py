@@ -169,6 +169,56 @@ def _validate_frontier_artifact(path: Path, errors: List[str]) -> None:
         errors.append(f"{path}: 'cross_domain_generalists' must be non-empty")
 
 
+def _validate_strategy_playbook(json_path: Path, md_path: Path, errors: List[str]) -> None:
+    if not json_path.exists():
+        errors.append(f"{json_path}: missing strategy playbook artifact")
+        return
+
+    if not md_path.exists():
+        errors.append(f"{md_path}: missing strategy playbook markdown")
+        return
+
+    try:
+        payload = _load_json(json_path)
+    except Exception as exc:
+        errors.append(f"{json_path}: cannot parse JSON ({exc})")
+        return
+
+    scenarios = payload.get("scenarios")
+    if not isinstance(scenarios, dict) or not scenarios:
+        errors.append(f"{json_path}: missing non-empty 'scenarios' object")
+        return
+
+    required_scenarios = [
+        "balanced_production",
+        "accuracy_first",
+        "latency_first",
+        "reliability_first",
+    ]
+    for scenario_name in required_scenarios:
+        if scenario_name not in scenarios:
+            errors.append(f"{json_path}: missing scenario '{scenario_name}'")
+            continue
+
+        scenario_payload = scenarios[scenario_name]
+        if not isinstance(scenario_payload, dict):
+            errors.append(f"{json_path}: scenario '{scenario_name}' must be an object")
+            continue
+
+        recommendations = scenario_payload.get("recommendations")
+        if not isinstance(recommendations, list) or not recommendations:
+            errors.append(f"{json_path}: scenario '{scenario_name}' has no recommendations")
+
+    try:
+        markdown = md_path.read_text(encoding="utf-8")
+    except Exception as exc:
+        errors.append(f"{md_path}: cannot read markdown ({exc})")
+        return
+
+    if "# Strategy Playbook" not in markdown:
+        errors.append(f"{md_path}: missing Strategy Playbook title")
+
+
 
 def run_release_gate(results_dir: str | Path = "results", require_report: bool = True) -> None:
     """Run release-gate checks and raise on failure."""
@@ -188,6 +238,11 @@ def run_release_gate(results_dir: str | Path = "results", require_report: bool =
     if require_report:
         _validate_report(root / "REPORT.md", errors)
         _validate_frontier_artifact(root / "CROSS_DOMAIN_FRONTIER.json", errors)
+        _validate_strategy_playbook(
+            root / "STRATEGY_PLAYBOOK.json",
+            root / "STRATEGY_PLAYBOOK.md",
+            errors,
+        )
 
     if errors:
         preview = "\n".join(f"- {err}" for err in errors[:25])
