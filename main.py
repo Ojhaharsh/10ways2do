@@ -151,6 +151,41 @@ def run_policy_simulation(
     print(f"Policy simulation generated: {outputs['markdown']}")
 
 
+def run_policy_optimization(
+    results_dir: str = "results",
+    policy_name: str = "optimized_policy",
+    objective: str = "balanced",
+    weight_step: float = 0.25,
+    min_quality: float = 0.0,
+    min_speed: float = 0.0,
+    min_resilience: float = 0.0,
+    min_consistency: float = 0.0,
+    top_k: int = 3,
+    top_n: int = 5,
+    max_configs: Optional[int] = None,
+):
+    """Search policy weight space and persist best policy recommendations."""
+    from src.analysis.policy_simulator import PolicySimulator
+
+    simulator = PolicySimulator(results_dir=results_dir)
+    outputs = simulator.save_optimization(
+        mins={
+            "quality_score": min_quality,
+            "speed_score": min_speed,
+            "resilience": min_resilience,
+            "consistency": min_consistency,
+        },
+        policy_name=policy_name,
+        objective=objective,
+        weight_step=weight_step,
+        top_k=top_k,
+        top_n=top_n,
+        max_configs=max_configs,
+    )
+    print(f"Policy optimization generated: {outputs['json']}")
+    print(f"Policy optimization generated: {outputs['markdown']}")
+
+
 def validate_artifacts(results_dir: str = "results"):
     """Validate benchmark artifacts across all configured domains."""
     from src.core.artifact_validator import ArtifactValidationError, validate_results_tree
@@ -384,6 +419,7 @@ Examples:
   python main.py --report                 # Generate report from existing results
     python main.py --strategy-playbook      # Generate strategy playbook from frontier artifact
     python main.py --simulate-policy --policy-name latency-ops --w-speed 0.6 --min-resilience 0.7
+    python main.py --optimize-policy --policy-name resilient-prod --opt-objective max_coverage --weight-step 0.25 --min-resilience 0.8
   python main.py --validate               # Validate artifact completeness/shape
   python main.py --release-gate           # Validate release readiness checks
   python main.py --snapshot-tag v1.1      # Create versioned release snapshot
@@ -403,6 +439,8 @@ Examples:
                         help='Generate strategy playbook from CROSS_DOMAIN_FRONTIER.json')
     parser.add_argument('--simulate-policy', action='store_true',
                         help='Run what-if policy simulation from CROSS_DOMAIN_FRONTIER.json')
+    parser.add_argument('--optimize-policy', action='store_true',
+                        help='Search weight combinations and output best policy recommendation')
     parser.add_argument('--policy-name', type=str, default='custom_policy',
                         help='Name used in policy simulation output files')
     parser.add_argument('--w-quality', type=float, default=0.45,
@@ -423,6 +461,15 @@ Examples:
                         help='Minimum acceptable consistency score')
     parser.add_argument('--policy-top-k', type=int, default=3,
                         help='Number of alternatives to include per domain in policy simulation')
+    parser.add_argument('--opt-objective', type=str, default='balanced',
+                        choices=['balanced', 'max_coverage', 'max_score'],
+                        help='Objective used by --optimize-policy')
+    parser.add_argument('--weight-step', type=float, default=0.25,
+                        help='Weight grid step for --optimize-policy (must divide 1.0 exactly)')
+    parser.add_argument('--opt-top-n', type=int, default=5,
+                        help='Number of top policy candidates to include in optimization output')
+    parser.add_argument('--opt-max-configs', type=int, default=None,
+                        help='Optional cap on number of searched policy weight candidates')
     parser.add_argument('--validate', action='store_true', help='Validate benchmark artifacts')
     parser.add_argument('--release-gate', action='store_true', help='Run full release-gate checks')
     parser.add_argument('--snapshot-tag', type=str, default=None,
@@ -499,6 +546,24 @@ Examples:
             )
         except Exception as exc:
             print(f"Policy simulation: FAILED ({exc})")
+            sys.exit(1)
+    elif args.optimize_policy:
+        try:
+            run_policy_optimization(
+                results_dir=args.output_dir,
+                policy_name=args.policy_name,
+                objective=args.opt_objective,
+                weight_step=args.weight_step,
+                min_quality=args.min_quality,
+                min_speed=args.min_speed,
+                min_resilience=args.min_resilience,
+                min_consistency=args.min_consistency,
+                top_k=args.policy_top_k,
+                top_n=args.opt_top_n,
+                max_configs=args.opt_max_configs,
+            )
+        except Exception as exc:
+            print(f"Policy optimization: FAILED ({exc})")
             sys.exit(1)
     elif args.publish_ready_tag:
         try:

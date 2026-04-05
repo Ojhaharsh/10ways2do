@@ -102,6 +102,12 @@ Run what-if policy simulation with custom priorities and constraints:
 python main.py --simulate-policy --policy-name latency-ops --w-speed 0.60 --w-quality 0.20 --w-resilience 0.15 --w-consistency 0.05 --min-resilience 0.70
 ```
 
+Run policy weight optimization to auto-discover best policy under constraints:
+
+```bash
+python main.py --optimize-policy --policy-name resilient-prod --opt-objective max_coverage --weight-step 0.25 --min-resilience 0.80
+```
+
 Validate artifact completeness and structure:
 
 ```bash
@@ -174,6 +180,8 @@ Cross-domain report:
 - results/STRATEGY_PLAYBOOK.md
 - results/POLICY_SIMULATION_<policy-name>.json
 - results/POLICY_SIMULATION_<policy-name>.md
+- results/POLICY_OPTIMIZATION_<policy-name>.json
+- results/POLICY_OPTIMIZATION_<policy-name>.md
 
 ## Documentation
 
