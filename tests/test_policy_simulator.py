@@ -126,3 +126,41 @@ def test_policy_optimizer_respects_max_configs(tmp_path: Path):
 
     payload = json.loads(outputs["json"].read_text(encoding="utf-8"))
     assert payload["search_space_size"] == 4
+
+
+def test_policy_frontier_optimizer_writes_outputs_and_stability_bands(tmp_path: Path):
+    _write_frontier(tmp_path)
+
+    outputs = PolicySimulator(results_dir=str(tmp_path)).save_frontier_optimization(
+        policy_name="frontier_search",
+        weight_step=0.5,
+        top_k=2,
+        top_n=5,
+    )
+
+    assert outputs["json"].exists()
+    assert outputs["markdown"].exists()
+
+    payload = json.loads(outputs["json"].read_text(encoding="utf-8"))
+    assert payload["mode"] == "multi_objective_pareto"
+    assert payload["frontier_size"] >= 1
+    assert len(payload["frontier_policies"]) >= 1
+
+    bands = payload["stability_bands"]
+    for metric in ["coverage_rate", "avg_selected_policy_score", "worst_selected_policy_score"]:
+        assert metric in bands
+        assert set(bands[metric].keys()) == {"p10", "p50", "p90"}
+
+
+def test_policy_frontier_optimizer_respects_max_configs(tmp_path: Path):
+    _write_frontier(tmp_path)
+
+    outputs = PolicySimulator(results_dir=str(tmp_path)).save_frontier_optimization(
+        policy_name="frontier_limited",
+        weight_step=0.25,
+        max_configs=3,
+        top_n=3,
+    )
+
+    payload = json.loads(outputs["json"].read_text(encoding="utf-8"))
+    assert payload["search_space_size"] == 3
