@@ -114,6 +114,43 @@ def generate_strategy_playbook(results_dir: str = "results"):
     print(f"Strategy playbook generated: {outputs['markdown']}")
 
 
+def run_policy_simulation(
+    results_dir: str = "results",
+    policy_name: str = "custom_policy",
+    w_quality: float = 0.45,
+    w_speed: float = 0.25,
+    w_resilience: float = 0.20,
+    w_consistency: float = 0.10,
+    min_quality: float = 0.0,
+    min_speed: float = 0.0,
+    min_resilience: float = 0.0,
+    min_consistency: float = 0.0,
+    top_k: int = 3,
+):
+    """Run a what-if policy simulation and persist results."""
+    from src.analysis.policy_simulator import PolicySimulator
+
+    simulator = PolicySimulator(results_dir=results_dir)
+    outputs = simulator.save(
+        weights={
+            "quality_score": w_quality,
+            "speed_score": w_speed,
+            "resilience": w_resilience,
+            "consistency": w_consistency,
+        },
+        mins={
+            "quality_score": min_quality,
+            "speed_score": min_speed,
+            "resilience": min_resilience,
+            "consistency": min_consistency,
+        },
+        policy_name=policy_name,
+        top_k=top_k,
+    )
+    print(f"Policy simulation generated: {outputs['json']}")
+    print(f"Policy simulation generated: {outputs['markdown']}")
+
+
 def validate_artifacts(results_dir: str = "results"):
     """Validate benchmark artifacts across all configured domains."""
     from src.core.artifact_validator import ArtifactValidationError, validate_results_tree
@@ -346,6 +383,7 @@ Examples:
   python main.py --domain b --n-train 1000  # Run Domain B with custom size
   python main.py --report                 # Generate report from existing results
     python main.py --strategy-playbook      # Generate strategy playbook from frontier artifact
+    python main.py --simulate-policy --policy-name latency-ops --w-speed 0.6 --min-resilience 0.7
   python main.py --validate               # Validate artifact completeness/shape
   python main.py --release-gate           # Validate release readiness checks
   python main.py --snapshot-tag v1.1      # Create versioned release snapshot
@@ -363,6 +401,28 @@ Examples:
     parser.add_argument('--report', action='store_true', help='Generate report')
     parser.add_argument('--strategy-playbook', action='store_true',
                         help='Generate strategy playbook from CROSS_DOMAIN_FRONTIER.json')
+    parser.add_argument('--simulate-policy', action='store_true',
+                        help='Run what-if policy simulation from CROSS_DOMAIN_FRONTIER.json')
+    parser.add_argument('--policy-name', type=str, default='custom_policy',
+                        help='Name used in policy simulation output files')
+    parser.add_argument('--w-quality', type=float, default=0.45,
+                        help='Policy weight for quality score')
+    parser.add_argument('--w-speed', type=float, default=0.25,
+                        help='Policy weight for speed score')
+    parser.add_argument('--w-resilience', type=float, default=0.20,
+                        help='Policy weight for resilience score')
+    parser.add_argument('--w-consistency', type=float, default=0.10,
+                        help='Policy weight for consistency score')
+    parser.add_argument('--min-quality', type=float, default=0.0,
+                        help='Minimum acceptable quality score')
+    parser.add_argument('--min-speed', type=float, default=0.0,
+                        help='Minimum acceptable speed score')
+    parser.add_argument('--min-resilience', type=float, default=0.0,
+                        help='Minimum acceptable resilience score')
+    parser.add_argument('--min-consistency', type=float, default=0.0,
+                        help='Minimum acceptable consistency score')
+    parser.add_argument('--policy-top-k', type=int, default=3,
+                        help='Number of alternatives to include per domain in policy simulation')
     parser.add_argument('--validate', action='store_true', help='Validate benchmark artifacts')
     parser.add_argument('--release-gate', action='store_true', help='Run full release-gate checks')
     parser.add_argument('--snapshot-tag', type=str, default=None,
@@ -421,6 +481,24 @@ Examples:
             generate_strategy_playbook(results_dir=args.output_dir)
         except Exception as exc:
             print(f"Strategy playbook: FAILED ({exc})")
+            sys.exit(1)
+    elif args.simulate_policy:
+        try:
+            run_policy_simulation(
+                results_dir=args.output_dir,
+                policy_name=args.policy_name,
+                w_quality=args.w_quality,
+                w_speed=args.w_speed,
+                w_resilience=args.w_resilience,
+                w_consistency=args.w_consistency,
+                min_quality=args.min_quality,
+                min_speed=args.min_speed,
+                min_resilience=args.min_resilience,
+                min_consistency=args.min_consistency,
+                top_k=args.policy_top_k,
+            )
+        except Exception as exc:
+            print(f"Policy simulation: FAILED ({exc})")
             sys.exit(1)
     elif args.publish_ready_tag:
         try:
