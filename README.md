@@ -96,6 +96,12 @@ Generate strategy playbook from cross-domain frontier:
 python main.py --strategy-playbook
 ```
 
+Run what-if policy simulation with custom priorities and constraints:
+
+```bash
+python main.py --simulate-policy --policy-name latency-ops --w-speed 0.60 --w-quality 0.20 --w-resilience 0.15 --w-consistency 0.05 --min-resilience 0.70
+```
+
 Validate artifact completeness and structure:
 
 ```bash
@@ -166,6 +172,8 @@ Cross-domain report:
 - results/CROSS_DOMAIN_FRONTIER.json
 - results/STRATEGY_PLAYBOOK.json
 - results/STRATEGY_PLAYBOOK.md
+- results/POLICY_SIMULATION_<policy-name>.json
+- results/POLICY_SIMULATION_<policy-name>.md
 
 ## Documentation
 
