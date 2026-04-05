@@ -248,6 +248,103 @@ class PolicySimulator:
 
         raise PolicySimulationError(f"Unknown optimization objective: {objective}")
 
+    @staticmethod
+    def _percentile(values: List[float], q: float) -> float:
+        if not values:
+            return 0.0
+        if q <= 0:
+            return float(min(values))
+        if q >= 100:
+            return float(max(values))
+
+        sorted_vals = sorted(float(v) for v in values)
+        pos = (len(sorted_vals) - 1) * (q / 100.0)
+        lo = int(pos)
+        hi = min(lo + 1, len(sorted_vals) - 1)
+        frac = pos - lo
+        return sorted_vals[lo] * (1.0 - frac) + sorted_vals[hi] * frac
+
+    def _evaluate_weight_candidate(
+        self,
+        weights: Dict[str, float],
+        mins: Dict[str, float],
+        policy_name: str,
+        top_k: int,
+        objective: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        payload = self.simulate(
+            weights=weights,
+            mins=mins,
+            policy_name=policy_name,
+            top_k=top_k,
+        )
+
+        selected_scores: List[float] = []
+        for domain in payload.get("domains", []):
+            selected = domain.get("selected") if isinstance(domain.get("selected"), dict) else None
+            score = selected.get("policy_score") if selected else None
+            if isinstance(score, (int, float)):
+                selected_scores.append(float(score))
+
+        avg_selected_score = sum(selected_scores) / len(selected_scores) if selected_scores else 0.0
+        worst_selected_score = min(selected_scores) if selected_scores else 0.0
+        payload["summary"]["avg_selected_policy_score"] = round(avg_selected_score, 6)
+        payload["summary"]["worst_selected_policy_score"] = round(worst_selected_score, 6)
+
+        total = max(1, int(payload["summary"].get("domains_total", 0)))
+        covered = int(payload["summary"].get("domains_meeting_constraints", 0))
+        payload["summary"]["coverage_rate"] = round(covered / total, 6)
+
+        row = {
+            "weights": payload["weights"],
+            "summary": payload["summary"],
+            "domains": payload["domains"],
+        }
+
+        if objective is not None:
+            objective_value = self._evaluate_objective(payload["summary"], objective=objective)
+            row["objective_value"] = round(float(objective_value), 6)
+
+        return row
+
+    @staticmethod
+    def _pareto_non_dominated(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Return non-dominated policies over coverage, avg score, and worst score."""
+        frontier: List[Dict[str, Any]] = []
+        for candidate in rows:
+            c_summary = candidate.get("summary", {})
+            c_cov = float(c_summary.get("coverage_rate", 0.0))
+            c_avg = float(c_summary.get("avg_selected_policy_score", 0.0))
+            c_worst = float(c_summary.get("worst_selected_policy_score", 0.0))
+
+            dominated = False
+            for other in rows:
+                if other is candidate:
+                    continue
+                o_summary = other.get("summary", {})
+                o_cov = float(o_summary.get("coverage_rate", 0.0))
+                o_avg = float(o_summary.get("avg_selected_policy_score", 0.0))
+                o_worst = float(o_summary.get("worst_selected_policy_score", 0.0))
+
+                better_or_equal = o_cov >= c_cov and o_avg >= c_avg and o_worst >= c_worst
+                strictly_better = o_cov > c_cov or o_avg > c_avg or o_worst > c_worst
+                if better_or_equal and strictly_better:
+                    dominated = True
+                    break
+
+            if not dominated:
+                frontier.append(candidate)
+
+        frontier.sort(
+            key=lambda r: (
+                float(r.get("summary", {}).get("coverage_rate", 0.0)),
+                float(r.get("summary", {}).get("avg_selected_policy_score", 0.0)),
+                float(r.get("summary", {}).get("worst_selected_policy_score", 0.0)),
+            ),
+            reverse=True,
+        )
+        return frontier
+
     def optimize(
         self,
         mins: Optional[Dict[str, float]] = None,
@@ -272,31 +369,14 @@ class PolicySimulator:
         evaluated: List[Dict[str, Any]] = []
 
         for idx, weights in enumerate(candidates):
-            payload = self.simulate(
-                weights=weights,
-                mins=mins,
-                policy_name=f"{policy_name}_candidate_{idx}",
-                top_k=top_k,
-            )
-
-            selected_scores: List[float] = []
-            for domain in payload.get("domains", []):
-                selected = domain.get("selected") if isinstance(domain.get("selected"), dict) else None
-                score = selected.get("policy_score") if selected else None
-                if isinstance(score, (int, float)):
-                    selected_scores.append(float(score))
-
-            avg_selected_score = sum(selected_scores) / len(selected_scores) if selected_scores else 0.0
-            payload["summary"]["avg_selected_policy_score"] = round(avg_selected_score, 6)
-
-            objective_value = self._evaluate_objective(payload["summary"], objective=objective)
             evaluated.append(
-                {
-                    "weights": payload["weights"],
-                    "summary": payload["summary"],
-                    "objective_value": round(float(objective_value), 6),
-                    "domains": payload["domains"],
-                }
+                self._evaluate_weight_candidate(
+                    weights=weights,
+                    mins=mins,
+                    policy_name=f"{policy_name}_candidate_{idx}",
+                    top_k=top_k,
+                    objective=objective,
+                )
             )
 
         if not evaluated:
@@ -314,6 +394,77 @@ class PolicySimulator:
             "search_space_size": len(candidates),
             "best_policy": best,
             "top_policies": ranked[: max(1, top_n)],
+        }
+
+    def optimize_frontier(
+        self,
+        mins: Optional[Dict[str, float]] = None,
+        policy_name: str = "frontier_policy",
+        weight_step: float = 0.25,
+        top_k: int = 3,
+        max_configs: Optional[int] = None,
+        top_n: int = 10,
+    ) -> Dict[str, Any]:
+        mins = mins or {
+            "quality_score": 0.0,
+            "speed_score": 0.0,
+            "resilience": 0.0,
+            "consistency": 0.0,
+        }
+
+        candidates = self._weight_grid(weight_step=weight_step)
+        if isinstance(max_configs, int) and max_configs > 0:
+            candidates = candidates[:max_configs]
+
+        evaluated: List[Dict[str, Any]] = []
+        for idx, weights in enumerate(candidates):
+            evaluated.append(
+                self._evaluate_weight_candidate(
+                    weights=weights,
+                    mins=mins,
+                    policy_name=f"{policy_name}_candidate_{idx}",
+                    top_k=top_k,
+                    objective=None,
+                )
+            )
+
+        if not evaluated:
+            raise PolicySimulationError("No candidate policies generated for frontier optimization")
+
+        frontier = self._pareto_non_dominated(evaluated)
+
+        coverage_values = [float(r.get("summary", {}).get("coverage_rate", 0.0)) for r in frontier]
+        avg_values = [float(r.get("summary", {}).get("avg_selected_policy_score", 0.0)) for r in frontier]
+        worst_values = [float(r.get("summary", {}).get("worst_selected_policy_score", 0.0)) for r in frontier]
+
+        stability_bands = {
+            "coverage_rate": {
+                "p10": round(self._percentile(coverage_values, 10), 6),
+                "p50": round(self._percentile(coverage_values, 50), 6),
+                "p90": round(self._percentile(coverage_values, 90), 6),
+            },
+            "avg_selected_policy_score": {
+                "p10": round(self._percentile(avg_values, 10), 6),
+                "p50": round(self._percentile(avg_values, 50), 6),
+                "p90": round(self._percentile(avg_values, 90), 6),
+            },
+            "worst_selected_policy_score": {
+                "p10": round(self._percentile(worst_values, 10), 6),
+                "p50": round(self._percentile(worst_values, 50), 6),
+                "p90": round(self._percentile(worst_values, 90), 6),
+            },
+        }
+
+        return {
+            "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+            "policy_name": policy_name,
+            "mode": "multi_objective_pareto",
+            "weight_step": weight_step,
+            "minimum_constraints": mins,
+            "search_space_size": len(candidates),
+            "frontier_size": len(frontier),
+            "stability_bands": stability_bands,
+            "frontier_policies": frontier[: max(1, top_n)],
         }
 
     @staticmethod
@@ -405,4 +556,71 @@ class PolicySimulator:
 
         json_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
         md_path.write_text(self._optimization_to_markdown(payload), encoding="utf-8")
+        return {"json": json_path, "markdown": md_path}
+
+    @staticmethod
+    def _frontier_to_markdown(payload: Dict[str, Any]) -> str:
+        lines: List[str] = []
+        lines.append(f"# Policy Frontier Optimization: {payload.get('policy_name', 'frontier_policy')}")
+        lines.append("")
+        lines.append(
+            f"Search Space: {payload.get('search_space_size', 0)} candidates | "
+            f"Frontier Size: {payload.get('frontier_size', 0)}"
+        )
+        lines.append("")
+
+        bands = payload.get("stability_bands", {})
+        lines.append("## Stability Bands")
+        lines.append("")
+        for metric, stats in bands.items():
+            lines.append(
+                f"- {metric}: p10={stats.get('p10', 0.0):.4f}, "
+                f"p50={stats.get('p50', 0.0):.4f}, p90={stats.get('p90', 0.0):.4f}"
+            )
+        lines.append("")
+
+        lines.append("## Non-Dominated Policies")
+        lines.append("")
+        lines.append("| Rank | Coverage | Avg Score | Worst Score | Weights (Q,S,R,C) |")
+        lines.append("|------|----------|-----------|-------------|-------------------|")
+        for idx, row in enumerate(payload.get("frontier_policies", []), start=1):
+            s = row.get("summary", {})
+            w = row.get("weights", {})
+            lines.append(
+                f"| {idx} "
+                f"| {s.get('coverage_rate', 0.0):.4f} "
+                f"| {s.get('avg_selected_policy_score', 0.0):.4f} "
+                f"| {s.get('worst_selected_policy_score', 0.0):.4f} "
+                f"| ({w.get('quality_score', 0.0):.2f}, {w.get('speed_score', 0.0):.2f}, {w.get('resilience', 0.0):.2f}, {w.get('consistency', 0.0):.2f}) |"
+            )
+        lines.append("")
+        return "\n".join(lines)
+
+    def save_frontier_optimization(
+        self,
+        mins: Optional[Dict[str, float]] = None,
+        policy_name: str = "frontier_policy",
+        weight_step: float = 0.25,
+        top_k: int = 3,
+        max_configs: Optional[int] = None,
+        top_n: int = 10,
+    ) -> Dict[str, Path]:
+        payload = self.optimize_frontier(
+            mins=mins,
+            policy_name=policy_name,
+            weight_step=weight_step,
+            top_k=top_k,
+            max_configs=max_configs,
+            top_n=top_n,
+        )
+
+        slug = "".join(ch if ch.isalnum() or ch in {"-", "_"} else "_" for ch in policy_name).strip("_")
+        slug = slug or "frontier_policy"
+
+        json_path = self.results_dir / f"POLICY_FRONTIER_{slug}.json"
+        md_path = self.results_dir / f"POLICY_FRONTIER_{slug}.md"
+        self.results_dir.mkdir(parents=True, exist_ok=True)
+
+        json_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        md_path.write_text(self._frontier_to_markdown(payload), encoding="utf-8")
         return {"json": json_path, "markdown": md_path}
