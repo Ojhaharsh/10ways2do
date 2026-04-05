@@ -64,6 +64,7 @@ results/
 *.log
 releases/
 restored_results/
+restored_results*/
 *.exit.txt
 smoke_exit_verify.txt
 pytest_release_gate_exit.txt
