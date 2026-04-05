@@ -108,6 +108,12 @@ Run policy weight optimization to auto-discover best policy under constraints:
 python main.py --optimize-policy --policy-name resilient-prod --opt-objective max_coverage --weight-step 0.25 --min-resilience 0.80
 ```
 
+Run multi-objective policy frontier optimization (non-dominated policies + stability bands):
+
+```bash
+python main.py --optimize-policy-frontier --policy-name policy-frontier --weight-step 0.25 --min-resilience 0.80
+```
+
 Validate artifact completeness and structure:
 
 ```bash
@@ -182,6 +188,8 @@ Cross-domain report:
 - results/POLICY_SIMULATION_<policy-name>.md
 - results/POLICY_OPTIMIZATION_<policy-name>.json
 - results/POLICY_OPTIMIZATION_<policy-name>.md
+- results/POLICY_FRONTIER_<policy-name>.json
+- results/POLICY_FRONTIER_<policy-name>.md
 
 ## Documentation
 
