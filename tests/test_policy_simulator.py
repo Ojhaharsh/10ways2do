@@ -83,3 +83,46 @@ def test_policy_simulator_falls_back_when_constraints_too_strict(tmp_path: Path)
     domain_row = payload["domains"][0]
     assert domain_row["constraints_satisfied"] is False
     assert "No feasible candidate" in domain_row["reason"]
+
+
+def test_policy_optimizer_writes_outputs_and_best_policy(tmp_path: Path):
+    _write_frontier(tmp_path)
+
+    outputs = PolicySimulator(results_dir=str(tmp_path)).save_optimization(
+        mins={
+            "quality_score": 0.0,
+            "speed_score": 0.0,
+            "resilience": 0.0,
+            "consistency": 0.0,
+        },
+        policy_name="search_balanced",
+        objective="balanced",
+        weight_step=0.5,
+        top_k=2,
+        top_n=3,
+    )
+
+    assert outputs["json"].exists()
+    assert outputs["markdown"].exists()
+
+    payload = json.loads(outputs["json"].read_text(encoding="utf-8"))
+    best = payload["best_policy"]
+    weights = best["weights"]
+    assert abs(sum(weights.values()) - 1.0) < 1e-8
+    assert payload["objective"] == "balanced"
+    assert len(payload["top_policies"]) >= 1
+
+
+def test_policy_optimizer_respects_max_configs(tmp_path: Path):
+    _write_frontier(tmp_path)
+
+    outputs = PolicySimulator(results_dir=str(tmp_path)).save_optimization(
+        policy_name="limited_search",
+        objective="max_coverage",
+        weight_step=0.25,
+        max_configs=4,
+        top_n=2,
+    )
+
+    payload = json.loads(outputs["json"].read_text(encoding="utf-8"))
+    assert payload["search_space_size"] == 4
