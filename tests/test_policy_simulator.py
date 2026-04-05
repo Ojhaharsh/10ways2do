@@ -1,0 +1,85 @@
+import json
+from pathlib import Path
+
+from src.analysis.policy_simulator import PolicySimulator
+
+
+def _write_frontier(results_dir: Path):
+    payload = {
+        "generated_at_utc": "2026-04-05T00:00:00+00:00",
+        "domains": [
+            {
+                "domain": "domain_a",
+                "domain_name": "Information Extraction",
+                "champion": {"name": "AccurateA", "extraordinary_index": 0.8},
+                "pareto_frontier": [
+                    {
+                        "name": "AccurateA",
+                        "quality_score": 0.95,
+                        "speed_score": 0.30,
+                        "resilience": 0.8,
+                        "consistency": 1.0,
+                    },
+                    {
+                        "name": "FastA",
+                        "quality_score": 0.75,
+                        "speed_score": 0.95,
+                        "resilience": 0.7,
+                        "consistency": 0.95,
+                    },
+                ],
+            }
+        ],
+    }
+    (results_dir / "CROSS_DOMAIN_FRONTIER.json").write_text(json.dumps(payload), encoding="utf-8")
+
+
+def test_policy_simulator_prefers_fast_model_when_speed_weight_high(tmp_path: Path):
+    _write_frontier(tmp_path)
+
+    outputs = PolicySimulator(results_dir=str(tmp_path)).save(
+        weights={
+            "quality_score": 0.1,
+            "speed_score": 0.8,
+            "resilience": 0.05,
+            "consistency": 0.05,
+        },
+        mins={
+            "quality_score": 0.0,
+            "speed_score": 0.0,
+            "resilience": 0.0,
+            "consistency": 0.0,
+        },
+        policy_name="latency_ops",
+        top_k=2,
+    )
+
+    payload = json.loads(outputs["json"].read_text(encoding="utf-8"))
+    selected = payload["domains"][0]["selected"]
+    assert selected["name"] == "FastA"
+
+
+def test_policy_simulator_falls_back_when_constraints_too_strict(tmp_path: Path):
+    _write_frontier(tmp_path)
+
+    outputs = PolicySimulator(results_dir=str(tmp_path)).save(
+        weights={
+            "quality_score": 0.5,
+            "speed_score": 0.2,
+            "resilience": 0.2,
+            "consistency": 0.1,
+        },
+        mins={
+            "quality_score": 0.99,
+            "speed_score": 0.99,
+            "resilience": 0.99,
+            "consistency": 0.99,
+        },
+        policy_name="strict_policy",
+        top_k=2,
+    )
+
+    payload = json.loads(outputs["json"].read_text(encoding="utf-8"))
+    domain_row = payload["domains"][0]
+    assert domain_row["constraints_satisfied"] is False
+    assert "No feasible candidate" in domain_row["reason"]
