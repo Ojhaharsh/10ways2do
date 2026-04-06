@@ -546,12 +546,18 @@ class PolicySimulator:
             },
         }
 
+        frontier_archetypes = {
+            self._policy_archetype(row.get("weights", {}), balance_threshold=balance_threshold)
+            for row in frontier
+        }
+        diversity_source = frontier if len(frontier_archetypes) >= min_archetypes else evaluated
         diversity = self._select_diverse_frontier(
-            frontier=frontier,
+            frontier=diversity_source,
             min_archetypes=min_archetypes,
             top_n=top_n,
             balance_threshold=balance_threshold,
         )
+        diversity["diversity_summary"]["selection_source"] = "frontier" if diversity_source is frontier else "evaluated"
 
         return {
             "generated_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -702,7 +708,8 @@ class PolicySimulator:
             lines.append(
                 f"Target archetypes: {diversity.get('target_min_archetypes', 0)} | "
                 f"Achieved archetypes: {diversity.get('archetypes_covered', 0)} | "
-                f"Selected policies: {diversity.get('selected_count', 0)}"
+                f"Selected policies: {diversity.get('selected_count', 0)} | "
+                f"Source: {diversity.get('selection_source', 'frontier')}"
             )
             lines.append("")
             lines.append("| Rank | Archetype | Coverage | Avg Score | Worst Score |")
