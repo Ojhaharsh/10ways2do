@@ -164,3 +164,23 @@ def test_policy_frontier_optimizer_respects_max_configs(tmp_path: Path):
 
     payload = json.loads(outputs["json"].read_text(encoding="utf-8"))
     assert payload["search_space_size"] == 3
+
+
+def test_policy_frontier_optimizer_enforces_archetype_diversity(tmp_path: Path):
+    _write_frontier(tmp_path)
+
+    outputs = PolicySimulator(results_dir=str(tmp_path)).save_frontier_optimization(
+        policy_name="frontier_diverse",
+        weight_step=0.5,
+        min_archetypes=2,
+        top_n=6,
+    )
+
+    payload = json.loads(outputs["json"].read_text(encoding="utf-8"))
+    diversity = payload["diversity_summary"]
+    assert diversity["target_min_archetypes"] == 2
+    assert diversity["archetypes_covered"] >= 2
+
+    archetypes = {row["policy_archetype"] for row in payload["diverse_frontier_policies"]}
+    assert len(archetypes) >= 2
+    assert "balanced" in payload["stability_bands"] or payload["frontier_size"] >= 1
