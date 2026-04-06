@@ -114,6 +114,12 @@ Run multi-objective policy frontier optimization (non-dominated policies + stabi
 python main.py --optimize-policy-frontier --policy-name policy-frontier --weight-step 0.25 --min-resilience 0.80
 ```
 
+Run diversity-constrained frontier optimization (keeps multiple archetypes in the frontier):
+
+```bash
+python main.py --optimize-policy-frontier --policy-name policy-frontier --weight-step 0.25 --frontier-min-archetypes 3 --frontier-balance-threshold 0.10
+```
+
 Validate artifact completeness and structure:
 
 ```bash

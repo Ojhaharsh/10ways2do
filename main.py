@@ -628,23 +628,6 @@ Examples:
         except Exception as exc:
             print(f"Policy frontier optimization: FAILED ({exc})")
             sys.exit(1)
-    elif args.optimize_policy_frontier:
-        try:
-            run_policy_frontier_optimization(
-                results_dir=args.output_dir,
-                policy_name=args.policy_name,
-                weight_step=args.weight_step,
-                min_quality=args.min_quality,
-                min_speed=args.min_speed,
-                min_resilience=args.min_resilience,
-                min_consistency=args.min_consistency,
-                top_k=args.policy_top_k,
-                top_n=args.opt_top_n,
-                max_configs=args.opt_max_configs,
-            )
-        except Exception as exc:
-            print(f"Policy frontier optimization: FAILED ({exc})")
-            sys.exit(1)
     elif args.publish_ready_tag:
         try:
             run_publish_ready(
