@@ -197,6 +197,8 @@ def run_policy_frontier_optimization(
     top_k: int = 3,
     top_n: int = 10,
     max_configs: Optional[int] = None,
+    min_archetypes: int = 3,
+    balance_threshold: float = 0.10,
 ):
     """Generate a non-dominated policy frontier with stability bands."""
     from src.analysis.policy_simulator import PolicySimulator
@@ -214,6 +216,8 @@ def run_policy_frontier_optimization(
         top_k=top_k,
         top_n=top_n,
         max_configs=max_configs,
+        min_archetypes=min_archetypes,
+        balance_threshold=balance_threshold,
     )
     print(f"Policy frontier generated: {outputs['json']}")
     print(f"Policy frontier generated: {outputs['markdown']}")
@@ -506,6 +510,10 @@ Examples:
                         help='Number of top policy candidates to include in optimization output')
     parser.add_argument('--opt-max-configs', type=int, default=None,
                         help='Optional cap on number of searched policy weight candidates')
+    parser.add_argument('--frontier-min-archetypes', type=int, default=3,
+                        help='Minimum distinct frontier archetypes to preserve in frontier selection')
+    parser.add_argument('--frontier-balance-threshold', type=float, default=0.10,
+                        help='Weight spread threshold for treating a policy as balanced')
     parser.add_argument('--validate', action='store_true', help='Validate benchmark artifacts')
     parser.add_argument('--release-gate', action='store_true', help='Run full release-gate checks')
     parser.add_argument('--snapshot-tag', type=str, default=None,
@@ -600,6 +608,25 @@ Examples:
             )
         except Exception as exc:
             print(f"Policy optimization: FAILED ({exc})")
+            sys.exit(1)
+    elif args.optimize_policy_frontier:
+        try:
+            run_policy_frontier_optimization(
+                results_dir=args.output_dir,
+                policy_name=args.policy_name,
+                weight_step=args.weight_step,
+                min_quality=args.min_quality,
+                min_speed=args.min_speed,
+                min_resilience=args.min_resilience,
+                min_consistency=args.min_consistency,
+                top_k=args.policy_top_k,
+                top_n=args.opt_top_n,
+                max_configs=args.opt_max_configs,
+                min_archetypes=args.frontier_min_archetypes,
+                balance_threshold=args.frontier_balance_threshold,
+            )
+        except Exception as exc:
+            print(f"Policy frontier optimization: FAILED ({exc})")
             sys.exit(1)
     elif args.optimize_policy_frontier:
         try:

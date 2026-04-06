@@ -20,6 +20,14 @@ def _normalize_weights(weights: Dict[str, float]) -> Dict[str, float]:
     return {k: max(0.0, float(v)) / total for k, v in weights.items()}
 
 
+FRONTIER_ARCHETYPE_LABELS = {
+    "quality_score": "quality_first",
+    "speed_score": "speed_first",
+    "resilience": "reliability_first",
+    "consistency": "consistency_first",
+}
+
+
 class PolicySimulator:
     """Simulate domain-wise strategy selection under custom policy settings."""
 
@@ -345,6 +353,87 @@ class PolicySimulator:
         )
         return frontier
 
+    @staticmethod
+    def _policy_archetype(weights: Dict[str, float], balance_threshold: float = 0.10) -> str:
+        values = {key: float(weights.get(key, 0.0)) for key in FRONTIER_ARCHETYPE_LABELS}
+        if not values:
+            return "balanced"
+
+        spread = max(values.values()) - min(values.values())
+        if spread <= balance_threshold:
+            return "balanced"
+
+        dominant = max(values, key=values.get)
+        return FRONTIER_ARCHETYPE_LABELS.get(dominant, "balanced")
+
+    @staticmethod
+    def _frontier_sort_key(row: Dict[str, Any]) -> tuple:
+        summary = row.get("summary", {})
+        return (
+            float(summary.get("coverage_rate", 0.0)),
+            float(summary.get("avg_selected_policy_score", 0.0)),
+            float(summary.get("worst_selected_policy_score", 0.0)),
+        )
+
+    def _select_diverse_frontier(
+        self,
+        frontier: List[Dict[str, Any]],
+        min_archetypes: int,
+        top_n: int,
+        balance_threshold: float,
+    ) -> Dict[str, Any]:
+        annotated: List[Dict[str, Any]] = []
+        for row in frontier:
+            annotated_row = dict(row)
+            annotated_row["policy_archetype"] = self._policy_archetype(
+                annotated_row.get("weights", {}),
+                balance_threshold=balance_threshold,
+            )
+            annotated.append(annotated_row)
+
+        ordered = sorted(annotated, key=self._frontier_sort_key, reverse=True)
+        selected: List[Dict[str, Any]] = []
+        seen_archetypes = set()
+
+        for row in ordered:
+            archetype = row["policy_archetype"]
+            if archetype in seen_archetypes:
+                continue
+            selected.append(row)
+            seen_archetypes.add(archetype)
+            if len(seen_archetypes) >= max(1, min_archetypes):
+                break
+
+        target_size = max(1, top_n, min_archetypes)
+        for row in ordered:
+            if len(selected) >= target_size:
+                break
+            if row in selected:
+                continue
+            selected.append(row)
+
+        archetype_counts: Dict[str, int] = {}
+        for row in selected:
+            archetype = row["policy_archetype"]
+            archetype_counts[archetype] = archetype_counts.get(archetype, 0) + 1
+
+        missing_archetypes = [
+            archetype for archetype in ["balanced", "quality_first", "speed_first", "reliability_first", "consistency_first"]
+            if archetype not in archetype_counts
+        ]
+
+        return {
+            "diverse_frontier_policies": selected,
+            "diversity_summary": {
+                "target_min_archetypes": max(1, min_archetypes),
+                "selected_count": len(selected),
+                "archetypes_covered": len(archetype_counts),
+                "archetype_counts": archetype_counts,
+                "missing_archetypes": missing_archetypes,
+                "balance_threshold": balance_threshold,
+            },
+        }
+
     def optimize(
         self,
         mins: Optional[Dict[str, float]] = None,
@@ -404,6 +493,8 @@ class PolicySimulator:
         top_k: int = 3,
         max_configs: Optional[int] = None,
         top_n: int = 10,
+        min_archetypes: int = 3,
+        balance_threshold: float = 0.10,
     ) -> Dict[str, Any]:
         mins = mins or {
             "quality_score": 0.0,
@@ -455,6 +546,13 @@ class PolicySimulator:
             },
         }
 
+        diversity = self._select_diverse_frontier(
+            frontier=frontier,
+            min_archetypes=min_archetypes,
+            top_n=top_n,
+            balance_threshold=balance_threshold,
+        )
+
         return {
             "generated_at_utc": datetime.now(timezone.utc).isoformat(),
             "policy_name": policy_name,
@@ -465,6 +563,8 @@ class PolicySimulator:
             "frontier_size": len(frontier),
             "stability_bands": stability_bands,
             "frontier_policies": frontier[: max(1, top_n)],
+            "diverse_frontier_policies": diversity["diverse_frontier_policies"],
+            "diversity_summary": diversity["diversity_summary"],
         }
 
     @staticmethod
@@ -594,6 +694,28 @@ class PolicySimulator:
                 f"| ({w.get('quality_score', 0.0):.2f}, {w.get('speed_score', 0.0):.2f}, {w.get('resilience', 0.0):.2f}, {w.get('consistency', 0.0):.2f}) |"
             )
         lines.append("")
+
+        diversity = payload.get("diversity_summary", {})
+        if diversity:
+            lines.append("## Diversity-Constrained Frontier")
+            lines.append("")
+            lines.append(
+                f"Target archetypes: {diversity.get('target_min_archetypes', 0)} | "
+                f"Achieved archetypes: {diversity.get('archetypes_covered', 0)} | "
+                f"Selected policies: {diversity.get('selected_count', 0)}"
+            )
+            lines.append("")
+            lines.append("| Rank | Archetype | Coverage | Avg Score | Worst Score |")
+            lines.append("|------|-----------|----------|-----------|-------------|")
+            for idx, row in enumerate(payload.get("diverse_frontier_policies", []), start=1):
+                s = row.get("summary", {})
+                lines.append(
+                    f"| {idx} | {row.get('policy_archetype', 'balanced')} "
+                    f"| {s.get('coverage_rate', 0.0):.4f} "
+                    f"| {s.get('avg_selected_policy_score', 0.0):.4f} "
+                    f"| {s.get('worst_selected_policy_score', 0.0):.4f} |"
+                )
+            lines.append("")
         return "\n".join(lines)
 
     def save_frontier_optimization(
@@ -604,6 +726,8 @@ class PolicySimulator:
         top_k: int = 3,
         max_configs: Optional[int] = None,
         top_n: int = 10,
+        min_archetypes: int = 3,
+        balance_threshold: float = 0.10,
     ) -> Dict[str, Path]:
         payload = self.optimize_frontier(
             mins=mins,
@@ -612,6 +736,8 @@ class PolicySimulator:
             top_k=top_k,
             max_configs=max_configs,
             top_n=top_n,
+            min_archetypes=min_archetypes,
+            balance_threshold=balance_threshold,
         )
 
         slug = "".join(ch if ch.isalnum() or ch in {"-", "_"} else "_" for ch in policy_name).strip("_")
