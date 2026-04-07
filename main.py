@@ -62,6 +62,22 @@ def run_domain(domain: str, **kwargs):
             'output_dir': kwargs.get('output_dir', 'results/domain_e'),
         }
         return run_all_approaches(**common_kwargs, **domain_kwargs)
+    elif domain == 'f' or domain == 'cyber':
+        from src.domain_f_cyber_threat_hunting.run_all import run_all_approaches
+        domain_kwargs = {
+            'n_samples': kwargs.get('n_train', 6000),
+            'n_features': kwargs.get('n_test', 30),
+            'output_dir': kwargs.get('output_dir', 'results/domain_f'),
+        }
+        return run_all_approaches(**common_kwargs, **domain_kwargs)
+    elif domain == 'g' or domain == 'ops':
+        from src.domain_g_operations_optimization.run_all import run_all_approaches
+        domain_kwargs = {
+            'n_samples': kwargs.get('n_train', 6000),
+            'n_features': kwargs.get('n_test', 20),
+            'output_dir': kwargs.get('output_dir', 'results/domain_g'),
+        }
+        return run_all_approaches(**common_kwargs, **domain_kwargs)
     else:
         raise ValueError(f"Unknown domain: {domain}")
 
@@ -72,7 +88,7 @@ def run_all(**kwargs):
     print("ML PHILOSOPHY BENCHMARK: Running All Domains")
     print("=" * 80)
     
-    domains = ['a', 'b', 'c', 'd', 'e']
+    domains = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
     results = {}
     base_output_dir = kwargs.get('output_dir', 'results')
     
@@ -470,7 +486,7 @@ Examples:
     
     parser.add_argument('--all', action='store_true', help='Run all domains')
     parser.add_argument('--domain', '-d', type=str, 
-                        choices=['a', 'b', 'c', 'd', 'e', 'ie', 'anomaly', 'rec', 'ts', 'tabular'],
+                        choices=['a', 'b', 'c', 'd', 'e', 'f', 'g', 'ie', 'anomaly', 'rec', 'ts', 'tabular', 'cyber', 'ops'],
                         help='Run specific domain')
     parser.add_argument('--report', action='store_true', help='Generate report')
     parser.add_argument('--strategy-playbook', action='store_true',
