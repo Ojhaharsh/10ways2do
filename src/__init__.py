@@ -27,6 +27,8 @@ _MODULES = {
     "domain_c_recommendation": ".domain_c_recommendation",
     "domain_d_time_series": ".domain_d_time_series",
     "domain_e_tabular_decisioning": ".domain_e_tabular_decisioning",
+    "domain_f_cyber_threat_hunting": ".domain_f_cyber_threat_hunting",
+    "domain_g_operations_optimization": ".domain_g_operations_optimization",
 }
 
 
@@ -46,4 +48,6 @@ __all__ = [
     "domain_c_recommendation",
     "domain_d_time_series",
     "domain_e_tabular_decisioning",
+    "domain_f_cyber_threat_hunting",
+    "domain_g_operations_optimization",
 ]
