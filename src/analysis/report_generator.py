@@ -19,7 +19,9 @@ class ReportGenerator:
             'domain_b': 'Anomaly Detection', 
             'domain_c': 'Recommendation',
             'domain_d': 'Time Series Forecasting',
-            'domain_e': 'Tabular Decisioning'
+            'domain_e': 'Tabular Decisioning',
+            'domain_f': 'Cyber Threat Hunting',
+            'domain_g': 'Operations Optimization',
         }
         self._latest_cross_domain_frontier: Optional[Dict[str, Any]] = None
 
@@ -242,7 +244,9 @@ class ReportGenerator:
             'domain_b': ('', 'f1'),
             'domain_c': ('', 'ndcg@10'),
             'domain_d': ('', 'rmse'),
-            'domain_e': ('', 'f1')
+            'domain_e': ('', 'f1'),
+            'domain_f': ('', 'f1'),
+            'domain_g': ('', 'rmse'),
         }
         
         container, metric = metrics_key.get(domain, ('', 'accuracy'))
@@ -260,7 +264,7 @@ class ReportGenerator:
                 value = metrics.get(metric, 0)
             
             if value is not None:
-                if domain == 'domain_d':  # Lower is better for RMSE
+                if domain in {'domain_d', 'domain_g'}:  # Lower is better for RMSE
                     if best_perf is None or value < best_perf:
                         best_perf = value
                         best_name = r['name']
@@ -308,13 +312,15 @@ class ReportGenerator:
         
         report.append("## Overview\n")
         report.append("""
-This benchmark evaluates 10 fundamentally different ML approaches across 5 real-world domains:
+This benchmark evaluates 10 fundamentally different ML approaches across 7 real-world domains:
 
 1. **Information Extraction** - Extracting structured data from text
 2. **Anomaly Detection** - Identifying unusual patterns in data
 3. **Recommendation** - Suggesting relevant items to users
 4. **Time Series Forecasting** - Predicting future values
 5. **Tabular Decisioning** - Risk scoring and binary decision support on structured features
+6. **Cyber Threat Hunting** - Classifying malicious activity from telemetry patterns
+7. **Operations Optimization** - Predicting continuous operational outcomes for planning
 
 Each approach represents a different **mental model** for solving ML problems, with distinct 
 trade-offs in terms of accuracy, speed, interpretability, data efficiency, and robustness.
