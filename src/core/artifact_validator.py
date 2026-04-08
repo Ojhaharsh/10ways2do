@@ -16,7 +16,15 @@ REQUIRED_FILES = [
     "comparison_canonical.csv",
 ]
 
-DEFAULT_DOMAIN_DIRS = ["domain_a", "domain_b", "domain_c", "domain_d", "domain_e"]
+DEFAULT_DOMAIN_DIRS = [
+    "domain_a",
+    "domain_b",
+    "domain_c",
+    "domain_d",
+    "domain_e",
+    "domain_f",
+    "domain_g",
+]
 
 
 class ArtifactValidationError(ValueError):

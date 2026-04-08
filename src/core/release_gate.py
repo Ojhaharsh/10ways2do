@@ -20,6 +20,8 @@ EXPECTED_DOMAIN_HEADERS = [
     "# Recommendation: Benchmark Report",
     "# Time Series Forecasting: Benchmark Report",
     "# Tabular Decisioning: Benchmark Report",
+    "# Cyber Threat Hunting: Benchmark Report",
+    "# Operations Optimization: Benchmark Report",
 ]
 
 
