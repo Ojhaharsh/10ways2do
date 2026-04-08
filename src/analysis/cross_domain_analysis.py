@@ -14,12 +14,15 @@ class CrossDomainAnalyzer:
     
     def __init__(self, results_dir: str = "results"):
         self.results_dir = Path(results_dir)
-        self.domains = ['domain_a', 'domain_b', 'domain_c', 'domain_d']
+        self.domains = ['domain_a', 'domain_b', 'domain_c', 'domain_d', 'domain_e', 'domain_f', 'domain_g']
         self.domain_names = {
             'domain_a': 'Information Extraction',
             'domain_b': 'Anomaly Detection',
             'domain_c': 'Recommendation',
-            'domain_d': 'Time Series'
+            'domain_d': 'Time Series',
+            'domain_e': 'Tabular Decisioning',
+            'domain_f': 'Cyber Threat Hunting',
+            'domain_g': 'Operations Optimization',
         }
         self.results = {}
     
