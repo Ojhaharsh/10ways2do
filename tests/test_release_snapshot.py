@@ -92,6 +92,10 @@ def _seed_report(results_dir: Path):
             "## Statistical Significance",
             "# Tabular Decisioning: Benchmark Report",
             "## Statistical Significance",
+            "# Cyber Threat Hunting: Benchmark Report",
+            "## Statistical Significance",
+            "# Operations Optimization: Benchmark Report",
+            "## Statistical Significance",
             "## Cross-Domain Statistical Summary",
             "## Cross-Domain Pareto Frontier",
         ]
@@ -107,7 +111,7 @@ def _seed_frontier(results_dir: Path):
                 "champion": {"name": "Rule-Based IE", "extraordinary_index": 0.88},
                 "pareto_frontier": [{"name": "Rule-Based IE", "extraordinary_index": 0.88}],
             }
-            for domain in ["domain_a", "domain_b", "domain_c", "domain_d", "domain_e"]
+            for domain in ["domain_a", "domain_b", "domain_c", "domain_d", "domain_e", "domain_f", "domain_g"]
         ],
         "cross_domain_generalists": [
             {"name": "Rule-Based IE", "avg_extraordinary_index": 0.88, "domains_covered": 1}
@@ -146,6 +150,8 @@ def test_create_release_snapshot_creates_expected_files(tmp_path):
     _seed_domain_artifacts(results_dir, "domain_c", "NDCG@10 Mean", "Popularity")
     _seed_domain_artifacts(results_dir, "domain_d", "MAE Mean", "Exp Smoothing")
     _seed_domain_artifacts(results_dir, "domain_e", "F1 Mean", "Linear")
+    _seed_domain_artifacts(results_dir, "domain_f", "F1 Mean", "Threat Ensemble")
+    _seed_domain_artifacts(results_dir, "domain_g", "RMSE Mean", "Ops Regressor")
     _seed_report(results_dir)
     _seed_frontier(results_dir)
     _seed_strategy_playbook(results_dir)
@@ -160,9 +166,11 @@ def test_create_release_snapshot_creates_expected_files(tmp_path):
     assert payload["snapshot_tag"] == "v1.1-test"
     assert payload["benchmark_protocol_version"] == BENCHMARK_PROTOCOL_VERSION
     assert payload["protocol_version"] == BENCHMARK_PROTOCOL_VERSION
-    assert len(payload["domain_summaries"]) == 5
-    assert len(payload["domains"]) == 5
+    assert len(payload["domain_summaries"]) == 7
+    assert len(payload["domains"]) == 7
     assert "domain_a" in payload["domains"]
+    assert "domain_f" in payload["domains"]
+    assert "domain_g" in payload["domains"]
     assert "comparison_canonical.csv" in payload["domains"]["domain_a"]["artifacts"]
     assert payload["report_artifacts"]["report"] == "REPORT.md"
     assert payload["report_artifacts"]["cross_domain_frontier"] == "CROSS_DOMAIN_FRONTIER.json"
