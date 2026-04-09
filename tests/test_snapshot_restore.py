@@ -186,7 +186,7 @@ def test_restore_snapshot_partial_artifacts(tmp_path):
 
 def test_restore_snapshot_from_generated_release_snapshot(tmp_path):
     """Generated snapshots should be directly restorable by restore_snapshot."""
-    from tests.test_release_snapshot import _seed_domain_artifacts, _seed_report
+    from tests.test_release_snapshot import _seed_domain_artifacts, _seed_frontier, _seed_report, _seed_strategy_playbook
 
     results_dir = tmp_path / "results"
     snapshots_dir = tmp_path / "releases"
@@ -196,7 +196,11 @@ def test_restore_snapshot_from_generated_release_snapshot(tmp_path):
     _seed_domain_artifacts(results_dir, "domain_c", "NDCG@10 Mean", "Popularity")
     _seed_domain_artifacts(results_dir, "domain_d", "MAE Mean", "Exp Smoothing")
     _seed_domain_artifacts(results_dir, "domain_e", "F1 Mean", "Linear")
+    _seed_domain_artifacts(results_dir, "domain_f", "F1 Mean", "Threat Ensemble")
+    _seed_domain_artifacts(results_dir, "domain_g", "RMSE Mean", "Ops Regressor")
     _seed_report(results_dir)
+    _seed_frontier(results_dir)
+    _seed_strategy_playbook(results_dir)
 
     create_release_snapshot("v9.9-test", results_dir=results_dir, snapshots_root=snapshots_dir)
 
@@ -214,6 +218,8 @@ def test_restore_snapshot_from_generated_release_snapshot(tmp_path):
         "domain_c",
         "domain_d",
         "domain_e",
+        "domain_f",
+        "domain_g",
     ]
     assert (restored_dir / "domain_a" / "run_manifest.json").exists()
     assert (restored_dir / "domain_e" / "comparison_canonical.csv").exists()
