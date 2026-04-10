@@ -122,6 +122,8 @@ python main.py --all
 # 3. Run all 10 approaches on Domain C (Recommendation)
 # 4. Run all 10 approaches on Domain D (Time Series)
 # 5. Run all 10 approaches on Domain E (Tabular Decisioning)
+# 6. Run all 10 approaches on Domain F (Cyber Threat Hunting)
+# 7. Run all 10 approaches on Domain G (Operations Optimization)
 # 6. Generate comparison reports
 # 7. Save results to results/ directory
 ```
@@ -264,10 +266,14 @@ print(results['comparison'])
 ```
 
 ### Domain E: Tabular Decisioning
+### Domain F: Cyber Threat Hunting
+### Domain G: Operations Optimization
 
 ```bash
 # Command line
 python main.py --domain e
+python main.py --domain f
+python main.py --domain g
 
 # or
 python main.py --domain tabular

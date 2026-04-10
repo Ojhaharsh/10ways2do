@@ -20,7 +20,10 @@
 │  ├─ domain_a        │      │  ├─ --all            │
 │  ├─ domain_b        │      │  ├─ --domain X       │
 │  ├─ domain_c        │      │  ├─ --n-runs         │
-│  └─ domain_d        │      │  ├─ --seed           │
+│  ├─ domain_d        │      │  ├─ --seed           │
+│  ├─ domain_e        │      │  └─ --smoke-test     │
+│  ├─ domain_f        │
+│  └─ domain_g        │
 └──────────┬──────────┘      │  └─ --smoke-test     │
            │                 └──────────────────────┘
            │
@@ -540,6 +543,9 @@ domain_a: n_train=80, n_test=20    # vs. 1000, 200 full
 domain_b: n_train=80, n_test=20    # vs. 1000, 200 full
 domain_c: n_users=60, n_items=20   # vs. 500, 200 full
 domain_d: n_samples=300            # vs. 1000 full
+domain_e: n_samples=600            # tabular decisioning smoke
+domain_f: n_samples=800            # cyber threat hunting smoke
+domain_g: n_samples=800            # operations optimization smoke
 ```
 
 ### 8.3 Smoke Test: Continuous Validation
@@ -581,7 +587,7 @@ Typical execution:
    ├─ Integration: ~20s
    └─ Total per domain: ~186s × 5 seeds = ~15 min
 
-Total for 5 domains: ~75 min + contingency = ~2.5 hours
+Total for 7 domains: ~105 min + contingency = ~3.5 hours
 ```
 
 ### 9.2 Memory Requirements
@@ -655,12 +661,16 @@ python main.py --domain X
 ```python
 # 1. Create directory
 src/domain_E_name/
+src/domain_F_name/
+src/domain_G_name/
 
 # 2. Implement data_generator.py
 def generate_data(n_train, n_test, seed): ...
 
 # 3. Implement 10 approaches
 src/domain_E/approach_0{1..10}_*.py
+src/domain_F/approach_0{1..10}_*.py
+src/domain_G/approach_0{1..10}_*.py
 
 # 4. Implement run_all.py
 def run_all_approaches(...): ...
@@ -668,10 +678,14 @@ def run_all_approaches(...): ...
 # 5. Register in main.py
 elif domain == 'e':
     from src.domain_e.run_all import run_all_approaches
+    from src.domain_f.run_all import run_all_approaches
+    from src.domain_g.run_all import run_all_approaches
     return run_all_approaches(...)
 
 # 6. Add tests
 tests/test_domain_e.py
+tests/test_domain_f.py
+tests/test_domain_g.py
 
 # 7. Run it
 python main.py --domain e
