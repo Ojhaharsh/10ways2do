@@ -27,6 +27,8 @@ DOMAIN_LABELS = {
     "domain_e": "Tabular Decisioning",
     "domain_f": "Cyber Threat Hunting",
     "domain_g": "Operations Optimization",
+    "domain_h": "Fraud Risk Assessment",
+    "domain_i": "Capacity Planning",
 }
 
 
