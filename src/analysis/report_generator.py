@@ -22,6 +22,8 @@ class ReportGenerator:
             'domain_e': 'Tabular Decisioning',
             'domain_f': 'Cyber Threat Hunting',
             'domain_g': 'Operations Optimization',
+            'domain_h': 'Fraud Risk Assessment',
+            'domain_i': 'Capacity Planning',
         }
         self._latest_cross_domain_frontier: Optional[Dict[str, Any]] = None
 
@@ -247,6 +249,8 @@ class ReportGenerator:
             'domain_e': ('', 'f1'),
             'domain_f': ('', 'f1'),
             'domain_g': ('', 'rmse'),
+            'domain_h': ('', 'f1'),
+            'domain_i': ('', 'rmse'),
         }
         
         container, metric = metrics_key.get(domain, ('', 'accuracy'))
@@ -264,7 +268,7 @@ class ReportGenerator:
                 value = metrics.get(metric, 0)
             
             if value is not None:
-                if domain in {'domain_d', 'domain_g'}:  # Lower is better for RMSE
+                if domain in {'domain_d', 'domain_g', 'domain_i'}:  # Lower is better for RMSE
                     if best_perf is None or value < best_perf:
                         best_perf = value
                         best_name = r['name']
@@ -312,7 +316,7 @@ class ReportGenerator:
         
         report.append("## Overview\n")
         report.append("""
-This benchmark evaluates 10 fundamentally different ML approaches across 7 real-world domains:
+This benchmark evaluates 10 fundamentally different ML approaches across 9 real-world domains:
 
 1. **Information Extraction** - Extracting structured data from text
 2. **Anomaly Detection** - Identifying unusual patterns in data
@@ -321,6 +325,8 @@ This benchmark evaluates 10 fundamentally different ML approaches across 7 real-
 5. **Tabular Decisioning** - Risk scoring and binary decision support on structured features
 6. **Cyber Threat Hunting** - Classifying malicious activity from telemetry patterns
 7. **Operations Optimization** - Predicting continuous operational outcomes for planning
+8. **Fraud Risk Assessment** - Classifying fraud propensity from mixed transactional signals
+9. **Capacity Planning** - Forecasting continuous capacity requirements for operations
 
 Each approach represents a different **mental model** for solving ML problems, with distinct 
 trade-offs in terms of accuracy, speed, interpretability, data efficiency, and robustness.

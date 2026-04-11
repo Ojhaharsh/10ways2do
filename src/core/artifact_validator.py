@@ -24,6 +24,8 @@ DEFAULT_DOMAIN_DIRS = [
     "domain_e",
     "domain_f",
     "domain_g",
+    "domain_h",
+    "domain_i",
 ]
 
 
