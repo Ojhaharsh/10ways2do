@@ -14,7 +14,7 @@ class CrossDomainAnalyzer:
     
     def __init__(self, results_dir: str = "results"):
         self.results_dir = Path(results_dir)
-        self.domains = ['domain_a', 'domain_b', 'domain_c', 'domain_d', 'domain_e', 'domain_f', 'domain_g']
+        self.domains = ['domain_a', 'domain_b', 'domain_c', 'domain_d', 'domain_e', 'domain_f', 'domain_g', 'domain_h', 'domain_i']
         self.domain_names = {
             'domain_a': 'Information Extraction',
             'domain_b': 'Anomaly Detection',
@@ -23,6 +23,8 @@ class CrossDomainAnalyzer:
             'domain_e': 'Tabular Decisioning',
             'domain_f': 'Cyber Threat Hunting',
             'domain_g': 'Operations Optimization',
+            'domain_h': 'Fraud Risk Assessment',
+            'domain_i': 'Capacity Planning',
         }
         self.results = {}
     
@@ -89,6 +91,8 @@ class CrossDomainAnalyzer:
                     accuracy = metrics.get('f1', 0)
                 elif domain == 'domain_c':
                     accuracy = metrics.get('ndcg@10', 0)
+                elif domain == 'domain_h':
+                    accuracy = metrics.get('f1', 0)
                 else:
                     accuracy = 1.0 / (metrics.get('rmse', 1) + 0.001)
                 
