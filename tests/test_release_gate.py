@@ -95,6 +95,10 @@ def _create_report(path: Path):
                 "## Statistical Significance",
                 "# Operations Optimization: Benchmark Report",
                 "## Statistical Significance",
+                "# Fraud Risk Assessment: Benchmark Report",
+                "## Statistical Significance",
+                "# Capacity Planning: Benchmark Report",
+                "## Statistical Significance",
                 "## Cross-Domain Statistical Summary",
                 "## Cross-Domain Pareto Frontier",
             ]
@@ -112,6 +116,8 @@ def _create_frontier(path: Path):
         "domain_e",
         "domain_f",
         "domain_g",
+        "domain_h",
+        "domain_i",
     ]
     path.write_text(
         json.dumps(
@@ -160,7 +166,7 @@ def _create_strategy_playbook(json_path: Path, md_path: Path):
 
 def test_release_gate_passes_on_valid_bundle(tmp_path):
     results_dir = tmp_path / "results"
-    for name in ["domain_a", "domain_b", "domain_c", "domain_d", "domain_e", "domain_f", "domain_g"]:
+    for name in ["domain_a", "domain_b", "domain_c", "domain_d", "domain_e", "domain_f", "domain_g", "domain_h", "domain_i"]:
         _create_domain_bundle(results_dir / name)
     _create_report(results_dir / "REPORT.md")
     _create_frontier(results_dir / "CROSS_DOMAIN_FRONTIER.json")
@@ -174,7 +180,7 @@ def test_release_gate_passes_on_valid_bundle(tmp_path):
 
 def test_release_gate_fails_when_report_missing_section(tmp_path):
     results_dir = tmp_path / "results"
-    for name in ["domain_a", "domain_b", "domain_c", "domain_d", "domain_e", "domain_f", "domain_g"]:
+    for name in ["domain_a", "domain_b", "domain_c", "domain_d", "domain_e", "domain_f", "domain_g", "domain_h", "domain_i"]:
         _create_domain_bundle(results_dir / name)
     (results_dir / "REPORT.md").write_text("# Incomplete report", encoding="utf-8")
     _create_frontier(results_dir / "CROSS_DOMAIN_FRONTIER.json")
@@ -189,7 +195,7 @@ def test_release_gate_fails_when_report_missing_section(tmp_path):
 
 def test_release_gate_fails_when_frontier_semantics_invalid(tmp_path):
     results_dir = tmp_path / "results"
-    for name in ["domain_a", "domain_b", "domain_c", "domain_d", "domain_e", "domain_f", "domain_g"]:
+    for name in ["domain_a", "domain_b", "domain_c", "domain_d", "domain_e", "domain_f", "domain_g", "domain_h", "domain_i"]:
         _create_domain_bundle(results_dir / name)
     _create_report(results_dir / "REPORT.md")
     _create_strategy_playbook(
@@ -220,7 +226,7 @@ def test_release_gate_fails_when_frontier_semantics_invalid(tmp_path):
 
 def test_release_gate_fails_when_strategy_playbook_missing(tmp_path):
     results_dir = tmp_path / "results"
-    for name in ["domain_a", "domain_b", "domain_c", "domain_d", "domain_e", "domain_f", "domain_g"]:
+    for name in ["domain_a", "domain_b", "domain_c", "domain_d", "domain_e", "domain_f", "domain_g", "domain_h", "domain_i"]:
         _create_domain_bundle(results_dir / name)
     _create_report(results_dir / "REPORT.md")
     _create_frontier(results_dir / "CROSS_DOMAIN_FRONTIER.json")

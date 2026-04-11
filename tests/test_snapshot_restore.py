@@ -198,6 +198,8 @@ def test_restore_snapshot_from_generated_release_snapshot(tmp_path):
     _seed_domain_artifacts(results_dir, "domain_e", "F1 Mean", "Linear")
     _seed_domain_artifacts(results_dir, "domain_f", "F1 Mean", "Threat Ensemble")
     _seed_domain_artifacts(results_dir, "domain_g", "RMSE Mean", "Ops Regressor")
+    _seed_domain_artifacts(results_dir, "domain_h", "F1 Mean", "Fraud Flags")
+    _seed_domain_artifacts(results_dir, "domain_i", "RMSE Mean", "Capacity Regressor")
     _seed_report(results_dir)
     _seed_frontier(results_dir)
     _seed_strategy_playbook(results_dir)
@@ -220,6 +222,8 @@ def test_restore_snapshot_from_generated_release_snapshot(tmp_path):
         "domain_e",
         "domain_f",
         "domain_g",
+        "domain_h",
+        "domain_i",
     ]
     assert (restored_dir / "domain_a" / "run_manifest.json").exists()
     assert (restored_dir / "domain_e" / "comparison_canonical.csv").exists()
