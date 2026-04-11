@@ -78,6 +78,22 @@ def run_domain(domain: str, **kwargs):
             'output_dir': kwargs.get('output_dir', 'results/domain_g'),
         }
         return run_all_approaches(**common_kwargs, **domain_kwargs)
+    elif domain == 'h' or domain == 'fraud':
+        from src.domain_h_fraud_risk_assessment.run_all import run_all_approaches
+        domain_kwargs = {
+            'n_samples': kwargs.get('n_train', 6000),
+            'n_features': kwargs.get('n_test', 26),
+            'output_dir': kwargs.get('output_dir', 'results/domain_h'),
+        }
+        return run_all_approaches(**common_kwargs, **domain_kwargs)
+    elif domain == 'i' or domain == 'capacity':
+        from src.domain_i_capacity_planning.run_all import run_all_approaches
+        domain_kwargs = {
+            'n_samples': kwargs.get('n_train', 6000),
+            'n_features': kwargs.get('n_test', 18),
+            'output_dir': kwargs.get('output_dir', 'results/domain_i'),
+        }
+        return run_all_approaches(**common_kwargs, **domain_kwargs)
     else:
         raise ValueError(f"Unknown domain: {domain}")
 
@@ -88,7 +104,7 @@ def run_all(**kwargs):
     print("ML PHILOSOPHY BENCHMARK: Running All Domains")
     print("=" * 80)
     
-    domains = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+    domains = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
     results = {}
     base_output_dir = kwargs.get('output_dir', 'results')
     
@@ -486,7 +502,7 @@ Examples:
     
     parser.add_argument('--all', action='store_true', help='Run all domains')
     parser.add_argument('--domain', '-d', type=str, 
-                        choices=['a', 'b', 'c', 'd', 'e', 'f', 'g', 'ie', 'anomaly', 'rec', 'ts', 'tabular', 'cyber', 'ops'],
+                        choices=['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'ie', 'anomaly', 'rec', 'ts', 'tabular', 'cyber', 'ops', 'fraud', 'capacity'],
                         help='Run specific domain')
     parser.add_argument('--report', action='store_true', help='Generate report')
     parser.add_argument('--strategy-playbook', action='store_true',
