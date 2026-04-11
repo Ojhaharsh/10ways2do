@@ -29,6 +29,8 @@ _MODULES = {
     "domain_e_tabular_decisioning": ".domain_e_tabular_decisioning",
     "domain_f_cyber_threat_hunting": ".domain_f_cyber_threat_hunting",
     "domain_g_operations_optimization": ".domain_g_operations_optimization",
+    "domain_h_fraud_risk_assessment": ".domain_h_fraud_risk_assessment",
+    "domain_i_capacity_planning": ".domain_i_capacity_planning",
 }
 
 
@@ -50,4 +52,6 @@ __all__ = [
     "domain_e_tabular_decisioning",
     "domain_f_cyber_threat_hunting",
     "domain_g_operations_optimization",
+    "domain_h_fraud_risk_assessment",
+    "domain_i_capacity_planning",
 ]
