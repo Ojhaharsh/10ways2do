@@ -6,6 +6,7 @@ Run all benchmarks across all domains and generate reports.
 """
 
 import argparse
+import subprocess
 import time
 import sys
 from pathlib import Path
@@ -476,6 +477,63 @@ def show_snapshot_info(snapshot_tag: str, snapshots_dir: str = "releases"):
     print(f"Restorable: {'yes' if info['restorable'] else 'no'}")
 
 
+def run_preflight(
+    results_dir: str = "results",
+    n_runs: int = 1,
+    seed: int = 42,
+    full_tests: bool = False,
+):
+    """Run a local preflight gate before pushing to remote."""
+    python_exe = sys.executable
+    smoke_cmd = [
+        python_exe,
+        "main.py",
+        "--all",
+        "--smoke-test",
+        "--n-runs",
+        str(n_runs),
+        "--seed",
+        str(seed),
+        "--output-dir",
+        results_dir,
+    ]
+    validate_cmd = [python_exe, "main.py", "--validate", "--output-dir", results_dir]
+    gate_cmd = [python_exe, "main.py", "--release-gate", "--output-dir", results_dir]
+
+    if full_tests:
+        tests_cmd = [python_exe, "-m", "pytest", "tests", "-v"]
+    else:
+        tests_cmd = [
+            python_exe,
+            "-m",
+            "pytest",
+            "tests/test_artifact_validator.py",
+            "tests/test_release_gate.py",
+            "tests/test_release_snapshot.py",
+            "tests/test_snapshot_restore.py",
+            "tests/test_benchmark_smoke_artifacts.py",
+            "tests/test_domain_h.py",
+            "tests/test_domain_i.py",
+            "-v",
+        ]
+
+    stages = [
+        ("smoke_benchmark", smoke_cmd),
+        ("artifact_validation", validate_cmd),
+        ("release_gate", gate_cmd),
+        ("tests", tests_cmd),
+    ]
+
+    print("=" * 80)
+    print("PREFLIGHT: local release confidence gate")
+    print("=" * 80)
+    for stage_name, command in stages:
+        print(f"\n[preflight] {stage_name}: {' '.join(command)}")
+        subprocess.run(command, check=True)
+
+    print("\nPreflight: PASSED")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="ML Philosophy Benchmark",
@@ -497,6 +555,8 @@ Examples:
     python main.py --list-snapshots          # List available snapshots
     python main.py --snapshot-info v1.1      # Show snapshot metadata
   python main.py --publish-ready-tag v1.1 # One-command publish-ready pipeline
+    python main.py --preflight             # Local smoke+validate+gate+critical tests
+    python main.py --preflight --preflight-full-tests  # Same with full pytest suite
         """
     )
     
@@ -505,6 +565,10 @@ Examples:
                         choices=['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'ie', 'anomaly', 'rec', 'ts', 'tabular', 'cyber', 'ops', 'fraud', 'capacity'],
                         help='Run specific domain')
     parser.add_argument('--report', action='store_true', help='Generate report')
+    parser.add_argument('--preflight', action='store_true',
+                        help='Run local smoke+validate+release-gate+tests before push')
+    parser.add_argument('--preflight-full-tests', action='store_true',
+                        help='When used with --preflight, run full pytest suite')
     parser.add_argument('--strategy-playbook', action='store_true',
                         help='Generate strategy playbook from CROSS_DOMAIN_FRONTIER.json')
     parser.add_argument('--simulate-policy', action='store_true',
@@ -599,6 +663,17 @@ Examples:
             sys.exit(1)
     elif args.report:
         generate_report(results_dir=args.output_dir)
+    elif args.preflight:
+        try:
+            run_preflight(
+                results_dir=args.output_dir,
+                n_runs=args.n_runs,
+                seed=args.seed,
+                full_tests=args.preflight_full_tests,
+            )
+        except Exception as exc:
+            print(f"Preflight: FAILED ({exc})")
+            sys.exit(1)
     elif args.strategy_playbook:
         try:
             generate_strategy_playbook(results_dir=args.output_dir)
