@@ -124,8 +124,10 @@ python main.py --all
 # 5. Run all 10 approaches on Domain E (Tabular Decisioning)
 # 6. Run all 10 approaches on Domain F (Cyber Threat Hunting)
 # 7. Run all 10 approaches on Domain G (Operations Optimization)
-# 6. Generate comparison reports
-# 7. Save results to results/ directory
+# 8. Run all 10 approaches on Domain H (Fraud Risk Assessment)
+# 9. Run all 10 approaches on Domain I (Capacity Planning)
+# 10. Generate comparison reports
+# 11. Save results to results/ directory
 ```
 
 ### Run All Domains with Custom Parameters
@@ -268,15 +270,21 @@ print(results['comparison'])
 ### Domain E: Tabular Decisioning
 ### Domain F: Cyber Threat Hunting
 ### Domain G: Operations Optimization
+### Domain H: Fraud Risk Assessment
+### Domain I: Capacity Planning
 
 ```bash
 # Command line
 python main.py --domain e
 python main.py --domain f
 python main.py --domain g
+python main.py --domain h
+python main.py --domain i
 
 # or
 python main.py --domain tabular
+python main.py --domain fraud
+python main.py --domain capacity
 
 # With custom parameters
 python main.py --domain e --n-train 6000 --n-test 1200
