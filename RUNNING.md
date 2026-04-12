@@ -464,6 +464,16 @@ pytest tests/test_domain_c.py -v
 pytest tests/test_domain_d.py -v
 ```
 
+### Run One-Command Preflight (Recommended Before Push)
+
+```bash
+# Fast preflight: smoke benchmark + validate + release gate + critical tests
+python main.py --preflight
+
+# Strict preflight: same as above plus full pytest suite
+python main.py --preflight --preflight-full-tests
+```
+
 ### Run Specific Test Classes
 
 ```bash

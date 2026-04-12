@@ -166,6 +166,13 @@ Run full publish-ready pipeline (smoke + report + gates + snapshot + summary):
 python main.py --publish-ready-tag v1.1
 ```
 
+Run local preflight before pushing (smoke + validate + release-gate + critical tests):
+
+```bash
+python main.py --preflight
+python main.py --preflight --preflight-full-tests
+```
+
 Publish-ready with retention policy (keep latest 30 nightly snapshots, protect stable tags):
 
 ```bash
