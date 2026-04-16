@@ -384,7 +384,7 @@ def load_domain_data(
     Load data for a specific domain.
     
     Args:
-        domain: One of 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'
+        domain: One of 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k'
         data_dir: Base data directory
         use_cache: Whether to use cached data
         
@@ -427,6 +427,12 @@ def load_domain_data(
     elif domain == 'i':
         from src.domain_i_capacity_planning.data_generator import create_capacity_planning_dataset
         data = create_capacity_planning_dataset()
+    elif domain == 'j':
+        from src.domain_j_model_risk_monitoring.data_generator import create_model_risk_dataset
+        data = create_model_risk_dataset()
+    elif domain == 'k':
+        from src.domain_k_infrastructure_cost_forecasting.data_generator import create_infrastructure_cost_dataset
+        data = create_infrastructure_cost_dataset()
     else:
         raise ValueError(f"Unknown domain: {domain}")
     
