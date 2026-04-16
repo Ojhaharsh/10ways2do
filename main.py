@@ -95,6 +95,22 @@ def run_domain(domain: str, **kwargs):
             'output_dir': kwargs.get('output_dir', 'results/domain_i'),
         }
         return run_all_approaches(**common_kwargs, **domain_kwargs)
+    elif domain == 'j' or domain == 'modelrisk':
+        from src.domain_j_model_risk_monitoring.run_all import run_all_approaches
+        domain_kwargs = {
+            'n_samples': kwargs.get('n_train', 6000),
+            'n_features': kwargs.get('n_test', 24),
+            'output_dir': kwargs.get('output_dir', 'results/domain_j'),
+        }
+        return run_all_approaches(**common_kwargs, **domain_kwargs)
+    elif domain == 'k' or domain == 'cost':
+        from src.domain_k_infrastructure_cost_forecasting.run_all import run_all_approaches
+        domain_kwargs = {
+            'n_samples': kwargs.get('n_train', 6000),
+            'n_features': kwargs.get('n_test', 20),
+            'output_dir': kwargs.get('output_dir', 'results/domain_k'),
+        }
+        return run_all_approaches(**common_kwargs, **domain_kwargs)
     else:
         raise ValueError(f"Unknown domain: {domain}")
 
@@ -105,7 +121,7 @@ def run_all(**kwargs):
     print("ML PHILOSOPHY BENCHMARK: Running All Domains")
     print("=" * 80)
     
-    domains = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
+    domains = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k']
     results = {}
     base_output_dir = kwargs.get('output_dir', 'results')
     
@@ -514,6 +530,8 @@ def run_preflight(
             "tests/test_benchmark_smoke_artifacts.py",
             "tests/test_domain_h.py",
             "tests/test_domain_i.py",
+            "tests/test_domain_j.py",
+            "tests/test_domain_k.py",
             "-v",
         ]
 
@@ -562,7 +580,7 @@ Examples:
     
     parser.add_argument('--all', action='store_true', help='Run all domains')
     parser.add_argument('--domain', '-d', type=str, 
-                        choices=['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'ie', 'anomaly', 'rec', 'ts', 'tabular', 'cyber', 'ops', 'fraud', 'capacity'],
+                        choices=['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'ie', 'anomaly', 'rec', 'ts', 'tabular', 'cyber', 'ops', 'fraud', 'capacity', 'modelrisk', 'cost'],
                         help='Run specific domain')
     parser.add_argument('--report', action='store_true', help='Generate report')
     parser.add_argument('--preflight', action='store_true',
