@@ -29,6 +29,8 @@ DOMAIN_LABELS = {
     "domain_g": "Operations Optimization",
     "domain_h": "Fraud Risk Assessment",
     "domain_i": "Capacity Planning",
+    "domain_j": "Model Risk Monitoring",
+    "domain_k": "Infrastructure Cost Forecasting",
 }
 
 
