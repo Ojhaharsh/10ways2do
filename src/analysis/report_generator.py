@@ -24,6 +24,8 @@ class ReportGenerator:
             'domain_g': 'Operations Optimization',
             'domain_h': 'Fraud Risk Assessment',
             'domain_i': 'Capacity Planning',
+            'domain_j': 'Model Risk Monitoring',
+            'domain_k': 'Infrastructure Cost Forecasting',
         }
         self._latest_cross_domain_frontier: Optional[Dict[str, Any]] = None
 
@@ -251,6 +253,8 @@ class ReportGenerator:
             'domain_g': ('', 'rmse'),
             'domain_h': ('', 'f1'),
             'domain_i': ('', 'rmse'),
+            'domain_j': ('', 'f1'),
+            'domain_k': ('', 'rmse'),
         }
         
         container, metric = metrics_key.get(domain, ('', 'accuracy'))
@@ -268,7 +272,7 @@ class ReportGenerator:
                 value = metrics.get(metric, 0)
             
             if value is not None:
-                if domain in {'domain_d', 'domain_g', 'domain_i'}:  # Lower is better for RMSE
+                if domain in {'domain_d', 'domain_g', 'domain_i', 'domain_k'}:  # Lower is better for RMSE
                     if best_perf is None or value < best_perf:
                         best_perf = value
                         best_name = r['name']
@@ -316,7 +320,7 @@ class ReportGenerator:
         
         report.append("## Overview\n")
         report.append("""
-This benchmark evaluates 10 fundamentally different ML approaches across 9 real-world domains:
+This benchmark evaluates 10 fundamentally different ML approaches across 11 real-world domains:
 
 1. **Information Extraction** - Extracting structured data from text
 2. **Anomaly Detection** - Identifying unusual patterns in data
@@ -327,6 +331,8 @@ This benchmark evaluates 10 fundamentally different ML approaches across 9 real-
 7. **Operations Optimization** - Predicting continuous operational outcomes for planning
 8. **Fraud Risk Assessment** - Classifying fraud propensity from mixed transactional signals
 9. **Capacity Planning** - Forecasting continuous capacity requirements for operations
+10. **Model Risk Monitoring** - Classifying production model risk from drift and stability indicators
+11. **Infrastructure Cost Forecasting** - Forecasting continuous infrastructure spend and utilization outcomes
 
 Each approach represents a different **mental model** for solving ML problems, with distinct 
 trade-offs in terms of accuracy, speed, interpretability, data efficiency, and robustness.

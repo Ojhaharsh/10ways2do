@@ -2,13 +2,20 @@
 ML Philosophy Benchmark
 
 A comprehensive benchmark comparing 10 fundamentally different ML approaches
-across 4 real-world domains.
+across 11 real-world domains.
 
 Domains:
 - A: Information Extraction
 - B: Anomaly Detection
 - C: Recommendation
 - D: Time Series Forecasting
+- E: Tabular Decisioning
+- F: Cyber Threat Hunting
+- G: Operations Optimization
+- H: Fraud Risk Assessment
+- I: Capacity Planning
+- J: Model Risk Monitoring
+- K: Infrastructure Cost Forecasting
 
 Each domain implements 10 approaches representing different ML philosophies.
 """
@@ -31,6 +38,8 @@ _MODULES = {
     "domain_g_operations_optimization": ".domain_g_operations_optimization",
     "domain_h_fraud_risk_assessment": ".domain_h_fraud_risk_assessment",
     "domain_i_capacity_planning": ".domain_i_capacity_planning",
+    "domain_j_model_risk_monitoring": ".domain_j_model_risk_monitoring",
+    "domain_k_infrastructure_cost_forecasting": ".domain_k_infrastructure_cost_forecasting",
 }
 
 
@@ -54,4 +63,6 @@ __all__ = [
     "domain_g_operations_optimization",
     "domain_h_fraud_risk_assessment",
     "domain_i_capacity_planning",
+    "domain_j_model_risk_monitoring",
+    "domain_k_infrastructure_cost_forecasting",
 ]
