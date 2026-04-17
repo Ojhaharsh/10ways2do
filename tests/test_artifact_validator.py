@@ -96,6 +96,8 @@ def test_validate_results_tree_passes_on_minimal_contract(tmp_path):
         "domain_g",
         "domain_h",
         "domain_i",
+        "domain_j",
+        "domain_k",
     ]
 
     for name in domain_names:
@@ -116,12 +118,14 @@ def test_validate_results_tree_fails_on_missing_required_file(tmp_path):
         "domain_g",
         "domain_h",
         "domain_i",
+        "domain_j",
+        "domain_k",
     ]
 
     for name in domain_names:
         _create_minimal_domain_artifacts(results_dir / name)
 
-    (results_dir / "domain_i" / "comparison_variants.csv").unlink()
+    (results_dir / "domain_k" / "comparison_variants.csv").unlink()
 
     with pytest.raises(ArtifactValidationError):
         validate_results_tree(results_dir=results_dir)
