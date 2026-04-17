@@ -20,6 +20,8 @@ from src.domain_f_cyber_threat_hunting.run_all import run_all_approaches as run_
 from src.domain_g_operations_optimization.run_all import run_all_approaches as run_g
 from src.domain_h_fraud_risk_assessment.run_all import run_all_approaches as run_h
 from src.domain_i_capacity_planning.run_all import run_all_approaches as run_i
+from src.domain_j_model_risk_monitoring.run_all import run_all_approaches as run_j
+from src.domain_k_infrastructure_cost_forecasting.run_all import run_all_approaches as run_k
 from src.core.benchmark_utils import BENCHMARK_PROTOCOL_VERSION
 
 
@@ -129,6 +131,28 @@ REQUIRED_FILES = [
         (
             "domain_i",
             run_i,
+            {
+                "n_samples": 800,
+                "n_features": 16,
+                "n_runs": 1,
+                "seed": 42,
+                "smoke_test": True,
+            },
+        ),
+        (
+            "domain_j",
+            run_j,
+            {
+                "n_samples": 800,
+                "n_features": 20,
+                "n_runs": 1,
+                "seed": 42,
+                "smoke_test": True,
+            },
+        ),
+        (
+            "domain_k",
+            run_k,
             {
                 "n_samples": 800,
                 "n_features": 16,
