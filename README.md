@@ -1,6 +1,6 @@
 # 10ways2do
 
-10ways2do is an ML comparison framework that evaluates different approach families on nine domains:
+10ways2do is an ML comparison framework that evaluates different approach families on eleven domains:
 
 - Domain A: Information Extraction
 - Domain B: Anomaly Detection
@@ -11,6 +11,8 @@
 - Domain G: Operations Optimization
 - Domain H: Fraud Risk Assessment
 - Domain I: Capacity Planning
+- Domain J: Model Risk Monitoring
+- Domain K: Infrastructure Cost Forecasting
 
 The goal is not to claim a universal winner. The goal is to make trade-offs explicit: accuracy, latency, data needs, and implementation complexity.
 
@@ -77,6 +79,8 @@ python main.py --domain f
 python main.py --domain g
 python main.py --domain h
 python main.py --domain i
+python main.py --domain j
+python main.py --domain k
 ```
 
 Run with reproducibility settings:
@@ -96,6 +100,13 @@ Generate report from existing outputs:
 
 ```bash
 python main.py --report
+```
+
+Generate benchmark card from existing outputs:
+
+```bash
+python main.py --benchmark-card
+python main.py --benchmark-card --benchmark-card-output-dir releases/v1.2
 ```
 
 Generate strategy playbook from cross-domain frontier:
@@ -211,6 +222,8 @@ Cross-domain report:
 - results/POLICY_OPTIMIZATION_<policy-name>.md
 - results/POLICY_FRONTIER_<policy-name>.json
 - results/POLICY_FRONTIER_<policy-name>.md
+- results/BENCHMARK_CARD.json
+- results/BENCHMARK_CARD.md
 
 ## Documentation
 

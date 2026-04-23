@@ -163,6 +163,17 @@ def generate_strategy_playbook(results_dir: str = "results"):
     print(f"Strategy playbook generated: {outputs['markdown']}")
 
 
+def generate_benchmark_card(results_dir: str = "results", output_dir: Optional[str] = None):
+    """Generate benchmark card artifacts from frontier and manifest outputs."""
+    from src.analysis.benchmark_card import BenchmarkCardGenerator
+
+    generator = BenchmarkCardGenerator(results_dir=results_dir)
+    outputs = generator.save(output_dir=output_dir)
+    print(f"Benchmark card generated: {outputs['json']}")
+    print(f"Benchmark card generated: {outputs['markdown']}")
+    return outputs
+
+
 def run_policy_simulation(
     results_dir: str = "results",
     policy_name: str = "custom_policy",
@@ -396,6 +407,13 @@ def run_publish_ready(
         details="Generated versioned snapshot package",
     )
 
+    benchmark_card_output = str(snapshot_output) if snapshot_output is not None else results_dir
+    _record_stage(
+        "benchmark_card",
+        lambda: generate_benchmark_card(results_dir=results_dir, output_dir=benchmark_card_output),
+        details="Generated BENCHMARK_CARD artifacts for release consumers",
+    )
+
     if prune_nightly_keep is not None:
         from src.core.snapshot_retention import prune_snapshot_directories
 
@@ -562,6 +580,7 @@ Examples:
   python main.py --domain a               # Run only Domain A (IE)
   python main.py --domain b --n-train 1000  # Run Domain B with custom size
   python main.py --report                 # Generate report from existing results
+    python main.py --benchmark-card         # Generate benchmark card from existing results
     python main.py --strategy-playbook      # Generate strategy playbook from frontier artifact
     python main.py --simulate-policy --policy-name latency-ops --w-speed 0.6 --min-resilience 0.7
     python main.py --optimize-policy --policy-name resilient-prod --opt-objective max_coverage --weight-step 0.25 --min-resilience 0.8
@@ -589,6 +608,10 @@ Examples:
                         help='When used with --preflight, run full pytest suite')
     parser.add_argument('--strategy-playbook', action='store_true',
                         help='Generate strategy playbook from CROSS_DOMAIN_FRONTIER.json')
+    parser.add_argument('--benchmark-card', action='store_true',
+                        help='Generate benchmark card from CROSS_DOMAIN_FRONTIER + manifests')
+    parser.add_argument('--benchmark-card-output-dir', type=str, default=None,
+                        help='Optional output directory for --benchmark-card artifacts')
     parser.add_argument('--simulate-policy', action='store_true',
                         help='Run what-if policy simulation from CROSS_DOMAIN_FRONTIER.json')
     parser.add_argument('--optimize-policy', action='store_true',
@@ -697,6 +720,15 @@ Examples:
             generate_strategy_playbook(results_dir=args.output_dir)
         except Exception as exc:
             print(f"Strategy playbook: FAILED ({exc})")
+            sys.exit(1)
+    elif args.benchmark_card:
+        try:
+            generate_benchmark_card(
+                results_dir=args.output_dir,
+                output_dir=args.benchmark_card_output_dir,
+            )
+        except Exception as exc:
+            print(f"Benchmark card: FAILED ({exc})")
             sys.exit(1)
     elif args.simulate_policy:
         try:

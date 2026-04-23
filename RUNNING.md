@@ -126,8 +126,10 @@ python main.py --all
 # 7. Run all 10 approaches on Domain G (Operations Optimization)
 # 8. Run all 10 approaches on Domain H (Fraud Risk Assessment)
 # 9. Run all 10 approaches on Domain I (Capacity Planning)
-# 10. Generate comparison reports
-# 11. Save results to results/ directory
+# 10. Run all 10 approaches on Domain J (Model Risk Monitoring)
+# 11. Run all 10 approaches on Domain K (Infrastructure Cost Forecasting)
+# 12. Generate comparison reports
+# 13. Save results to results/ directory
 ```
 
 ### Run All Domains with Custom Parameters
@@ -272,6 +274,8 @@ print(results['comparison'])
 ### Domain G: Operations Optimization
 ### Domain H: Fraud Risk Assessment
 ### Domain I: Capacity Planning
+### Domain J: Model Risk Monitoring
+### Domain K: Infrastructure Cost Forecasting
 
 ```bash
 # Command line
@@ -280,11 +284,15 @@ python main.py --domain f
 python main.py --domain g
 python main.py --domain h
 python main.py --domain i
+python main.py --domain j
+python main.py --domain k
 
 # or
 python main.py --domain tabular
 python main.py --domain fraud
 python main.py --domain capacity
+python main.py --domain modelrisk
+python main.py --domain cost
 
 # With custom parameters
 python main.py --domain e --n-train 6000 --n-test 1200
@@ -302,6 +310,13 @@ results = run_all_approaches(
 )
 
 print(results['canonical_comparison'])
+```
+
+Generate benchmark card artifacts from existing results:
+
+```bash
+python main.py --benchmark-card
+python main.py --benchmark-card --benchmark-card-output-dir releases/v1.2
 ```
 
 ---
