@@ -7,3 +7,4 @@ from .visualization import Visualizer
 from .report_generator import ReportGenerator
 from .strategy_playbook import StrategyPlaybookGenerator
 from .policy_simulator import PolicySimulator
+from .benchmark_card import BenchmarkCardGenerator
