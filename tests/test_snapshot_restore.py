@@ -186,7 +186,7 @@ def test_restore_snapshot_partial_artifacts(tmp_path):
 
 def test_restore_snapshot_from_generated_release_snapshot(tmp_path):
     """Generated snapshots should be directly restorable by restore_snapshot."""
-    from tests.test_release_snapshot import _seed_domain_artifacts, _seed_frontier, _seed_report, _seed_strategy_playbook
+    from tests.test_release_snapshot import _seed_benchmark_card, _seed_domain_artifacts, _seed_frontier, _seed_report, _seed_strategy_playbook
 
     results_dir = tmp_path / "results"
     snapshots_dir = tmp_path / "releases"
@@ -205,6 +205,7 @@ def test_restore_snapshot_from_generated_release_snapshot(tmp_path):
     _seed_report(results_dir)
     _seed_frontier(results_dir)
     _seed_strategy_playbook(results_dir)
+    _seed_benchmark_card(results_dir)
 
     create_release_snapshot("v9.9-test", results_dir=results_dir, snapshots_root=snapshots_dir)
 

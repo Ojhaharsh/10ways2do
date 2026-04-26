@@ -149,6 +149,18 @@ def _seed_strategy_playbook(results_dir: Path):
     (results_dir / "STRATEGY_PLAYBOOK.md").write_text("# Strategy Playbook\n", encoding="utf-8")
 
 
+def _seed_benchmark_card(results_dir: Path):
+    card = {
+        "domain_coverage": {"expected": 11, "observed": 11, "missing_in_frontier": [], "missing_manifest": []},
+        "protocol_versions": {BENCHMARK_PROTOCOL_VERSION: 11},
+        "git_commit_hashes": ["deadbeef"],
+        "champions": [{"domain": "domain_a", "domain_name": "Information Extraction", "champion": "Rule-Based IE", "extraordinary_index": 0.88}],
+        "top_generalists": [{"name": "Rule-Based IE", "avg_extraordinary_index": 0.88, "domains_covered": 11}],
+    }
+    (results_dir / "BENCHMARK_CARD.json").write_text(json.dumps(card), encoding="utf-8")
+    (results_dir / "BENCHMARK_CARD.md").write_text("# Benchmark Card\n", encoding="utf-8")
+
+
 def test_create_release_snapshot_creates_expected_files(tmp_path):
     results_dir = tmp_path / "results"
     snapshots_dir = tmp_path / "releases"
@@ -167,6 +179,7 @@ def test_create_release_snapshot_creates_expected_files(tmp_path):
     _seed_report(results_dir)
     _seed_frontier(results_dir)
     _seed_strategy_playbook(results_dir)
+    _seed_benchmark_card(results_dir)
 
     out = create_release_snapshot("v1.1-test", results_dir=results_dir, snapshots_root=snapshots_dir)
 
