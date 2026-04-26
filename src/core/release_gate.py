@@ -225,6 +225,45 @@ def _validate_strategy_playbook(json_path: Path, md_path: Path, errors: List[str
         errors.append(f"{md_path}: missing Strategy Playbook title")
 
 
+def _validate_benchmark_card(json_path: Path, md_path: Path, errors: List[str]) -> None:
+    if not json_path.exists():
+        errors.append(f"{json_path}: missing benchmark card artifact")
+        return
+
+    if not md_path.exists():
+        errors.append(f"{md_path}: missing benchmark card markdown")
+        return
+
+    try:
+        payload = _load_json(json_path)
+    except Exception as exc:
+        errors.append(f"{json_path}: cannot parse JSON ({exc})")
+        return
+
+    coverage = payload.get("domain_coverage")
+    if not isinstance(coverage, dict):
+        errors.append(f"{json_path}: missing domain_coverage block")
+    else:
+        expected = coverage.get("expected")
+        observed = coverage.get("observed")
+        if not isinstance(expected, int) or expected < len(DEFAULT_DOMAIN_DIRS):
+            errors.append(f"{json_path}: invalid expected domain count in benchmark card")
+        if not isinstance(observed, int) or observed <= 0:
+            errors.append(f"{json_path}: invalid observed domain count in benchmark card")
+
+    if not isinstance(payload.get("champions"), list) or not payload.get("champions"):
+        errors.append(f"{json_path}: missing champions list")
+
+    try:
+        markdown = md_path.read_text(encoding="utf-8")
+    except Exception as exc:
+        errors.append(f"{md_path}: cannot read benchmark card markdown ({exc})")
+        return
+
+    if "# Benchmark Card" not in markdown:
+        errors.append(f"{md_path}: missing Benchmark Card title")
+
+
 
 def run_release_gate(results_dir: str | Path = "results", require_report: bool = True) -> None:
     """Run release-gate checks and raise on failure."""
@@ -247,6 +286,11 @@ def run_release_gate(results_dir: str | Path = "results", require_report: bool =
         _validate_strategy_playbook(
             root / "STRATEGY_PLAYBOOK.json",
             root / "STRATEGY_PLAYBOOK.md",
+            errors,
+        )
+        _validate_benchmark_card(
+            root / "BENCHMARK_CARD.json",
+            root / "BENCHMARK_CARD.md",
             errors,
         )
 

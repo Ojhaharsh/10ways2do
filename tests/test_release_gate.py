@@ -170,6 +170,22 @@ def _create_strategy_playbook(json_path: Path, md_path: Path):
     md_path.write_text("# Strategy Playbook\n", encoding="utf-8")
 
 
+def _create_benchmark_card(json_path: Path, md_path: Path):
+    json_path.write_text(
+        json.dumps(
+            {
+                "domain_coverage": {"expected": 11, "observed": 11, "missing_in_frontier": [], "missing_manifest": []},
+                "protocol_versions": {BENCHMARK_PROTOCOL_VERSION: 11},
+                "git_commit_hashes": ["abc123"],
+                "champions": [{"domain": "domain_a", "domain_name": "Information Extraction", "champion": "Dummy", "extraordinary_index": 0.99}],
+                "top_generalists": [{"name": "Dummy", "avg_extraordinary_index": 0.99, "domains_covered": 11}],
+            }
+        ),
+        encoding="utf-8",
+    )
+    md_path.write_text("# Benchmark Card\n", encoding="utf-8")
+
+
 def test_release_gate_passes_on_valid_bundle(tmp_path):
     results_dir = tmp_path / "results"
     for name in ["domain_a", "domain_b", "domain_c", "domain_d", "domain_e", "domain_f", "domain_g", "domain_h", "domain_i", "domain_j", "domain_k"]:
@@ -180,6 +196,8 @@ def test_release_gate_passes_on_valid_bundle(tmp_path):
         results_dir / "STRATEGY_PLAYBOOK.json",
         results_dir / "STRATEGY_PLAYBOOK.md",
     )
+    _create_benchmark_card(results_dir / "BENCHMARK_CARD.json", results_dir / "BENCHMARK_CARD.md")
+    _create_benchmark_card(results_dir / "BENCHMARK_CARD.json", results_dir / "BENCHMARK_CARD.md")
 
     run_release_gate(results_dir=results_dir)
 
@@ -208,6 +226,7 @@ def test_release_gate_fails_when_frontier_semantics_invalid(tmp_path):
         results_dir / "STRATEGY_PLAYBOOK.json",
         results_dir / "STRATEGY_PLAYBOOK.md",
     )
+    _create_benchmark_card(results_dir / "BENCHMARK_CARD.json", results_dir / "BENCHMARK_CARD.md")
 
     # Missing domain coverage and empty Pareto list should fail semantic frontier checks.
     (results_dir / "CROSS_DOMAIN_FRONTIER.json").write_text(
@@ -236,6 +255,8 @@ def test_release_gate_fails_when_strategy_playbook_missing(tmp_path):
         _create_domain_bundle(results_dir / name)
     _create_report(results_dir / "REPORT.md")
     _create_frontier(results_dir / "CROSS_DOMAIN_FRONTIER.json")
+
+    _create_benchmark_card(results_dir / "BENCHMARK_CARD.json", results_dir / "BENCHMARK_CARD.md")
 
     with pytest.raises(ReleaseGateError):
         run_release_gate(results_dir=results_dir)
