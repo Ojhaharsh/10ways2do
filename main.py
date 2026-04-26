@@ -836,6 +836,7 @@ Examples:
             smoke_test=args.smoke_test,
         )
         generate_report(results_dir=args.output_dir)
+        generate_benchmark_card(results_dir=args.output_dir)
     elif args.domain:
         kwargs = {
             'n_train': args.n_train,

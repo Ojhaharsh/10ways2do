@@ -54,6 +54,10 @@ jobs:
             python main.py --publish-ready-tag "$SNAP_TAG" --prune-nightly-keep 30 --protect-tag-prefixes v stable release
           fi
 
+      - name: Refresh benchmark card in snapshot bundle
+        run: |
+          python main.py --benchmark-card --output-dir "releases/$SNAP_TAG"
+
       - name: Upload publish-ready artifacts
         uses: actions/upload-artifact@v4
         with:
