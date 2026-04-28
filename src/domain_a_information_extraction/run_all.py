@@ -182,7 +182,7 @@ def run_all_approaches(
                 HybridIE(),
             ]
 
-        if HAS_TRANSFORMERS:
+        if HAS_TRANSFORMERS and not smoke_test:
             try:
                 approaches.insert(-1, PretrainedTransformerIE({'epochs': 1}))
             except Exception:
