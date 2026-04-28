@@ -1,0 +1,77 @@
+name: Leaderboard Update & Publication
+
+on:
+  workflow_run:
+    workflows: ["Auto-Scaling Nightly Benchmark", "release-quality-gate"]
+    types: [completed]
+
+jobs:
+  publish-leaderboard:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Download benchmark results
+        uses: actions/download-artifact@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+          path: results/
+      
+      - name: Generate leaderboards (all formats)
+        run: |
+          python main.py --leaderboard --output-dir results/leaderboards/
+      
+      - name: Generate dashboard with current results
+        run: |
+          python main.py --dashboard --output-file results/leaderboards/dashboard.html
+      
+      - name: Create leaderboard markdown
+        run: |
+          python -c "
+          import pandas as pd
+          from pathlib import Path
+          
+          # Read overall leaderboard
+          df = pd.read_csv('results/leaderboards/leaderboard_overall.csv')
+          
+          # Create markdown
+          md = '''# Leaderboard
+          
+          ## Overall Cross-Domain Rankings
+          
+          '''
+          
+          md += df.to_markdown(index=False)
+          
+          # Save
+          Path('results/leaderboards/LEADERBOARD.md').write_text(md)
+          print('Leaderboard markdown generated')
+          "
+      
+      - name: Push leaderboard updates
+        run: |
+          git config user.name 'Benchmark Bot'
+          git config user.email 'benchmark@example.com'
+          git add -A leaderboards/ || true
+          git commit -m 'chore: update leaderboards from latest benchmark' || true
+          git push || true
+      
+      - name: Upload leaderboards
+        uses: actions/upload-artifact@v3
+        with:
+          name: leaderboards
+          path: results/leaderboards/
+          retention-days: 90
