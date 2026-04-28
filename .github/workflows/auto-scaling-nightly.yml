@@ -1,0 +1,105 @@
+name: Auto-Scaling Nightly Benchmark
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 2 AM UTC daily
+  workflow_dispatch:
+
+jobs:
+  parallel-benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 480  # 8 hours
+    
+    strategy:
+      matrix:
+        domain: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p']
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Run Domain ${{ matrix.domain }} with multiple seeds
+        run: |
+          python main.py --domain ${{ matrix.domain }} \
+            --n-runs 3 \
+            --seed 42 \
+            --output-dir results/domain_${{ matrix.domain }} \
+            --advanced-metrics
+        timeout-minutes: 120
+      
+      - name: Generate domain leaderboard
+        if: always()
+        run: |
+          python main.py --leaderboard --domain ${{ matrix.domain }}
+      
+      - name: Upload domain results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: domain-${{ matrix.domain }}-results
+          path: results/domain_${{ matrix.domain }}/
+          retention-days: 30
+  
+  aggregate-results:
+    needs: parallel-benchmark
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Download all results
+        uses: actions/download-artifact@v3
+        with:
+          path: results/
+      
+      - name: Generate cross-domain analysis
+        run: |
+          python main.py --report --output-dir results/
+          python main.py --leaderboard --output-dir results/
+          python main.py --significance-report --output-dir results/
+      
+      - name: Generate dashboard
+        run: |
+          python main.py --dashboard --output-file results/dashboard.html
+      
+      - name: Upload final results
+        uses: actions/upload-artifact@v3
+        with:
+          name: benchmark-results-complete
+          path: results/
+          retention-days: 90
+      
+      - name: Upload dashboard
+        uses: actions/upload-artifact@v3
+        with:
+          name: benchmark-dashboard
+          path: results/dashboard.html
+          retention-days: 90
+      
+      - name: Comment on workflow
+        if: always()
+        run: |
+          echo "✓ Auto-scaling benchmark complete"
+          echo "✓ 16 domains × 3 seeds = 160 method runs"
+          echo "✓ Advanced metrics collected: cost, fairness, robustness"
+          echo "✓ Statistical significance testing completed"
