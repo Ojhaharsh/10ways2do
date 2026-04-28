@@ -128,8 +128,13 @@ python main.py --all
 # 9. Run all 10 approaches on Domain I (Capacity Planning)
 # 10. Run all 10 approaches on Domain J (Model Risk Monitoring)
 # 11. Run all 10 approaches on Domain K (Infrastructure Cost Forecasting)
-# 12. Generate comparison reports
-# 13. Save results to results/ directory
+# 12. Run all 10 approaches on Domain L (Computer Vision)
+# 13. Run all 10 approaches on Domain M (Graph Neural Networks)
+# 14. Run all 10 approaches on Domain N (Few-Shot Learning)
+# 15. Run all 10 approaches on Domain O (Reinforcement Learning)
+# 16. Run all 10 approaches on Domain P (Multimodal Learning)
+# 17. Generate comparison reports
+# 18. Save results to results/ directory
 ```
 
 ### Run All Domains with Custom Parameters

@@ -1,6 +1,8 @@
 # 10ways2do
 
-10ways2do is an ML comparison framework that evaluates different approach families on eleven domains:
+10ways2do is an ML comparison framework that evaluates different approach families on **sixteen domains**:
+
+## Original Domains (A-K)
 
 - Domain A: Information Extraction
 - Domain B: Anomaly Detection
@@ -14,7 +16,25 @@
 - Domain J: Model Risk Monitoring
 - Domain K: Infrastructure Cost Forecasting
 
-The goal is not to claim a universal winner. The goal is to make trade-offs explicit: accuracy, latency, data needs, and implementation complexity.
+## New Domains (L-P)
+
+- Domain L: Computer Vision (10 CNN architectures)
+- Domain M: Graph Neural Networks (GCN, GAT, GraphSAGE, etc.)
+- Domain N: Few-Shot Learning (Prototypical Networks, MAML, etc.)
+- Domain O: Reinforcement Learning (Bandit algorithms, UCB, Thompson, etc.)
+- Domain P: Multimodal Learning (CLIP, VisualBERT, LLaVA, etc.)
+
+## Key Features
+
+- **160 Method Comparisons**: 10 approaches × 16 domains
+- **Advanced Metrics**: Cost tracking (latency, memory, FLOPS), fairness assessment, robustness testing
+- **Leaderboards**: Per-domain and cross-domain rankings with statistical significance
+- **Statistical Testing**: Welch's t-test, Mann-Whitney U, bootstrap confidence intervals
+- **Distributed Running**: Auto-scaling parallel execution with job priority queues
+- **Release Governance**: Mandatory benchmark cards, artifact validation, CI/CD gates
+- **Reproducibility**: Deterministic seeding, multi-run validation (n_runs configurable)
+
+The goal is not to claim a universal winner. The goal is to make trade-offs explicit: accuracy, latency, data needs, implementation complexity, fairness, and robustness.
 
 ## What this repo is
 
@@ -81,6 +101,11 @@ python main.py --domain h
 python main.py --domain i
 python main.py --domain j
 python main.py --domain k
+python main.py --domain l    # Computer Vision
+python main.py --domain m    # Graph Neural Networks
+python main.py --domain n    # Few-Shot Learning
+python main.py --domain o    # Reinforcement Learning
+python main.py --domain p    # Multimodal Learning
 ```
 
 Run with reproducibility settings:
@@ -97,6 +122,29 @@ python main.py --all --smoke-test --n-runs 1 --seed 42
 ```
 
 Generate report from existing outputs:
+
+```bash
+python main.py --report
+```
+
+Generate leaderboard and dashboard:
+
+```bash
+python main.py --leaderboard
+python main.py --dashboard
+```
+
+Generate statistical significance report:
+
+```bash
+python main.py --significance-report
+```
+
+Generate advanced metrics (cost, fairness, robustness):
+
+```bash
+python main.py --advanced-metrics
+```
 
 ```bash
 python main.py --report
