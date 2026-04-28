@@ -26,6 +26,11 @@ EXPECTED_DOMAIN_HEADERS = [
     "# Capacity Planning: Benchmark Report",
     "# Model Risk Monitoring: Benchmark Report",
     "# Infrastructure Cost Forecasting: Benchmark Report",
+    "# Computer Vision: Benchmark Report",
+    "# Graph Neural Networks: Benchmark Report",
+    "# Few-Shot Learning: Benchmark Report",
+    "# Reinforcement Learning: Benchmark Report",
+    "# Multimodal Learning: Benchmark Report",
 ]
 
 
