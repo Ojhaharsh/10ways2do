@@ -79,6 +79,10 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+## Website
+
+Open [website/index.html](website/index.html) in a browser for a visual guide to the project. It explains what the repository contains, how the domains map out, and which files to read first.
+
 ## CLI usage
 
 Run all domains:

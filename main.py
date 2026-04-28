@@ -111,6 +111,46 @@ def run_domain(domain: str, **kwargs):
             'output_dir': kwargs.get('output_dir', 'results/domain_k'),
         }
         return run_all_approaches(**common_kwargs, **domain_kwargs)
+    elif domain == 'l' or domain == 'vision':
+        from src.domain_l_computer_vision.run_all import run_all_approaches
+        domain_kwargs = {
+            'n_train': kwargs.get('n_train', 1000),
+            'n_test': kwargs.get('n_test', 200),
+            'output_dir': kwargs.get('output_dir', 'results/domain_l'),
+        }
+        return run_all_approaches(**common_kwargs, **domain_kwargs)
+    elif domain == 'm' or domain == 'graphs':
+        from src.domain_m_graph_neural_networks.run_all import run_all_approaches
+        domain_kwargs = {
+            'n_nodes': kwargs.get('n_train', 500),
+            'n_edges': kwargs.get('n_test', 1000),
+            'output_dir': kwargs.get('output_dir', 'results/domain_m'),
+        }
+        return run_all_approaches(**common_kwargs, **domain_kwargs)
+    elif domain == 'n' or domain == 'fewshot':
+        from src.domain_n_few_shot_learning.run_all import run_all_approaches
+        domain_kwargs = {
+            'n_ways': 5,
+            'n_shots': kwargs.get('n_train', 5),
+            'n_queries': kwargs.get('n_test', 15),
+            'output_dir': kwargs.get('output_dir', 'results/domain_n'),
+        }
+        return run_all_approaches(**common_kwargs, **domain_kwargs)
+    elif domain == 'o' or domain == 'rl':
+        from src.domain_o_reinforcement_learning.run_all import run_all_approaches
+        domain_kwargs = {
+            'n_arms': 10,
+            'n_steps': kwargs.get('n_train', 1000),
+            'output_dir': kwargs.get('output_dir', 'results/domain_o'),
+        }
+        return run_all_approaches(**common_kwargs, **domain_kwargs)
+    elif domain == 'p' or domain == 'multimodal':
+        from src.domain_p_multimodal_learning.run_all import run_all_approaches
+        domain_kwargs = {
+            'n_samples': kwargs.get('n_train', 1000),
+            'output_dir': kwargs.get('output_dir', 'results/domain_p'),
+        }
+        return run_all_approaches(**common_kwargs, **domain_kwargs)
     else:
         raise ValueError(f"Unknown domain: {domain}")
 
@@ -121,7 +161,7 @@ def run_all(**kwargs):
     print("ML PHILOSOPHY BENCHMARK: Running All Domains")
     print("=" * 80)
     
-    domains = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k']
+    domains = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p']
     results = {}
     base_output_dir = kwargs.get('output_dir', 'results')
     
