@@ -634,6 +634,12 @@ Examples:
   python main.py --publish-ready-tag v1.1 # One-command publish-ready pipeline
     python main.py --preflight             # Local smoke+validate+gate+critical tests
     python main.py --preflight --preflight-full-tests  # Same with full pytest suite
+
+  AI MODEL EVALUATION (NEW):
+    python main.py --evaluate-model --provider gemini --model gemini-2.5-flash
+    python main.py --evaluate-model --provider together --model Qwen/Qwen3-235B-A22B
+    python main.py --evaluate-model --provider mock --model mock-v1 --eval-challenges 10
+    python main.py --evaluate-model --provider perplexity --model sonar-pro --scoring-profile enterprise
         """
     )
     
@@ -721,10 +727,56 @@ Examples:
     parser.add_argument('--seed-list', type=int, nargs='+', default=None,
                         help='Explicit seed list (overrides --n-runs and --seed)')
     parser.add_argument('--smoke-test', action='store_true', help='Run a lightweight subset of approaches for quick validation')
+
+    # ── AI Model Evaluation (new platform features) ──
+    parser.add_argument('--evaluate-model', action='store_true',
+                        help='Evaluate an AI model against the benchmark')
+    parser.add_argument('--provider', type=str, default='mock',
+                        choices=['gemini', 'perplexity', 'openai', 'together', 'openrouter', 'groq', 'local', 'mock'],
+                        help='Model provider for --evaluate-model')
+    parser.add_argument('--model', type=str, default='mock-v1',
+                        help='Model name for --evaluate-model (e.g., gemini-2.5-flash, Qwen/Qwen3-235B-A22B)')
+    parser.add_argument('--api-key', type=str, default=None,
+                        help='API key for model provider (or set via env var)')
+    parser.add_argument('--api-base-url', type=str, default=None,
+                        help='Custom API base URL')
+    parser.add_argument('--eval-domains', type=str, nargs='+', default=None,
+                        help='Challenge domains to evaluate (default: all)')
+    parser.add_argument('--eval-challenges', type=int, default=20,
+                        help='Number of challenges per domain')
+    parser.add_argument('--scoring-profile', type=str, default='balanced',
+                        choices=['balanced', 'enterprise', 'research', 'safety', 'speed_optimized'],
+                        help='Scoring profile for radar chart weights')
+    parser.add_argument('--eval-temperature', type=float, default=0.0,
+                        help='Model temperature for evaluation')
+    parser.add_argument('--eval-max-tokens', type=int, default=4096,
+                        help='Max output tokens for model responses')
     
     args = parser.parse_args()
     
-    if args.list_snapshots:
+    if args.evaluate_model:
+        try:
+            from src.core.evaluation_pipeline import run_evaluation
+            run_evaluation(
+                provider=args.provider,
+                model_name=args.model,
+                domains=args.eval_domains,
+                n_challenges=args.eval_challenges,
+                seed=args.seed,
+                scoring_profile=args.scoring_profile,
+                results_dir=args.output_dir,
+                api_key=args.api_key,
+                api_base_url=args.api_base_url,
+                temperature=args.eval_temperature,
+                max_tokens=args.eval_max_tokens,
+                verbose=True,
+            )
+        except Exception as exc:
+            print(f"Model evaluation: FAILED ({exc})")
+            import traceback
+            traceback.print_exc()
+            sys.exit(1)
+    elif args.list_snapshots:
         list_snapshots(snapshots_dir=args.snapshots_dir)
     elif args.snapshot_info:
         try:
