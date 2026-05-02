@@ -73,3 +73,4 @@ pytest_release_gate_exit.txt
 .env
 .env.*
 !.env.example
+test_*.py
