@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>10ways2do — AI Benchmark Platform</title>
+  <meta name="description" content="The world's first multi-dimensional, contamination-resistant AI benchmark platform. Evaluate any model across 8 axes: accuracy, speed, cost, robustness, fairness, consistency, generalization, efficiency." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+  <div class="bg-orb orb-c"></div>
+
+  <header class="topbar" id="topbar">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">10</span>
+      <div>
+        <div class="brand-title">10ways2do</div>
+        <div class="brand-subtitle">Benchmark Platform</div>
+      </div>
+    </a>
+    <nav class="nav" id="main-nav">
+      <a href="index.html" class="active">Home</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="submit.html">Submit Model</a>
+      <a href="../docs/ARCHITECTURE.md">Docs</a>
+      <a href="https://github.com/Ojhaharsh/10ways2do" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">the benchmark that can't be gamed</p>
+        <h1>Evaluate AI models the way they <em>actually</em> perform.</h1>
+        <p class="lede">
+          Dynamic challenges. 8-axis radar scoring. Process evaluation.
+          No memorization. No gaming. No single-number leaderboards.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="leaderboard.html">View Leaderboard</a>
+          <a class="btn btn-secondary" href="submit.html">Submit Your Model</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <canvas id="hero-radar" width="400" height="400"></canvas>
+        <div class="hero-radar-label">Multi-Dimensional Evaluation</div>
+      </div>
+    </section>
+
+    <!-- LIVE STATS -->
+    <section class="stats-strip" id="live-stats">
+      <article class="stat-tile" id="stat-models">
+        <strong class="counter" data-target="0">0</strong>
+        <span>Models Evaluated</span>
+      </article>
+      <article class="stat-tile" id="stat-challenges">
+        <strong class="counter" data-target="0">0</strong>
+        <span>Challenges Generated</span>
+      </article>
+      <article class="stat-tile" id="stat-domains">
+        <strong>10+</strong>
+        <span>Evaluation Domains</span>
+      </article>
+      <article class="stat-tile" id="stat-axes">
+        <strong>8</strong>
+        <span>Scoring Axes</span>
+      </article>
+    </section>
+
+    <!-- LIVE DATA PREVIEW (SCATTER PLOT) -->
+    <section class="section" id="scatter-preview">
+      <div class="section-heading">
+        <p class="eyebrow">performance vs cost</p>
+        <h2>Real trade-offs. Visualized.</h2>
+        <p>Aggregate evaluation scores plotted against estimated cost per 1k tokens. Find the Pareto frontier for your specific use case.</p>
+      </div>
+      <div class="scatter-container" style="position:relative; width:100%; height:400px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:24px;">
+        <canvas id="scatter-canvas"></canvas>
+      </div>
+    </section>
+
+    <!-- HEAD-TO-HEAD COMPARISON -->
+    <section class="section" id="h2h-comparison">
+      <div class="section-heading">
+        <p class="eyebrow">head-to-head</p>
+        <h2>Overlay radar profiles. Spot the differences.</h2>
+        <p>Don't rely on aggregate scores. See exactly where a model excels or fails compared to another.</p>
+      </div>
+      <div class="h2h-layout">
+        <div class="h2h-controls">
+          <div class="form-group">
+            <label>Model A</label>
+            <select id="model-a-select">
+              <option value="gemini-flash" selected>Gemini 2.5 Flash</option>
+              <option value="qwen-coder">Qwen 2.5 Coder</option>
+              <option value="llama-3">Llama 3 (70B)</option>
+            </select>
+          </div>
+          <div class="h2h-vs">VS</div>
+          <div class="form-group">
+            <label>Model B</label>
+            <select id="model-b-select">
+              <option value="gemini-flash">Gemini 2.5 Flash</option>
+              <option value="qwen-coder" selected>Qwen 2.5 Coder</option>
+              <option value="llama-3">Llama 3 (70B)</option>
+            </select>
+          </div>
+          <div class="h2h-legend">
+            <div class="legend-item"><span class="legend-color" style="background:var(--accent);"></span> Model A</div>
+            <div class="legend-item"><span class="legend-color" style="background:var(--accent-2);"></span> Model B</div>
+          </div>
+        </div>
+        <div class="h2h-radar-wrap">
+          <canvas id="h2h-radar" width="500" height="500"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- METHODOLOGY (REVAMPED) -->
+    <section class="section" id="methodology">
+      <div class="section-heading">
+        <p class="eyebrow">the 10w2d difference</p>
+        <h2>Why giants trust this benchmark.</h2>
+        <p>
+          We moved past static multiple-choice questions. Our engine generates unique problems at runtime and scores the reasoning process, not just the output.
+        </p>
+      </div>
+
+      <div class="methodology-grid">
+        <article class="methodology-card">
+          <div class="methodology-visual" style="background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), transparent);">
+            <!-- Mock diagram of dynamic generation -->
+            <div class="diagram-nodes">
+              <div class="node seed-node">Seed: 42</div>
+              <div class="arrow">→</div>
+              <div class="node template-node">Templates</div>
+              <div class="arrow">→</div>
+              <div class="node hash-node">Hash: f3cec...</div>
+            </div>
+          </div>
+          <h3>Contamination-Proof Generation</h3>
+          <p>Challenges are procedurally generated at evaluation time. Every session gets unique problems with a cryptographic hash. It is mathematically impossible to pre-train on the test set.</p>
+        </article>
+        
+        <article class="methodology-card">
+          <div class="methodology-visual" style="background: linear-gradient(135deg, rgba(132, 94, 247, 0.1), transparent);">
+            <!-- Mock diagram of process evaluation -->
+            <div class="diagram-bars">
+              <div class="bar-row"><span class="bar-label">Answer</span><div class="bar-fill" style="width:100%; background:var(--accent-3);"></div></div>
+              <div class="bar-row"><span class="bar-label">Reasoning</span><div class="bar-fill" style="width:80%; background:var(--accent-2);"></div></div>
+              <div class="bar-row"><span class="bar-label">Confidence</span><div class="bar-fill" style="width:60%; background:var(--accent);"></div></div>
+            </div>
+          </div>
+          <h3>Process Evaluation</h3>
+          <p>We evaluate how a model reasons, not just what it outputs. Our engine scores chain-of-thought quality, confidence calibration, and self-correction steps across 5 dimensions.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- RADAR DEMO -->
+    <section class="section" id="radar-demo">
+      <div class="section-heading">
+        <p class="eyebrow">the 8 axes</p>
+        <h2>One model. Eight dimensions of truth.</h2>
+        <p>Click any axis to understand what it measures and why it matters.</p>
+      </div>
+
+      <div class="radar-demo-layout">
+        <div class="radar-canvas-wrap">
+          <canvas id="demo-radar" width="500" height="500"></canvas>
+        </div>
+        <div class="axis-detail" id="axis-detail">
+          <div class="axis-detail-header">
+            <span class="axis-dot"></span>
+            <h3 id="axis-name">Accuracy</h3>
+          </div>
+          <p id="axis-desc">How often the model produces correct answers across all difficulty levels and challenge types.</p>
+          <div class="axis-meta">
+            <div><span class="meta-label">Weight (Balanced)</span><span class="meta-value" id="axis-weight">20%</span></div>
+            <div><span class="meta-label">Metric</span><span class="meta-value" id="axis-metric">Exact match + partial credit</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="section" id="how">
+      <div class="section-heading compact">
+        <p class="eyebrow">the pipeline</p>
+        <h2>From API key to radar chart in one command.</h2>
+      </div>
+
+      <div class="steps-grid">
+        <article class="step-card">
+          <span class="step-number">01</span>
+          <h3>Connect</h3>
+          <p>Point the benchmark at any model API — Gemini, Claude, GPT, Qwen, or your own endpoint.</p>
+          <code>--provider gemini --model gemini-2.5-pro</code>
+        </article>
+        <article class="step-card">
+          <span class="step-number">02</span>
+          <h3>Generate</h3>
+          <p>Fresh challenges are created on-the-fly across 4+ domains. Every session is unique. No memorization possible.</p>
+          <code>--eval-challenges 20 --seed 42</code>
+        </article>
+        <article class="step-card">
+          <span class="step-number">03</span>
+          <h3>Evaluate</h3>
+          <p>Responses are scored on 5 dimensions: answer correctness, reasoning quality, confidence calibration, format compliance, and efficiency.</p>
+          <code>--scoring-profile balanced</code>
+        </article>
+        <article class="step-card">
+          <span class="step-number">04</span>
+          <h3>Profile</h3>
+          <p>An 8-axis radar profile is computed. Models are ranked on a multi-dimensional leaderboard. No single-number reductionism.</p>
+          <code>Results saved to results/EVAL_*.json</code>
+        </article>
+      </div>
+    </section>
+
+    <!-- SCORING PROFILES -->
+    <section class="section" id="profiles">
+      <div class="section-heading">
+        <p class="eyebrow">configurable scoring</p>
+        <h2>Different priorities. Different rankings.</h2>
+        <p>The same model can rank #1 for research and #5 for enterprise. That's the point.</p>
+      </div>
+
+      <div class="profiles-grid">
+        <button class="profile-card active" data-profile="balanced">
+          <h3>Balanced</h3>
+          <p>Equal weight across all dimensions. The default.</p>
+        </button>
+        <button class="profile-card" data-profile="enterprise">
+          <h3>Enterprise</h3>
+          <p>Prioritizes cost, robustness, and speed for production use.</p>
+        </button>
+        <button class="profile-card" data-profile="research">
+          <h3>Research</h3>
+          <p>Accuracy and generalization matter most.</p>
+        </button>
+        <button class="profile-card" data-profile="safety">
+          <h3>Safety</h3>
+          <p>Robustness, fairness, and consistency above all.</p>
+        </button>
+      </div>
+
+      <div class="profile-weights" id="profile-weights">
+        <!-- Filled by JS -->
+      </div>
+    </section>
+
+    <!-- DOMAINS GRID (HIGH DENSITY) -->
+    <section class="section" id="domains">
+      <div class="section-heading">
+        <p class="eyebrow">evaluation coverage</p>
+        <h2>10 dynamic domains. Unlimited scope.</h2>
+        <p>Every challenge is generated fresh. New domains are added as AI capabilities evolve. Hover to see what each domain tests.</p>
+      </div>
+
+      <div class="domain-density-grid">
+        <div class="domain-column">
+          <h3 class="category-label accent">Core Capabilities</h3>
+          <div class="domain-card tooltip-trigger">
+            <strong>Reasoning</strong>
+            <p>Multi-step math & probability</p>
+            <div class="tooltip">Tests ability to follow complex chains of thought without losing track of constraints. e.g., Markov chain probabilities.</div>
+          </div>
+          <div class="domain-card tooltip-trigger">
+            <strong>Code Generation</strong>
+            <p>Write working functions</p>
+            <div class="tooltip">Tests functional correctness and efficiency of generated code against execution environments and test suites.</div>
+          </div>
+          <div class="domain-card tooltip-trigger">
+            <strong>Instruction Following</strong>
+            <p>Precise formatting rules</p>
+            <div class="tooltip">Tests adherence to strict length, format, and content constraints (similar to IFEval).</div>
+          </div>
+          <div class="domain-card tooltip-trigger">
+            <strong>Logical Deduction</strong>
+            <p>Puzzles & constraints</p>
+            <div class="tooltip">Tests deductive reasoning using logic puzzles, ordering tasks, and constraint satisfaction problems.</div>
+          </div>
+          <div class="domain-card tooltip-trigger">
+            <strong>Classification</strong>
+            <p>Contextual sentiment</p>
+            <div class="tooltip">Tests basic NLU capabilities by categorizing text with varying degrees of built-in ambiguity.</div>
+          </div>
+        </div>
+
+        <div class="domain-column">
+          <h3 class="category-label accent">Advanced Capabilities</h3>
+          <div class="domain-card tooltip-trigger">
+            <strong>Hallucination Resistance</strong>
+            <p>Knowing what it doesn't know</p>
+            <div class="tooltip">Tests the model's ability to refuse unanswerable questions or identify false premises instead of confidently hallucinating.</div>
+          </div>
+          <div class="domain-card tooltip-trigger">
+            <strong>Summarization</strong>
+            <p>Factual compression</p>
+            <div class="tooltip">Tests ability to condense text while strictly preserving key numerical and entity facts.</div>
+          </div>
+          <div class="domain-card tooltip-trigger">
+            <strong>Tool Use Planning</strong>
+            <p>API sequence planning</p>
+            <div class="tooltip">Tests the model's ability to orchestrate multi-step action plans using a provided set of tools.</div>
+          </div>
+          <div class="domain-card tooltip-trigger">
+            <strong>Information Extraction</strong>
+            <p>Structured parsing</p>
+            <div class="tooltip">Tests ability to reliably extract entities and relationships from noisy text into structured JSON.</div>
+          </div>
+          <div class="domain-card tooltip-trigger">
+            <strong>Anomaly Detection</strong>
+            <p>Finding outliers</p>
+            <div class="tooltip">Tests pattern recognition and outlier detection in long numerical sequences.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section cta-section" id="cta">
+      <div class="cta-content">
+        <p class="eyebrow">ready to evaluate?</p>
+        <h2>Run your first evaluation in 60 seconds.</h2>
+        <div class="cta-code">
+          <code>python main.py --evaluate-model --provider mock --model mock-v1 --eval-challenges 10</code>
+        </div>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="submit.html">Submit Your Model</a>
+          <a class="btn btn-secondary" href="leaderboard.html">View Leaderboard</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div>
+      <strong>10ways2do Benchmark Platform</strong>
+      <p>The world's first multi-dimensional, contamination-resistant AI evaluation system.</p>
+    </div>
+    <p>MIT License &middot; Open Source</p>
+  </footer>
+
+  <script src="charts.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
