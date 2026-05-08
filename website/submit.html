@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submit Model — 10ways2do Benchmark</title>
+  <meta name="description" content="Evaluate your AI model on the 10ways2do benchmark. Connect any model API and get an 8-axis radar profile." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+  <div class="bg-orb orb-c"></div>
+
+  <header class="topbar">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">10</span>
+      <div>
+        <div class="brand-title">10ways2do</div>
+        <div class="brand-subtitle">Benchmark Platform</div>
+      </div>
+    </a>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="submit.html" class="active">Submit Model</a>
+      <a href="../docs/ARCHITECTURE.md">Docs</a>
+      <a href="https://github.com/Ojhaharsh/10ways2do" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section" style="margin-top:28px;">
+      <div class="section-heading" style="text-align:center;max-width:600px;margin:0 auto 32px;">
+        <p class="eyebrow">evaluate any model</p>
+        <h1>Submit Your Model</h1>
+        <p>Connect your model's API and run a full 8-axis evaluation. Results appear on the leaderboard automatically.</p>
+      </div>
+
+      <form class="submit-form" id="submit-form">
+        <div class="form-group">
+          <label for="provider">Provider</label>
+          <select id="provider">
+            <option value="gemini">Google Gemini</option>
+            <option value="perplexity">Perplexity</option>
+            <option value="openai">OpenAI</option>
+            <option value="together">Together.ai (Qwen, Llama, etc.)</option>
+            <option value="openrouter">OpenRouter</option>
+            <option value="groq">Groq</option>
+            <option value="mock" selected>Mock (for testing)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="model-name">Model Name</label>
+          <input type="text" id="model-name" placeholder="e.g., gemini-2.5-flash, Qwen/Qwen3-235B-A22B" value="mock-v1" />
+          <span class="form-hint">Exact model identifier as used by the provider's API</span>
+        </div>
+
+        <div class="form-group">
+          <label for="n-challenges">Challenges Per Domain</label>
+          <select id="n-challenges">
+            <option value="5">5 (Quick test)</option>
+            <option value="10">10 (Standard)</option>
+            <option value="20" selected>20 (Recommended)</option>
+            <option value="50">50 (Thorough)</option>
+            <option value="100">100 (Research-grade)</option>
+          </select>
+          <span class="form-hint">More challenges = more reliable scores but higher cost</span>
+        </div>
+
+        <div class="form-group">
+          <label for="scoring-profile">Scoring Profile</label>
+          <select id="scoring-profile">
+            <option value="balanced" selected>Balanced — Equal weight across all axes</option>
+            <option value="enterprise">Enterprise — Cost, robustness, speed</option>
+            <option value="research">Research — Accuracy, generalization</option>
+            <option value="safety">Safety — Robustness, fairness, consistency</option>
+            <option value="speed_optimized">Speed-optimized — Latency matters most</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-submit">Generate Evaluation Command</button>
+      </form>
+
+      <div id="submit-result"></div>
+    </section>
+
+    <!-- Quick Start Guide -->
+    <section class="section" style="margin-top:20px;">
+      <div class="section-heading compact">
+        <p class="eyebrow">quick start</p>
+        <h2>First-time setup</h2>
+      </div>
+
+      <div class="steps-grid" style="grid-template-columns: repeat(3, 1fr);">
+        <article class="step-card">
+          <span class="step-number">01</span>
+          <h3>Install</h3>
+          <p>Clone the repo and install dependencies.</p>
+          <code>pip install -r requirements.txt</code>
+        </article>
+        <article class="step-card">
+          <span class="step-number">02</span>
+          <h3>Set API Key</h3>
+          <p>Export your provider's API key.</p>
+          <code>set GEMINI_API_KEY=your_key</code>
+        </article>
+        <article class="step-card">
+          <span class="step-number">03</span>
+          <h3>Run</h3>
+          <p>Execute the evaluation command.</p>
+          <code>python main.py --evaluate-model ...</code>
+        </article>
+      </div>
+
+      <div style="margin-top:20px;padding:20px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;">
+        <h3 style="font-family:var(--font-display);margin-bottom:10px;">Supported Providers & API Keys</h3>
+        <table style="width:100%;border-collapse:collapse;font-size:0.88rem;">
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:10px;color:var(--text);">Google Gemini</td>
+            <td style="padding:10px;font-family:var(--font-mono);color:var(--accent-3);font-size:0.82rem;">GEMINI_API_KEY</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:10px;color:var(--text);">Perplexity</td>
+            <td style="padding:10px;font-family:var(--font-mono);color:var(--accent-3);font-size:0.82rem;">PERPLEXITY_API_KEY</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:10px;color:var(--text);">OpenAI</td>
+            <td style="padding:10px;font-family:var(--font-mono);color:var(--accent-3);font-size:0.82rem;">OPENAI_API_KEY</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:10px;color:var(--text);">Together.ai (Qwen, Llama, etc.)</td>
+            <td style="padding:10px;font-family:var(--font-mono);color:var(--accent-3);font-size:0.82rem;">TOGETHER_API_KEY</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:10px;color:var(--text);">OpenRouter</td>
+            <td style="padding:10px;font-family:var(--font-mono);color:var(--accent-3);font-size:0.82rem;">OPENROUTER_API_KEY</td>
+          </tr>
+          <tr>
+            <td style="padding:10px;color:var(--text);">Groq</td>
+            <td style="padding:10px;font-family:var(--font-mono);color:var(--accent-3);font-size:0.82rem;">GROQ_API_KEY</td>
+          </tr>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div>
+      <strong>10ways2do Benchmark Platform</strong>
+      <p>Multi-dimensional, contamination-resistant AI evaluation.</p>
+    </div>
+    <p>MIT License &middot; Open Source</p>
+  </footer>
+
+  <script src="charts.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
